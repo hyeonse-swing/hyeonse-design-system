@@ -1,0 +1,7 @@
+# Visual contract
+
+The default is white paper (`--paper: #fff`), dark ink (`--ink: #101114`), and cobalt (`--accent-solid: #204cfc`). Forest (`#087451`) and coral (`#b93d20`) are alternate accents. Dark mode uses `#111318` paper and separate lighter `--accent-text` values for readable text and focus. Use `--accent-solid` with `--on-accent` for filled actions; use `--accent-text` for links, selected outlines, and focus. `--surface` groups content, `--surface-raised` elevates a card, `--line` divides, and `--muted` carries supporting information.
+
+Use DM Sans for English and Noto Sans KR for Korean when those font assets are available in the consumer app. The package does not ship fonts. Prefer large editorial headings, compact labels, readable body measure, and crisp controls. Base radii are 0px for cards and 2px for controls; the soft preference changes them to 20px and 12px. Density is expressed through `--space-factor` (1 or .8), which components must actually use for spacing to change.
+
+Preferences: theme `system/light/dark`, accent `cobalt/forest/coral`, density `comfortable/compact`, corners `crisp/soft`, motion `full/reduced`. The root receives resolved `data-theme` plus `data-accent`, `data-density`, `data-corners`, and effective `data-motion`. System reduced motion takes priority. Preserve keyboard access, visible focus, and text labels; never convey a state only by color or motion.
