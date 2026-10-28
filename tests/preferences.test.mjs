@@ -25,7 +25,7 @@ test('malformed and untrusted preferences fall back field by field', () => {
   assert.equal(effectiveMotion('full', false), 'full');
 });
 
-function runInitialScript({ key = preferencesKey, stored, dark = false, reduced = false, storageThrows = false } = {}) {
+function runInitialScript({ key = preferencesKey, defaults, stored, dark = false, reduced = false, storageThrows = false } = {}) {
   const dataset = {};
   const requestedKeys = [];
   const context = {
@@ -39,7 +39,7 @@ function runInitialScript({ key = preferencesKey, stored, dark = false, reduced 
       return { matches: query.includes('color-scheme') ? dark : reduced };
     } },
   };
-  vm.runInNewContext(createPreferenceScript(key), context);
+  vm.runInNewContext(createPreferenceScript(key, defaults), context);
   return { dataset, requestedKeys };
 }
 
@@ -54,6 +54,27 @@ test('initial script uses the same defaults, validation and OS overrides', () =>
   });
   assert.deepEqual(runInitialScript({ storageThrows: true }).dataset, {
     theme: 'light', themePreference: 'system', accent: 'cobalt', density: 'comfortable', corners: 'crisp', motion: 'full',
+  });
+});
+
+test('site defaults fill missing or invalid fields while saved choices win', () => {
+  const defaults = { corners: 'soft', accent: 'forest', motion: 'invalid' };
+  assert.equal(defaultPreferences.corners, 'crisp');
+  assert.equal(parsePreferences(null).corners, 'crisp');
+  assert.deepEqual(parsePreferences(null, defaults), { ...defaultPreferences, corners: 'soft', accent: 'forest' });
+  assert.deepEqual(parsePreferences('{bad', defaults), { ...defaultPreferences, corners: 'soft', accent: 'forest' });
+  assert.deepEqual(parsePreferences('{"corners":"crisp","accent":"invalid","density":"compact"}', defaults), {
+    ...defaultPreferences, corners: 'crisp', accent: 'forest', density: 'compact',
+  });
+  assert.deepEqual(validatePreferences({ corners: 'invalid' }, { corners: 'invalid' }), defaultPreferences);
+  assert.deepEqual(runInitialScript({ defaults }).dataset, {
+    theme: 'light', themePreference: 'system', accent: 'forest', density: 'comfortable', corners: 'soft', motion: 'full',
+  });
+  assert.deepEqual(runInitialScript({ defaults, stored: '{"corners":"crisp","accent":"invalid"}' }).dataset, {
+    theme: 'light', themePreference: 'system', accent: 'forest', density: 'comfortable', corners: 'crisp', motion: 'full',
+  });
+  assert.deepEqual(runInitialScript({ defaults, storageThrows: true }).dataset, {
+    theme: 'light', themePreference: 'system', accent: 'forest', density: 'comfortable', corners: 'soft', motion: 'full',
   });
 });
 
@@ -83,4 +104,11 @@ test('SSR retains localized semantics and isolates multiple panels', () => {
   const themeNames = [...html.matchAll(/name="([^"]+-theme)"/g)].map(match => match[1]);
   assert.equal(new Set(themeNames).size, 2);
   assert.match(html, /hds-panel/);
+});
+
+test('provider renders site defaults before hydration', () => {
+  const html = renderToStaticMarkup(React.createElement(PreferencesProvider, { defaults: { corners: 'soft' } },
+    React.createElement(PreferencesPanel, { locale: 'en' })));
+  assert.match(html, /checked="" value="soft"/);
+  assert.doesNotMatch(html, /checked="" value="crisp"/);
 });

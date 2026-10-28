@@ -12,10 +12,10 @@ export type Preferences = {
 };
 export declare const preferencesKey = "hyeonse-site-preferences";
 export declare const defaultPreferences: Preferences;
-export declare function validatePreferences(value: unknown): Preferences;
-export declare function parsePreferences(raw: string | null): Preferences;
+export declare function validatePreferences(value: unknown, defaults?: Partial<Preferences>): Preferences;
+export declare function parsePreferences(raw: string | null, defaults?: Partial<Preferences>): Preferences;
 export declare function serializePreferences(value: Preferences): string;
 export declare function resolvedTheme(theme: ThemePreference, systemDark: boolean): 'light' | 'dark';
 export declare function effectiveMotion(motion: MotionPreference, systemReduced: boolean): MotionPreference;
-export declare function createPreferenceScript(storageKey?: string): string;
+export declare function createPreferenceScript(storageKey?: string, defaults?: Partial<Preferences>): string;
 export declare const preferenceScript: string;

@@ -52,6 +52,17 @@ export function DisplaySettings() {
 
 설정 키나 이벤트 이름을 바꾸는 경우에는 [API 문서](docs/api.md)의 적용 범위를 확인하세요. 글꼴 파일은 [출처와 라이선스](THIRD_PARTY_NOTICES.md)를 확인한 뒤 제품 자산으로 따로 제공해야 합니다.
 
+사이트별 기본 모서리를 부드럽게 하려면 첫 페인트 스크립트와 Provider에 같은 기본값을 전달합니다. 저장된 유효한 선택은 그대로 우선하며, 기본 내보내기인 `preferenceScript`와 `defaultPreferences`는 각진 모서리를 유지합니다.
+
+```tsx
+import { createPreferenceScript } from '@hyeonse/design-system/preferences';
+
+const siteDefaults = { corners: 'soft' } as const;
+const siteScript = createPreferenceScript(undefined, siteDefaults);
+// <head>의 <script dangerouslySetInnerHTML={{ __html: siteScript }} />
+// <PreferencesProvider defaults={siteDefaults}>...</PreferencesProvider>
+```
+
 ## 구성
 
 - [기초 규칙](docs/foundations.md): 색의 역할, 글자, 밀도, 모서리, 움직임.

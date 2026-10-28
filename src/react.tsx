@@ -1,9 +1,9 @@
 'use client';
 
-import { createContext, useCallback, useContext, useId, useLayoutEffect, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import {
-  defaultPreferences, effectiveMotion, parsePreferences, preferencesKey,
+  effectiveMotion, parsePreferences, preferencesKey,
   resolvedTheme, serializePreferences, validatePreferences,
 } from './preferences.js';
 import type { Preferences, ThemePreference } from './preferences.js';
@@ -31,19 +31,22 @@ function applyPreferences(preferences: Preferences, eventName: string) {
   window.dispatchEvent(new CustomEvent(eventName, { detail: preferences }));
 }
 
-function readPreferences(storageKey: string): Preferences {
-  try { return parsePreferences(window.localStorage.getItem(storageKey)); }
-  catch { return { ...defaultPreferences }; }
+function readPreferences(storageKey: string, defaults: Preferences): Preferences {
+  try { return parsePreferences(window.localStorage.getItem(storageKey), defaults); }
+  catch { return { ...defaults }; }
 }
 
-export function PreferencesProvider({ children, storageKey = preferencesKey, eventName = defaultEventName }: {
-  children: ReactNode; storageKey?: string; eventName?: string;
+export function PreferencesProvider({ children, storageKey = preferencesKey, eventName = defaultEventName, defaults }: {
+  children: ReactNode; storageKey?: string; eventName?: string; defaults?: Partial<Preferences>;
 }) {
-  const [preferences, setPreferences] = useState<Preferences>(defaultPreferences);
-  const preferencesRef = useRef<Preferences>(defaultPreferences);
+  const resolvedDefaults = useMemo(() => validatePreferences(null, defaults), [
+    defaults?.theme, defaults?.accent, defaults?.density, defaults?.corners, defaults?.motion,
+  ]);
+  const [preferences, setPreferences] = useState<Preferences>(resolvedDefaults);
+  const preferencesRef = useRef<Preferences>(resolvedDefaults);
 
   useLayoutEffect(() => {
-    const stored = readPreferences(storageKey);
+    const stored = readPreferences(storageKey, resolvedDefaults);
     preferencesRef.current = stored;
     setPreferences(stored);
     applyPreferences(stored, eventName);
@@ -53,7 +56,7 @@ export function PreferencesProvider({ children, storageKey = preferencesKey, eve
     const onSystemChange = () => applyPreferences(preferencesRef.current, eventName);
     const onStorage = (event: StorageEvent) => {
       if (event.key !== storageKey && event.key !== null) return;
-      const next = readPreferences(storageKey);
+      const next = readPreferences(storageKey, resolvedDefaults);
       preferencesRef.current = next;
       setPreferences(next);
       applyPreferences(next, eventName);
@@ -66,22 +69,22 @@ export function PreferencesProvider({ children, storageKey = preferencesKey, eve
       motionQuery.removeEventListener('change', onSystemChange);
       window.removeEventListener('storage', onStorage);
     };
-  }, [storageKey, eventName]);
+  }, [storageKey, eventName, resolvedDefaults]);
 
   const save = useCallback((next: Preferences) => {
-    const safe = validatePreferences(next);
+    const safe = validatePreferences(next, resolvedDefaults);
     preferencesRef.current = safe;
     setPreferences(safe);
     applyPreferences(safe, eventName);
     try { window.localStorage.setItem(storageKey, serializePreferences(safe)); }
     catch { /* Settings still work for this tab when storage is unavailable. */ }
-  }, [storageKey, eventName]);
+  }, [storageKey, eventName, resolvedDefaults]);
 
   const setPreference = useCallback(<K extends keyof Preferences>(key: K, value: Preferences[K]) => {
     save({ ...preferencesRef.current, [key]: value });
   }, [save]);
 
-  const resetPreferences = useCallback(() => save({ ...defaultPreferences }), [save]);
+  const resetPreferences = useCallback(() => save({ ...resolvedDefaults }), [save, resolvedDefaults]);
 
   return <Context.Provider value={{ preferences, setPreference, resetPreferences }}>{children}</Context.Provider>;
 }

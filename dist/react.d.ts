@@ -6,10 +6,11 @@ type PreferenceContext = {
     setPreference: <K extends keyof Preferences>(key: K, value: Preferences[K]) => void;
     resetPreferences: () => void;
 };
-export declare function PreferencesProvider({ children, storageKey, eventName }: {
+export declare function PreferencesProvider({ children, storageKey, eventName, defaults }: {
     children: ReactNode;
     storageKey?: string;
     eventName?: string;
+    defaults?: Partial<Preferences>;
 }): import("react").JSX.Element;
 export declare function usePreferences(): PreferenceContext;
 export declare function ThemeToggle({ locale }: {

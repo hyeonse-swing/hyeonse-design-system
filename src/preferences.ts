@@ -29,23 +29,30 @@ const options = {
   motion: ['full', 'reduced'],
 } as const;
 
-export function validatePreferences(value: unknown): Preferences {
+export function validatePreferences(value: unknown, defaults?: Partial<Preferences>): Preferences {
   const input = value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
     : {};
+  const fallback = {
+    theme: options.theme.includes(defaults?.theme as ThemePreference) ? defaults!.theme! : defaultPreferences.theme,
+    accent: options.accent.includes(defaults?.accent as AccentPreference) ? defaults!.accent! : defaultPreferences.accent,
+    density: options.density.includes(defaults?.density as DensityPreference) ? defaults!.density! : defaultPreferences.density,
+    corners: options.corners.includes(defaults?.corners as CornersPreference) ? defaults!.corners! : defaultPreferences.corners,
+    motion: options.motion.includes(defaults?.motion as MotionPreference) ? defaults!.motion! : defaultPreferences.motion,
+  };
   return {
-    theme: options.theme.includes(input.theme as ThemePreference) ? input.theme as ThemePreference : defaultPreferences.theme,
-    accent: options.accent.includes(input.accent as AccentPreference) ? input.accent as AccentPreference : defaultPreferences.accent,
-    density: options.density.includes(input.density as DensityPreference) ? input.density as DensityPreference : defaultPreferences.density,
-    corners: options.corners.includes(input.corners as CornersPreference) ? input.corners as CornersPreference : defaultPreferences.corners,
-    motion: options.motion.includes(input.motion as MotionPreference) ? input.motion as MotionPreference : defaultPreferences.motion,
+    theme: options.theme.includes(input.theme as ThemePreference) ? input.theme as ThemePreference : fallback.theme,
+    accent: options.accent.includes(input.accent as AccentPreference) ? input.accent as AccentPreference : fallback.accent,
+    density: options.density.includes(input.density as DensityPreference) ? input.density as DensityPreference : fallback.density,
+    corners: options.corners.includes(input.corners as CornersPreference) ? input.corners as CornersPreference : fallback.corners,
+    motion: options.motion.includes(input.motion as MotionPreference) ? input.motion as MotionPreference : fallback.motion,
   };
 }
 
-export function parsePreferences(raw: string | null): Preferences {
-  if (!raw) return { ...defaultPreferences };
-  try { return validatePreferences(JSON.parse(raw)); }
-  catch { return { ...defaultPreferences }; }
+export function parsePreferences(raw: string | null, defaults?: Partial<Preferences>): Preferences {
+  if (!raw) return validatePreferences(null, defaults);
+  try { return validatePreferences(JSON.parse(raw), defaults); }
+  catch { return validatePreferences(null, defaults); }
 }
 
 export function serializePreferences(value: Preferences): string {
@@ -61,12 +68,14 @@ export function effectiveMotion(motion: MotionPreference, systemReduced: boolean
 }
 
 // Root layout inserts this in <head> before CSS paints and suppresses hydration warnings on <html>.
-export function createPreferenceScript(storageKey = preferencesKey): string {
+export function createPreferenceScript(storageKey = preferencesKey, defaults?: Partial<Preferences>): string {
   // A JSON string literal is used inside an inline script; escape HTML syntax too.
   const safeKey = JSON.stringify(storageKey).replace(/[<>&\u2028\u2029]/g, character =>
     `\\u${character.charCodeAt(0).toString(16).padStart(4, '0')}`);
+  const safeDefaults = JSON.stringify(validatePreferences(null, defaults)).replace(/[<>&\u2028\u2029]/g, character =>
+    `\\u${character.charCodeAt(0).toString(16).padStart(4, '0')}`);
   return `(function(){
-  var defaults={theme:'system',accent:'cobalt',density:'comfortable',corners:'crisp',motion:'full'};
+  var defaults=${safeDefaults};
   var allowed={theme:['system','light','dark'],accent:['cobalt','forest','coral'],density:['comfortable','compact'],corners:['crisp','soft'],motion:['full','reduced']};
   var stored={};
   try { var value=JSON.parse(localStorage.getItem(${safeKey})||'{}'); if(value&&typeof value==='object'&&!Array.isArray(value))stored=value; } catch(e) {}
