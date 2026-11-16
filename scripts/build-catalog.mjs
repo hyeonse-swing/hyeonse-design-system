@@ -91,8 +91,12 @@ function reactProps(declaration, checker) {
   if (!declaration || !declaration.parameters.length) fail('React entry must have a declared props parameter');
   const parameter = declaration.parameters[0];
   const type = checker.getTypeAtLocation(parameter);
-  const properties = checker.getPropertiesOfType(type);
-  if (!properties.length) fail(`React props unavailable for ${declaration.name?.text}`);
+  // ComponentPropsWithRef brings in the entire React DOM attribute surface.
+  // The summary lists only props authored in this public declaration; the
+  // unchanged module declaration below carries the complete inherited type.
+  const properties = checker.getPropertiesOfType(type).filter(property =>
+    property.getDeclarations()?.some(propDeclaration => propDeclaration.getSourceFile() === declaration.getSourceFile()));
+  if (!properties.length) fail(`locally declared React props unavailable for ${declaration.name?.text}`);
   return properties.map(property => ({
     name: property.name,
     type: checker.typeToString(checker.getTypeOfSymbolAtLocation(property, parameter), parameter, ts.TypeFormatFlags.NoTruncation),

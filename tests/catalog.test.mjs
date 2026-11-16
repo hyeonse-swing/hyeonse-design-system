@@ -5,6 +5,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as preferenceRuntime from '../dist/preferences.js';
 import * as reactRuntime from '../dist/react.js';
+import * as primitiveRuntime from '../dist/primitives.js';
 import { buildCatalog, parseTokenCss } from '../scripts/build-catalog.mjs';
 import catalogMetadata from '../metadata/catalog.mjs';
 
@@ -57,6 +58,7 @@ test('every shipped runtime export has an authored entry and declarations includ
   const runtime = new Map([
     ['./preferences', preferenceRuntime],
     ['./react', reactRuntime],
+    ['./primitives', primitiveRuntime],
   ]);
   assert.deepEqual(catalog.modules.map(module => module.subpath), [...runtime.keys()]);
   for (const module of catalog.modules) {
@@ -72,7 +74,8 @@ test('every shipped runtime export has an authored entry and declarations includ
   }
   assert.match(catalog.modules.find(module => module.subpath === './react').declarations, /type PreferenceContext =/);
   assert.ok(catalog.modules.find(module => module.subpath === './preferences').exports.some(item => item.name === 'Preferences' && item.kind === 'type'));
-  assert.equal(catalog.entries.length, Object.keys(preferenceRuntime).length + Object.keys(reactRuntime).length);
+  assert.ok(catalog.modules.find(module => module.subpath === './primitives').exports.some(item => item.name === 'ButtonProps' && item.kind === 'type'));
+  assert.deepEqual(catalog.entries.map(entry => entry.id).sort(), [...Object.keys(preferenceRuntime), ...Object.keys(reactRuntime), ...Object.keys(primitiveRuntime)].sort());
 });
 
 test('React props come from declarations and utility defaults match runtime', () => {
@@ -93,6 +96,18 @@ test('React props come from declarations and utility defaults match runtime', ()
   assert.match(byId('defaultPreferences').summary, /system.*cobalt.*comfortable.*crisp.*full/);
   assert.match(byId('PreferencesProvider').states.join(' '), /storage events/);
   assert.match(byId('effectiveMotion').accessibility.join(' '), /reduced motion/);
+  assert.deepEqual(byId('Button').props.map(prop => prop.name), ['variant', 'size', 'loading', 'loadingLabel']);
+  assert.deepEqual(byId('TextField').props.map(prop => [prop.name, prop.required]), [['label', true], ['type', false], ['hint', false], ['error', false]]);
+  assert.deepEqual(byId('Checkbox').props.map(prop => [prop.name, prop.required]), [['label', true], ['hint', false], ['error', false]]);
+  assert.deepEqual(byId('Badge').props.map(prop => prop.name), ['tone']);
+  for (const id of ['Button', 'TextField', 'Checkbox', 'Badge']) {
+    assert.equal(byId(id).importPath, '@hyeonse/design-system/primitives');
+    assert.match(byId(id).usage.join(' '), /attributes.*ref are forwarded/);
+    assert(!byId(id).props.some(prop => ['onClick', 'ref', 'className'].includes(prop.name)), `${id} should summarize local props only`);
+  }
+  assert.match(byId('Button').props.find(prop => prop.name === 'variant').type, /primary.*secondary.*ghost/);
+  assert.match(byId('TextField').signature, /TextFieldProps/);
+  assert.match(catalog.modules.find(module => module.subpath === './primitives').declarations, /ComponentPropsWithRef<'input'>/);
 });
 
 test('all base CSS custom properties have roles and conditional values retain selectors and media', () => {
@@ -106,8 +121,19 @@ test('all base CSS custom properties have roles and conditional values retain se
   assert.ok(byToken('--ink').overrides.some(override => override.selector === ":root[data-theme='dark']" && override.media === null && override.value === '#f2f4f8'));
   assert.ok(byToken('--ink').overrides.some(override => override.selector === ':root:not([data-theme])' && override.media === '(prefers-color-scheme: dark)' && override.value === '#f2f4f8'));
   assert.ok(byToken('--accent-text').overrides.some(override => override.selector === ":root[data-theme='dark'][data-accent='forest']" && override.value === '#68dfb1'));
+  assert.ok(byToken('--accent-text').overrides.some(override => override.selector === ":root:not([data-theme])[data-accent='forest']" && override.media === '(prefers-color-scheme: dark)' && override.value === '#68dfb1'));
   assert.deepEqual(byToken('--space-factor').overrides, [{ selector: ":root[data-density='compact']", media: null, value: '.8' }]);
   assert.deepEqual(byToken('--radius-card').overrides, [{ selector: ":root[data-corners='soft']", media: null, value: '20px' }]);
+  assert.equal(byToken('--duration-fast').value, '140ms');
+  assert.equal(byToken('--leading-body').value, '1.6');
+  assert.equal(byToken('--focus-ring').value, 'var(--accent-text)');
+  assert.ok(byToken('--success-surface').overrides.some(override => override.selector === ":root[data-theme='dark']" && override.media === null && override.value === '#142b23'));
+  assert.ok(byToken('--success-surface').overrides.some(override => override.selector === ':root:not([data-theme])' && override.media === '(prefers-color-scheme: dark)' && override.value === '#142b23'));
+  for (const [index, pixels] of [4, 8, 12, 16, 24, 32, 48, 64].entries()) {
+    assert.match(byToken(`--space-${index + 1}`).value, new RegExp(`${pixels}px`));
+  }
+  assert.ok(byToken('--focus-ring').role.includes('focus'));
+  assert.ok(byToken('--danger-text').role.includes('error'));
 });
 
 test('catalog rejects stale or missing authored API and token descriptions', () => {
@@ -128,13 +154,18 @@ test('catalog rejects stale or missing authored API and token descriptions', () 
 });
 
 test('examples are embedded from files, with stable IDs and public imports', () => {
-  assert.deepEqual(catalog.examples.map(example => example.id), ['display-settings', 'token-card']);
+  assert.deepEqual(catalog.examples.map(example => example.id), ['display-settings', 'token-card', 'form-controls']);
   for (const example of catalog.examples) {
     for (const file of example.files) assert.equal(file.code, readFileSync(resolve(root, file.path), 'utf8'));
   }
   const display = catalog.examples.find(example => example.id === 'display-settings');
   assert.match(display.files.map(file => file.code).join('\n'), /@hyeonse\/design-system\/react/);
   assert.match(display.files.map(file => file.code).join('\n'), /@hyeonse\/design-system\/preferences/);
+  const form = catalog.examples.find(example => example.id === 'form-controls');
+  assert.match(form.files.map(file => file.code).join('\n'), /@hyeonse\/design-system\/primitives/);
+  const tokenCard = catalog.examples.find(example => example.id === 'token-card');
+  assert.match(tokenCard.description, /unpacked package/);
+  assert.match(tokenCard.files.find(file => file.path.endsWith('.html')).code, /preview only.*public package path/);
   assert.ok(catalog.setup.some(step => step.includes('tokens.css') && step.includes('components.css')));
   assert.ok(catalog.boundaries.notProvided.some(item => /Font files/.test(item)));
 });

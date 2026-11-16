@@ -1,39 +1,55 @@
 # 공개 API와 통합
 
-패키지 이름은 `@hyeonse/design-system`입니다. 실행·스타일 진입점은 `./tokens.css`, `./components.css`, `./preferences`, `./react`입니다. 읽기 전용 데이터 진입점으로 `./catalog.json`, `./catalog.schema.json`도 제공합니다. 내부 `src/`나 `dist/` 경로를 소비 앱에서 직접 가져오지 않습니다.
-
-설치 버전의 공개 내보내기, 타입, 토큰 값과 사용 예제는 [AI 활용 안내](ai.md)에 설명한 `hds` CLI나 카탈로그에서 확인할 수 있습니다. 패키지 루트의 `llms.txt`는 색인이고 `llms-full.txt`는 같은 카탈로그에서 생성한 전체 참조입니다. 카탈로그는 기존 CSS·JavaScript·React 진입점을 대체하지 않습니다.
+패키지 이름은 `@hyeonse/design-system`입니다. `v0.3.0`은 `./tokens.css`, `./components.css`, `./preferences`, `./react`, `./primitives`, `./catalog.json`, `./catalog.schema.json`을 제공합니다. `./primitives`는 `v0.3.0`에서 추가되었으며 `v0.2.0`에는 없습니다. 사용 중인 패키지의 `package.json`과 타입 선언을 기준으로 확인하세요. 내부 `src/`나 `dist/` 경로를 직접 가져오지 않습니다.
 
 ## CSS
 
-`tokens.css`는 역할 색과 화면 설정 선택자를 제공합니다. `components.css`는 현재 `ThemeToggle`과 `PreferencesPanel`의 `.hds-*` 스타일을 제공합니다. 일반 버튼·입력 컴포넌트 전체를 스타일링하는 전역 CSS는 아닙니다. 애플리케이션은 이 두 파일을 각각 한 번 불러와야 합니다.
+```css
+@import '@hyeonse/design-system/tokens.css';
+@import '@hyeonse/design-system/components.css';
+```
 
-## 설정 유틸
+`tokens.css`는 의미별 색상, 간격, 글자 크기, 조작 상태 토큰과 화면 설정 선택자를 제공합니다. `components.css`는 설정 UI와 네 가지 기본 컴포넌트 클래스를 포함합니다. 전역 리셋이나 앱의 모든 HTML 요소 스타일을 적용하지 않습니다. 두 파일을 각각 한 번 불러오세요. 토큰 역할은 [기초 규칙](foundations.md), 컴포넌트 사용은 [컴포넌트 안내](components.md)에 있습니다.
 
-`@hyeonse/design-system/preferences`는 `Preferences` 타입과 다음 값을 공개합니다.
+## 화면 설정 유틸
 
-`Preferences`에는 `theme`, `accent`, `density`, `corners`, `motion` 필드가 있습니다. 각각 `system/light/dark`, `cobalt/forest/coral`, `comfortable/compact`, `crisp/soft`, `full/reduced` 중 하나입니다. `defaultPreferences`는 차례대로 `system`, `cobalt`, `comfortable`, `crisp`, `full`을 사용합니다.
+`@hyeonse/design-system/preferences`의 `Preferences`는 `theme`(`system/light/dark`), `accent`(`cobalt/forest/coral`), `density`(`comfortable/compact`), `corners`(`crisp/soft`), `motion`(`full/reduced`)을 가집니다. `defaultPreferences`는 차례로 `system`, `cobalt`, `comfortable`, `crisp`, `full`입니다.
 
 | 이름 | 목적 |
 | --- | --- |
 | `preferencesKey`, `defaultPreferences` | 기본 저장 키와 설정 |
-| `validatePreferences(value, defaults?)`, `parsePreferences(raw, defaults?)`, `serializePreferences` | 저장값의 안전한 읽기·쓰기. 선택한 사이트 기본값은 누락·무효 필드에만 적용 |
+| `validatePreferences(value, defaults?)`, `parsePreferences(raw, defaults?)`, `serializePreferences` | 저장값 검증·읽기·쓰기. 유효한 저장값이 사이트 기본값보다 우선 |
 | `resolvedTheme`, `effectiveMotion` | 기기 설정을 적용한 값 계산 |
 | `createPreferenceScript(storageKey?, defaults?)`, `preferenceScript` | 첫 페인트 전에 루트 `data-*` 속성 적용 |
 
-스크립트는 `<head>`에서 CSS보다 먼저 실행합니다. 사용자 저장 문자열을 HTML에 직접 연결하지 말고 제공 함수를 사용합니다. 별도 저장 키나 사이트 기본값을 쓰면 스크립트와 React Provider에 동일하게 전달합니다. `defaultPreferences`와 `preferenceScript`는 기존 전역 기본값인 각진 모서리(`crisp`)를 유지합니다. 사이트 기본값과 저장값 모두 허용된 선택지로 검증하며, 유효한 저장값이 사이트 기본값보다 우선합니다.
+기본 저장 키는 `hyeonse-site-preferences`입니다. 초기 스크립트를 문서 `<head>`에서 CSS보다 먼저 실행하세요. 저장 문자열을 HTML에 직접 연결하지 말고 제공 함수를 사용합니다. 별도 저장 키나 기본값을 쓰면 스크립트와 Provider에 동일하게 전달하세요. 기본 내보내기는 기존의 `crisp` 모서리를 유지합니다.
 
-## React
+## 화면 설정 React API
 
-`@hyeonse/design-system/react`는 `PreferencesProvider`, `usePreferences`, `ThemeToggle`, `PreferencesPanel`을 제공합니다. Provider는 자식 컴포넌트에 `preferences`, `setPreference(key, value)`, `resetPreferences()`를 제공합니다. 두 UI 컴포넌트의 `locale`은 `ko` 또는 `en`이며 기본값은 `ko`입니다.
+`@hyeonse/design-system/react`는 `PreferencesProvider`, `usePreferences`, `ThemeToggle`, `PreferencesPanel`을 제공합니다. Provider의 자식은 훅에서 `preferences`, `setPreference(key, value)`, `resetPreferences()`를 받습니다. 두 UI 컴포넌트의 `locale`은 `ko` 또는 `en`이며 기본값은 `ko`입니다.
 
 ```tsx
-<PreferencesProvider storageKey="hyeonse-site-preferences" eventName="hyeonse:preferences" defaults={{ corners: 'soft' }}>
-  <ThemeToggle locale="ko" />
-  <PreferencesPanel locale="ko" />
-</PreferencesProvider>
+import { PreferencesProvider, ThemeToggle, PreferencesPanel } from '@hyeonse/design-system/react';
+import { createPreferenceScript } from '@hyeonse/design-system/preferences';
+
+const defaults = { corners: 'soft' } as const;
+const firstPaintScript = createPreferenceScript(undefined, defaults);
+// 문서 <head>에서 CSS보다 먼저 firstPaintScript 실행
+
+export function Settings() {
+  return <PreferencesProvider defaults={defaults}>
+    <ThemeToggle locale="ko" />
+    <PreferencesPanel locale="ko" />
+  </PreferencesProvider>;
+}
 ```
 
-Provider는 현재 탭에서 값을 갱신하고 저장 가능한 환경에서는 localStorage에 보존합니다. 다른 탭의 저장 변경과 기기 색상·움직임 설정 변경도 반영합니다. 저장값이 없거나 저장소에 접근할 수 없으면 사이트 기본값을 적용합니다. 설정 초기화도 사이트 기본값을 사용합니다. `eventName`으로 설정 변경 이벤트 이름을 지정할 수 있습니다. 설정을 읽는 컴포넌트는 Provider 안에 두세요.
+Provider는 현재 탭의 값을 갱신한 뒤 저장 가능한 환경에서 localStorage에 기록하고 설정 변경 이벤트를 보냅니다. 이벤트 기본 이름은 `hyeonse:preferences`이며 `eventName`으로 변경할 수 있습니다. 기존 이벤트의 `detail` 계약은 유지됩니다. 다른 탭의 저장 변경과 기기 색상·움직임 변경도 반영합니다. 저장소에 접근할 수 없는 환경에서도 기본값으로 동작합니다. 초기화 역시 사이트 기본값을 사용합니다. 기기의 움직임 감소 설정은 앱에서 `motion='full'`을 골라도 우선합니다.
 
-첫 페인트에도 같은 기본값을 쓰려면 문서 `<head>`에 `createPreferenceScript(undefined, { corners: 'soft' })`의 결과를 넣습니다. 다른 저장 키를 쓰는 경우 첫 인자와 Provider의 `storageKey`를 일치시키세요.
+## 기본 컴포넌트
+
+`@hyeonse/design-system/primitives`는 `Button`, `TextField`, `Checkbox`, `Badge`와 각각의 Props 타입을 제공합니다. React 19 네이티브 속성과 `ref`를 전달합니다. `Input`, `Card`, `Dialog`, `Select`는 내보내지 않습니다. props, 상태, 폼 예제는 [컴포넌트 안내](components.md)를 확인하세요. 이 진입점은 `v0.2.0`에 없습니다.
+
+## 버전별 조회
+
+설치된 패키지에서 `npm exec --no -- hds list`, `hds show Button`, `hds tokens --focus-ring`, `hds search disabled`를 실행하세요. 저장소 안에서는 `npm run hds -- ...`를 사용합니다. `--json` 성공 응답은 `schemaVersion: 1`, `package`, `type`, `data`를 포함합니다. `entry.props`는 직접 선언한 props만 나열하며 상속된 네이티브 속성과 `ref`는 `show`의 `typeContext.declarations` 및 공개 `.d.ts`에서 확인합니다. [AI 활용 안내](ai.md)에 조회 절차가 있습니다.

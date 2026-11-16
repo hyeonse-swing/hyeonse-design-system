@@ -2,15 +2,16 @@
   "schemaVersion": 1,
   "package": {
     "name": "@hyeonse/design-system",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "boundaries": {
     "provided": [
-      "Role tokens in tokens.css and styles for ThemeToggle and PreferencesPanel in components.css.",
-      "Preference validation, first-paint script, provider, hook, and display-setting controls."
+      "Role tokens in tokens.css and styles for display settings and Button/TextField/Checkbox/Badge in components.css.",
+      "Preference validation, first-paint script, provider, hook, and display-setting controls.",
+      "Button, TextField, Checkbox, and Badge React components with native element attributes and refs."
     ],
     "notProvided": [
-      "General Button, Input, or page-layout React components.",
+      "Card and page-layout React components.",
       "Font files for consuming applications; provide fonts with the required character coverage separately.",
       "A design-token interchange format such as DTCG."
     ]
@@ -18,7 +19,7 @@
   "setup": [
     "Import @hyeonse/design-system/tokens.css before @hyeonse/design-system/components.css, once each.",
     "Run preferenceScript or createPreferenceScript(...) in the document head before CSS paints; match storageKey and defaults with PreferencesProvider.",
-    "Import JavaScript from @hyeonse/design-system/preferences and React APIs from @hyeonse/design-system/react. Do not import internal src/ or dist/ paths.",
+    "Import JavaScript from @hyeonse/design-system/preferences, display-setting React APIs from @hyeonse/design-system/react, and form primitives from @hyeonse/design-system/primitives. Do not import internal src/ or dist/ paths.",
     "Provide DM Sans and Noto Sans KR font assets in the consuming app if those faces are needed; the package only declares a font stack."
   ],
   "modules": [
@@ -135,6 +136,54 @@
           "name": "PreferencesPanel",
           "kind": "value",
           "signature": "export declare function PreferencesPanel({ locale }: {\n    locale?: Locale;\n}): import(\"react\").JSX.Element;"
+        }
+      ]
+    },
+    {
+      "subpath": "./primitives",
+      "importPath": "@hyeonse/design-system/primitives",
+      "source": "src/primitives.tsx",
+      "declarations": "import type { ComponentPropsWithRef } from 'react';\nexport type ButtonProps = ComponentPropsWithRef<'button'> & {\n    variant?: 'primary' | 'secondary' | 'ghost';\n    size?: 'sm' | 'md';\n    loading?: boolean;\n    loadingLabel?: string;\n};\nexport declare function Button({ variant, size, loading, loadingLabel, type, disabled, className, children, ref, 'aria-busy': ariaBusy, 'aria-label': ariaLabel, ...props }: ButtonProps): import(\"react\").JSX.Element;\ntype TextInputType = 'text' | 'email' | 'password' | 'search' | 'tel' | 'url';\nexport type TextFieldProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children'> & {\n    label: string;\n    type?: TextInputType;\n    hint?: string;\n    error?: string;\n};\nexport declare function TextField({ label, hint, error, type, id, className, disabled, ref, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, ...props }: TextFieldProps): import(\"react\").JSX.Element;\nexport type CheckboxProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children'> & {\n    label: string;\n    hint?: string;\n    error?: string;\n};\nexport declare function Checkbox({ label, hint, error, id, className, disabled, readOnly, ref, onClick, onChange, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, 'aria-readonly': ariaReadOnly, ...props }: CheckboxProps): import(\"react\").JSX.Element;\nexport type BadgeProps = ComponentPropsWithRef<'span'> & {\n    tone?: 'neutral' | 'accent' | 'success' | 'warning' | 'danger';\n};\nexport declare function Badge({ tone, className, children, ref, ...props }: BadgeProps): import(\"react\").JSX.Element;\nexport {};\n",
+      "exports": [
+        {
+          "name": "ButtonProps",
+          "kind": "type",
+          "signature": "export type ButtonProps = ComponentPropsWithRef<'button'> & {\n    variant?: 'primary' | 'secondary' | 'ghost';\n    size?: 'sm' | 'md';\n    loading?: boolean;\n    loadingLabel?: string;\n};"
+        },
+        {
+          "name": "Button",
+          "kind": "value",
+          "signature": "export declare function Button({ variant, size, loading, loadingLabel, type, disabled, className, children, ref, 'aria-busy': ariaBusy, 'aria-label': ariaLabel, ...props }: ButtonProps): import(\"react\").JSX.Element;"
+        },
+        {
+          "name": "TextFieldProps",
+          "kind": "type",
+          "signature": "export type TextFieldProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children'> & {\n    label: string;\n    type?: TextInputType;\n    hint?: string;\n    error?: string;\n};"
+        },
+        {
+          "name": "TextField",
+          "kind": "value",
+          "signature": "export declare function TextField({ label, hint, error, type, id, className, disabled, ref, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, ...props }: TextFieldProps): import(\"react\").JSX.Element;"
+        },
+        {
+          "name": "CheckboxProps",
+          "kind": "type",
+          "signature": "export type CheckboxProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children'> & {\n    label: string;\n    hint?: string;\n    error?: string;\n};"
+        },
+        {
+          "name": "Checkbox",
+          "kind": "value",
+          "signature": "export declare function Checkbox({ label, hint, error, id, className, disabled, readOnly, ref, onClick, onChange, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, 'aria-readonly': ariaReadOnly, ...props }: CheckboxProps): import(\"react\").JSX.Element;"
+        },
+        {
+          "name": "BadgeProps",
+          "kind": "type",
+          "signature": "export type BadgeProps = ComponentPropsWithRef<'span'> & {\n    tone?: 'neutral' | 'accent' | 'success' | 'warning' | 'danger';\n};"
+        },
+        {
+          "name": "Badge",
+          "kind": "value",
+          "signature": "export declare function Badge({ tone, className, children, ref, ...props }: BadgeProps): import(\"react\").JSX.Element;"
         }
       ]
     }
@@ -570,6 +619,220 @@
           "required": false
         }
       ]
+    },
+    {
+      "id": "Button",
+      "kind": "component",
+      "summary": "Native button with primary, secondary, and ghost visual variants.",
+      "importPath": "@hyeonse/design-system/primitives",
+      "source": "src/primitives.tsx",
+      "signature": "export declare function Button({ variant, size, loading, loadingLabel, type, disabled, className, children, ref, 'aria-busy': ariaBusy, 'aria-label': ariaLabel, ...props }: ButtonProps): import(\"react\").JSX.Element;",
+      "usage": [
+        "Import from @hyeonse/design-system/primitives and import components.css after tokens.css.",
+        "Native button attributes and ref are forwarded; type defaults to button. The caller manages loading state."
+      ],
+      "states": [
+        "primary/secondary/ghost variants",
+        "sm/md sizes",
+        "enabled/disabled/loading"
+      ],
+      "accessibility": [
+        "Native button keyboard behavior.",
+        "Loading disables the button, sets aria-busy, and uses loadingLabel as visible and accessible text when supplied."
+      ],
+      "limitations": [
+        "Loading does not start or track an asynchronous operation.",
+        "Renders a button element, not a link."
+      ],
+      "examples": [
+        "form-controls"
+      ],
+      "keywords": [
+        "button",
+        "action",
+        "loading",
+        "disabled",
+        "버튼",
+        "작업"
+      ],
+      "props": [
+        {
+          "name": "variant",
+          "type": "\"primary\" | \"secondary\" | \"ghost\"",
+          "required": false
+        },
+        {
+          "name": "size",
+          "type": "\"sm\" | \"md\"",
+          "required": false
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "loadingLabel",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "TextField",
+      "kind": "component",
+      "summary": "Labeled single-line input with optional hint and error text.",
+      "importPath": "@hyeonse/design-system/primitives",
+      "source": "src/primitives.tsx",
+      "signature": "export declare function TextField({ label, hint, error, type, id, className, disabled, ref, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, ...props }: TextFieldProps): import(\"react\").JSX.Element;",
+      "usage": [
+        "Import from @hyeonse/design-system/primitives and import components.css after tokens.css.",
+        "Native input attributes and ref are forwarded; className applies to the input element."
+      ],
+      "states": [
+        "text/email/password/search/tel/url types",
+        "enabled/disabled/readOnly",
+        "hint/error"
+      ],
+      "accessibility": [
+        "The label targets the supplied id or a generated id.",
+        "Hint and error IDs are added to aria-describedby alongside a caller-supplied description; an error sets aria-invalid."
+      ],
+      "limitations": [
+        "Single-line input only; the caller owns validation and error messages."
+      ],
+      "examples": [
+        "form-controls"
+      ],
+      "keywords": [
+        "input",
+        "text field",
+        "label",
+        "hint",
+        "error",
+        "입력",
+        "필드",
+        "오류"
+      ],
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "type",
+          "type": "TextInputType",
+          "required": false
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "Checkbox",
+      "kind": "component",
+      "summary": "Labeled native checkbox with optional hint and error text.",
+      "importPath": "@hyeonse/design-system/primitives",
+      "source": "src/primitives.tsx",
+      "signature": "export declare function Checkbox({ label, hint, error, id, className, disabled, readOnly, ref, onClick, onChange, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, 'aria-readonly': ariaReadOnly, ...props }: CheckboxProps): import(\"react\").JSX.Element;",
+      "usage": [
+        "Import from @hyeonse/design-system/primitives and import components.css after tokens.css.",
+        "Native checkbox attributes, checked/defaultChecked, and ref are forwarded; className applies to the input element."
+      ],
+      "states": [
+        "checked/unchecked",
+        "enabled/disabled/readOnly",
+        "hint/error"
+      ],
+      "accessibility": [
+        "The label targets the supplied id or a generated id.",
+        "Hint and error IDs are added to aria-describedby alongside a caller-supplied description; an error sets aria-invalid.",
+        "readOnly exposes aria-readonly and prevents click changes while retaining focus."
+      ],
+      "limitations": [
+        "A checkbox has no native readOnly behavior; the component cancels clicks to preserve its value.",
+        "The caller owns validation and error messages."
+      ],
+      "examples": [
+        "form-controls"
+      ],
+      "keywords": [
+        "checkbox",
+        "checked",
+        "readOnly",
+        "label",
+        "hint",
+        "error",
+        "체크박스",
+        "동의"
+      ],
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "Badge",
+      "kind": "component",
+      "summary": "Noninteractive span badge for a short status or category.",
+      "importPath": "@hyeonse/design-system/primitives",
+      "source": "src/primitives.tsx",
+      "signature": "export declare function Badge({ tone, className, children, ref, ...props }: BadgeProps): import(\"react\").JSX.Element;",
+      "usage": [
+        "Import from @hyeonse/design-system/primitives and import components.css after tokens.css.",
+        "Native span attributes and ref are forwarded; include text that communicates the status without color alone."
+      ],
+      "states": [
+        "neutral/accent/success/warning/danger tones"
+      ],
+      "accessibility": [
+        "Renders a span with its text content; tone alone does not announce meaning."
+      ],
+      "limitations": [
+        "No interaction or live-region behavior is added."
+      ],
+      "examples": [
+        "form-controls"
+      ],
+      "keywords": [
+        "badge",
+        "status",
+        "tone",
+        "success",
+        "warning",
+        "danger",
+        "상태",
+        "배지"
+      ],
+      "props": [
+        {
+          "name": "tone",
+          "type": "\"neutral\" | \"accent\" | \"success\" | \"warning\" | \"danger\"",
+          "required": false
+        }
+      ]
     }
   ],
   "tokens": [
@@ -726,6 +989,16 @@
           "selector": ":root:not([data-theme])",
           "media": "(prefers-color-scheme: dark)",
           "value": "#9aafff"
+        },
+        {
+          "selector": ":root:not([data-theme])[data-accent='forest']",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#68dfb1"
+        },
+        {
+          "selector": ":root:not([data-theme])[data-accent='coral']",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#ffa58e"
         }
       ]
     },
@@ -783,6 +1056,16 @@
           "selector": ":root:not([data-theme])",
           "media": "(prefers-color-scheme: dark)",
           "value": "#1b2540"
+        },
+        {
+          "selector": ":root:not([data-theme])[data-accent='forest']",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#173029"
+        },
+        {
+          "selector": ":root:not([data-theme])[data-accent='coral']",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#35231f"
         }
       ]
     },
@@ -837,6 +1120,16 @@
           "selector": ":root:not([data-theme])",
           "media": "(prefers-color-scheme: dark)",
           "value": "#c1c9de"
+        },
+        {
+          "selector": ":root:not([data-theme])[data-accent='forest']",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#b7e1d1"
+        },
+        {
+          "selector": ":root:not([data-theme])[data-accent='coral']",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#e7c1b8"
         }
       ]
     },
@@ -939,6 +1232,300 @@
       "role": "Control text size",
       "value": "12px",
       "overrides": []
+    },
+    {
+      "name": "--control-border",
+      "role": "Border of form controls",
+      "value": "#747b89",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#7b8494"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#7b8494"
+        }
+      ]
+    },
+    {
+      "name": "--focus-ring",
+      "role": "Visible keyboard focus outline",
+      "value": "var(--accent-text)",
+      "overrides": []
+    },
+    {
+      "name": "--disabled-ink",
+      "role": "Foreground text for disabled controls",
+      "value": "#727987",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#99a2b2"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#99a2b2"
+        }
+      ]
+    },
+    {
+      "name": "--disabled-surface",
+      "role": "Surface for disabled controls",
+      "value": "#e9ecf1",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#202631"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#202631"
+        }
+      ]
+    },
+    {
+      "name": "--success-text",
+      "role": "Success status text",
+      "value": "#176b4e",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#8cdeb7"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#8cdeb7"
+        }
+      ]
+    },
+    {
+      "name": "--success-surface",
+      "role": "Success status background",
+      "value": "#edf8f2",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#142b23"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#142b23"
+        }
+      ]
+    },
+    {
+      "name": "--success-line",
+      "role": "Success status border",
+      "value": "#3c8668",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#4e9a78"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#4e9a78"
+        }
+      ]
+    },
+    {
+      "name": "--warning-text",
+      "role": "Warning status text",
+      "value": "#80520c",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#f3cc83"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#f3cc83"
+        }
+      ]
+    },
+    {
+      "name": "--warning-surface",
+      "role": "Warning status background",
+      "value": "#fff7e3",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#302719"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#302719"
+        }
+      ]
+    },
+    {
+      "name": "--warning-line",
+      "role": "Warning status border",
+      "value": "#ab751f",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#b28d46"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#b28d46"
+        }
+      ]
+    },
+    {
+      "name": "--danger-text",
+      "role": "Danger or validation-error text",
+      "value": "#b42332",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#ff9ba5"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#ff9ba5"
+        }
+      ]
+    },
+    {
+      "name": "--danger-surface",
+      "role": "Danger or validation-error background",
+      "value": "#fff1f2",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#351f25"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#351f25"
+        }
+      ]
+    },
+    {
+      "name": "--danger-line",
+      "role": "Danger or validation-error border",
+      "value": "#c64a59",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#c26b77"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#c26b77"
+        }
+      ]
+    },
+    {
+      "name": "--space-1",
+      "role": "Spacing step 1 (4px); pair with --space-factor for density-aware spacing",
+      "value": "4px",
+      "overrides": []
+    },
+    {
+      "name": "--space-2",
+      "role": "Spacing step 2 (8px); pair with --space-factor for density-aware spacing",
+      "value": "8px",
+      "overrides": []
+    },
+    {
+      "name": "--space-3",
+      "role": "Spacing step 3 (12px); pair with --space-factor for density-aware spacing",
+      "value": "12px",
+      "overrides": []
+    },
+    {
+      "name": "--space-4",
+      "role": "Spacing step 4 (16px); pair with --space-factor for density-aware spacing",
+      "value": "16px",
+      "overrides": []
+    },
+    {
+      "name": "--space-5",
+      "role": "Spacing step 5 (24px); pair with --space-factor for density-aware spacing",
+      "value": "24px",
+      "overrides": []
+    },
+    {
+      "name": "--space-6",
+      "role": "Spacing step 6 (32px); pair with --space-factor for density-aware spacing",
+      "value": "32px",
+      "overrides": []
+    },
+    {
+      "name": "--space-7",
+      "role": "Spacing step 7 (48px); pair with --space-factor for density-aware spacing",
+      "value": "48px",
+      "overrides": []
+    },
+    {
+      "name": "--space-8",
+      "role": "Spacing step 8 (64px); pair with --space-factor for density-aware spacing",
+      "value": "64px",
+      "overrides": []
+    },
+    {
+      "name": "--text-xs",
+      "role": "Extra-small text size",
+      "value": "12px",
+      "overrides": []
+    },
+    {
+      "name": "--text-sm",
+      "role": "Small text size",
+      "value": "14px",
+      "overrides": []
+    },
+    {
+      "name": "--text-base",
+      "role": "Base text size",
+      "value": "16px",
+      "overrides": []
+    },
+    {
+      "name": "--text-lg",
+      "role": "Large text size",
+      "value": "20px",
+      "overrides": []
+    },
+    {
+      "name": "--leading-body",
+      "role": "Body text line-height",
+      "value": "1.6",
+      "overrides": []
+    },
+    {
+      "name": "--duration-fast",
+      "role": "Fast interaction transition duration",
+      "value": "140ms",
+      "overrides": []
     }
   ],
   "examples": [
@@ -960,7 +1547,7 @@
     },
     {
       "id": "token-card",
-      "description": "HTML card styled with public role tokens.",
+      "description": "HTML card preview for this repository or an unpacked package; consuming apps import @hyeonse/design-system/tokens.css instead of the preview-only ../dist link.",
       "files": [
         {
           "path": "examples/token-card.css",
@@ -970,7 +1557,18 @@
         {
           "path": "examples/token-card.html",
           "language": "html",
-          "code": "<!doctype html>\n<html lang=\"ko\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <title>역할 토큰으로 만든 카드</title>\n    <!-- These relative paths run in the repository or unpacked package. -->\n    <!-- In a bundler, import @hyeonse/design-system/tokens.css instead. -->\n    <link rel=\"stylesheet\" href=\"../dist/tokens.css\">\n    <link rel=\"stylesheet\" href=\"./token-card.css\">\n  </head>\n  <body>\n    <main>\n      <article class=\"example-card\" aria-labelledby=\"card-title\">\n        <h2 id=\"card-title\">읽기 편한 화면 만들기</h2>\n        <p>본문, 보조 글자, 링크에 서로 다른 역할 토큰을 사용합니다.</p>\n        <a href=\"../docs/foundations.md\">기초 규칙 읽기</a>\n      </article>\n    </main>\n  </body>\n</html>\n"
+          "code": "<!doctype html>\n<html lang=\"ko\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <title>역할 토큰으로 만든 카드</title>\n    <!-- Preview at /examples/token-card.html after building this repository, or from an unpacked package with dist/ beside examples/. -->\n    <!-- The ../dist link is for this standalone preview only. In a consuming app, copy the markup/CSS and import @hyeonse/design-system/tokens.css through its public package path; do not copy this relative link. -->\n    <link rel=\"stylesheet\" href=\"../dist/tokens.css\">\n    <link rel=\"stylesheet\" href=\"./token-card.css\">\n  </head>\n  <body>\n    <main>\n      <article class=\"example-card\" aria-labelledby=\"card-title\">\n        <h2 id=\"card-title\">읽기 편한 화면 만들기</h2>\n        <p>본문, 보조 글자, 링크에 서로 다른 역할 토큰을 사용합니다.</p>\n        <a href=\"../docs/foundations.md\">기초 규칙 읽기</a>\n      </article>\n    </main>\n  </body>\n</html>\n"
+        }
+      ]
+    },
+    {
+      "id": "form-controls",
+      "description": "React Button, TextField, Checkbox, and Badge with public imports and native attributes.",
+      "files": [
+        {
+          "path": "examples/form-controls.tsx",
+          "language": "tsx",
+          "code": "'use client';\n\nimport { useState } from 'react';\nimport { Badge, Button, Checkbox, TextField } from '@hyeonse/design-system/primitives';\nimport '@hyeonse/design-system/tokens.css';\nimport '@hyeonse/design-system/components.css';\n\ntype FormValues = { email: string; updates: boolean };\n\nexport function FormControls({ onSubmit, saving = false, emailError }: {\n  onSubmit: (values: FormValues) => void;\n  saving?: boolean;\n  emailError?: string;\n}) {\n  const [email, setEmail] = useState('');\n  const [updates, setUpdates] = useState(false);\n\n  return <form onSubmit={event => {\n    event.preventDefault();\n    onSubmit({ email, updates });\n  }}>\n    <TextField\n      label=\"이메일\"\n      name=\"email\"\n      type=\"email\"\n      autoComplete=\"email\"\n      required\n      hint=\"연락받을 주소를 입력해 주세요.\"\n      error={emailError}\n      value={email}\n      onChange={event => setEmail(event.currentTarget.value)}\n    />\n    <Checkbox\n      label=\"업데이트 소식 받기\"\n      name=\"updates\"\n      checked={updates}\n      onChange={event => setUpdates(event.currentTarget.checked)}\n    />\n    <Button type=\"submit\" loading={saving} loadingLabel=\"저장 중\">저장</Button>\n    <Badge tone={emailError ? 'danger' : 'neutral'}>{emailError ? '이메일 확인 필요' : '입력 중'}</Badge>\n  </form>;\n}\n"
         }
       ]
     }

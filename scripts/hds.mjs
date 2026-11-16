@@ -48,8 +48,12 @@ try {
   const search = query => {
     const terms = normalized(query).split(/\s+/).filter(Boolean);
     const candidates = [
-      ...catalog.entries.map(entry => ({ id: entry.id, kind: entry.kind, summary: entry.summary, keywords: entry.keywords, command: `hds show ${entry.id}` })),
-      ...catalog.tokens.map(token => ({ id: token.name, kind: 'token', summary: token.role, keywords: [], command: `hds tokens ${token.name}` })),
+      ...catalog.entries.map(entry => ({ id: entry.id, kind: entry.kind, summary: entry.summary, keywords: [
+        ...entry.keywords, ...entry.usage, ...entry.states, ...entry.accessibility, ...entry.limitations,
+      ], command: `hds show ${entry.id}` })),
+      ...catalog.tokens.map(token => ({ id: token.name, kind: 'token', summary: token.role, keywords: [
+        token.value, ...token.overrides.flatMap(override => [override.selector, override.media ?? '', override.value]),
+      ], command: `hds tokens ${token.name}` })),
       ...catalog.examples.map(example => ({ id: example.id, kind: 'example', summary: example.description, keywords: [], command: `hds example ${example.id}` })),
     ];
     return candidates.map(item => {

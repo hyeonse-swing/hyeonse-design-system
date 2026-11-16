@@ -51,8 +51,8 @@ export function PreferencesProvider({ children, storageKey = preferencesKey, eve
     setPreferences(stored);
     applyPreferences(stored, eventName);
 
-    const themeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const themeQuery = window.matchMedia?.('(prefers-color-scheme: dark)');
+    const motionQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)');
     const onSystemChange = () => applyPreferences(preferencesRef.current, eventName);
     const onStorage = (event: StorageEvent) => {
       if (event.key !== storageKey && event.key !== null) return;
@@ -61,12 +61,12 @@ export function PreferencesProvider({ children, storageKey = preferencesKey, eve
       setPreferences(next);
       applyPreferences(next, eventName);
     };
-    themeQuery.addEventListener('change', onSystemChange);
-    motionQuery.addEventListener('change', onSystemChange);
+    themeQuery?.addEventListener('change', onSystemChange);
+    motionQuery?.addEventListener('change', onSystemChange);
     window.addEventListener('storage', onStorage);
     return () => {
-      themeQuery.removeEventListener('change', onSystemChange);
-      motionQuery.removeEventListener('change', onSystemChange);
+      themeQuery?.removeEventListener('change', onSystemChange);
+      motionQuery?.removeEventListener('change', onSystemChange);
       window.removeEventListener('storage', onStorage);
     };
   }, [storageKey, eventName, resolvedDefaults]);
@@ -75,9 +75,9 @@ export function PreferencesProvider({ children, storageKey = preferencesKey, eve
     const safe = validatePreferences(next, resolvedDefaults);
     preferencesRef.current = safe;
     setPreferences(safe);
-    applyPreferences(safe, eventName);
     try { window.localStorage.setItem(storageKey, serializePreferences(safe)); }
     catch { /* Settings still work for this tab when storage is unavailable. */ }
+    applyPreferences(safe, eventName);
   }, [storageKey, eventName, resolvedDefaults]);
 
   const setPreference = useCallback(<K extends keyof Preferences>(key: K, value: Preferences[K]) => {
@@ -124,10 +124,10 @@ export function ThemeToggle({ locale = 'ko' }: { locale?: Locale }) {
 type Choice<K extends keyof Preferences> = { value: Preferences[K]; label: string };
 
 function RadioGroup<K extends 'theme' | 'density' | 'corners' | 'motion'>({
-  field, legend, choices, name,
-}: { field: K; legend: string; choices: Choice<K>[]; name: string }) {
+  field, legend, choices, name, description,
+}: { field: K; legend: string; choices: Choice<K>[]; name: string; description?: string }) {
   const { preferences, setPreference } = usePreferences();
-  return <fieldset className={'hds-group'}>
+  return <fieldset className={'hds-group'} aria-describedby={description ? `${name}-${field}-description` : undefined}>
     <legend>{legend}</legend>
     <div className={'hds-options'}>
       {choices.map(choice => <label className={'hds-radioOption'} key={choice.value}>
@@ -135,6 +135,7 @@ function RadioGroup<K extends 'theme' | 'density' | 'corners' | 'motion'>({
         <span>{choice.label}</span>
       </label>)}
     </div>
+    {description && <p id={`${name}-${field}-description`}>{description}</p>}
   </fieldset>;
 }
 
@@ -157,7 +158,7 @@ export function PreferencesPanel({ locale = 'ko' }: { locale?: Locale }) {
       </fieldset>
       <RadioGroup field="density" legend={en ? 'Spacing' : '간격'} choices={en ? [{ value: 'comfortable', label: 'Default' }, { value: 'compact', label: 'Compact' }] : [{ value: 'comfortable', label: '기본' }, { value: 'compact', label: '촘촘하게' }]} name={panelId} />
       <RadioGroup field="corners" legend={en ? 'Corners' : '모서리'} choices={en ? [{ value: 'crisp', label: 'Sharp' }, { value: 'soft', label: 'Rounded' }] : [{ value: 'crisp', label: '각지게' }, { value: 'soft', label: '부드럽게' }]} name={panelId} />
-      <RadioGroup field="motion" legend={en ? 'Motion' : '움직임'} choices={en ? [{ value: 'full', label: 'Default' }, { value: 'reduced', label: 'Reduced' }] : [{ value: 'full', label: '기본' }, { value: 'reduced', label: '줄이기' }]} name={panelId} />
+      <RadioGroup field="motion" legend={en ? 'Motion' : '움직임'} choices={en ? [{ value: 'full', label: 'Default' }, { value: 'reduced', label: 'Reduced' }] : [{ value: 'full', label: '기본' }, { value: 'reduced', label: '줄이기' }]} name={panelId} description={en ? 'Your device’s reduced motion setting takes priority.' : '기기의 움직임 줄이기 설정이 선택한 값보다 우선 적용됩니다.'} />
     </div>
     <div className={'hds-footer'}><p role="status" aria-live="polite">{en ? 'Current settings: ' : '현재 설정: '}{themeOptions[locale].find(option => option.value === preferences.theme)?.label}, {accentOptions.find(option => option.value === preferences.accent)?.label}, {en ? (preferences.density === 'compact' ? 'compact spacing' : 'default spacing') : (preferences.density === 'compact' ? '촘촘한 간격' : '기본 간격')}, {en ? (preferences.corners === 'soft' ? 'rounded corners' : 'sharp corners') : (preferences.corners === 'soft' ? '부드러운 모서리' : '각진 모서리')}, {en ? (preferences.motion === 'reduced' ? 'reduced motion' : 'default motion') : (preferences.motion === 'reduced' ? '움직임 줄이기' : '기본 움직임')}</p><button type="button" onClick={resetPreferences}>{en ? 'Reset to defaults' : '기본값으로 되돌리기'}</button></div>
   </section>;

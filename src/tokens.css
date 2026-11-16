@@ -25,6 +25,33 @@
   --gutter: clamp(22px, 4.1vw, 72px);
   --control-min-size: 44px;
   --text-control: 12px;
+  --control-border: #747b89;
+  --focus-ring: var(--accent-text);
+  --disabled-ink: #727987;
+  --disabled-surface: #e9ecf1;
+  --success-text: #176b4e;
+  --success-surface: #edf8f2;
+  --success-line: #3c8668;
+  --warning-text: #80520c;
+  --warning-surface: #fff7e3;
+  --warning-line: #ab751f;
+  --danger-text: #b42332;
+  --danger-surface: #fff1f2;
+  --danger-line: #c64a59;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 20px;
+  --leading-body: 1.6;
+  --duration-fast: 140ms;
 }
 
 @media (max-width: 700px) {
@@ -50,6 +77,18 @@
   --about-muted: #c1c9de;
   --inverse-surface: #f2f4f8;
   --inverse-ink: #101114;
+  --control-border: #7b8494;
+  --disabled-ink: #99a2b2;
+  --disabled-surface: #202631;
+  --success-text: #8cdeb7;
+  --success-surface: #142b23;
+  --success-line: #4e9a78;
+  --warning-text: #f3cc83;
+  --warning-surface: #302719;
+  --warning-line: #b28d46;
+  --danger-text: #ff9ba5;
+  --danger-surface: #351f25;
+  --danger-line: #c26b77;
 }
 
 :root[data-theme='dark'][data-accent='forest'] { --accent-text: #68dfb1; --about-surface: #173029; --about-muted: #b7e1d1; }
@@ -71,5 +110,19 @@
     --about-muted: #c1c9de;
     --inverse-surface: #f2f4f8;
     --inverse-ink: #101114;
+    --control-border: #7b8494;
+    --disabled-ink: #99a2b2;
+    --disabled-surface: #202631;
+    --success-text: #8cdeb7;
+    --success-surface: #142b23;
+    --success-line: #4e9a78;
+    --warning-text: #f3cc83;
+    --warning-surface: #302719;
+    --warning-line: #b28d46;
+    --danger-text: #ff9ba5;
+    --danger-surface: #351f25;
+    --danger-line: #c26b77;
   }
+  :root:not([data-theme])[data-accent='forest'] { --accent-text: #68dfb1; --about-surface: #173029; --about-muted: #b7e1d1; }
+  :root:not([data-theme])[data-accent='coral'] { --accent-text: #ffa58e; --about-surface: #35231f; --about-muted: #e7c1b8; }
 }

@@ -14,9 +14,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run check
-      - run: npm run build:site
-      - run: npm run check:examples
-      - run: npm test
+      - run: npm run verify
       - run: git diff --exit-code -- dist llms.txt llms-full.txt
       - run: npm pack --dry-run

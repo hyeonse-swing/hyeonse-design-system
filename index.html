@@ -4,48 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <title>Hyeonse Design System — Visual Catalog</title>
-  <meta name="description" content="Hyeonse Design System의 토큰, 화면 설정과 컨트롤 상태를 살펴보는 시각 카탈로그">
+  <title>Hyeonse Design System — Working Reference</title>
+  <meta name="description" content="역할 토큰을 찾고 실제 React 컴포넌트와 화면 설정을 시험하는 Hyeonse Design System 사용 안내">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <!-- hds:preferences -->
   <link rel="stylesheet" href="./dist/tokens.css">
   <link rel="stylesheet" href="./dist/components.css">
   <link rel="stylesheet" href="./showcase.css">
-  <script type="module" src="./showcase.mjs"></script>
 </head>
 <body>
-  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
-  <div class="catalog-shell">
-    <header class="masthead">
-      <a class="brand" href="#top" aria-label="Hyeonse Design System, 맨 위로"><span class="brand-mark" aria-hidden="true">H<span>·</span></span><span>HYEONSE<br>DESIGN SYSTEM</span></a>
-      <nav aria-label="카탈로그 목차"><a href="#foundations">기초</a><a href="#controls">컨트롤</a><a href="#preferences">설정</a><a href="./docs/api.md">API ↗</a></nav>
-      <span class="masthead-version">SYSTEM / 001</span>
-    </header>
-    <main id="main">
-      <section class="hero" id="top" aria-labelledby="hero-title">
-        <div class="hero-top"><span class="eyebrow"><span class="signal-dot"></span> PERSONAL INTERFACE SYSTEM</span><span class="hero-index">01 / VISUAL LANGUAGE</span></div>
-        <h1 id="hero-title">명확한 형태.<br><em>유연한 화면.</em></h1>
-        <div class="hero-bottom"><p>읽기 좋은 정보 구조와 선명한 조작을 위한 개인 디자인 시스템. 하나의 시각 언어를 다양한 화면에 맞게 조정합니다.</p><a class="text-action" href="#preferences">직접 조정하기 <span aria-hidden="true">↗</span></a></div>
-        <div class="hero-grid" aria-hidden="true"><span>FORM / FUNCTION</span><span>THEME / ACCENT</span><span>TYPE / SPACE</span></div>
-      </section>
-
-      <section class="catalog-section" id="foundations" aria-labelledby="foundations-title">
-        <div class="section-heading"><div><span class="eyebrow">01 — FOUNDATION</span><h2 id="foundations-title">기초 요소</h2></div><p>원시 색보다 사용 목적을 먼저 정합니다. 설정을 바꾸면 같은 역할이 다른 화면에서도 유지됩니다.</p></div>
-        <div class="foundation-grid">
-          <article class="sample-panel type-panel"><div class="panel-top"><span>01.A / TYPE</span><span>DM SANS + NOTO SANS KR</span></div><div class="type-display" aria-label="Typography sample">Aa<span class="type-dot">.</span></div><h3>정보가 먼저 보이는 글자</h3><p>큰 제목은 시선을 잡고, 본문은 적당한 길이로 읽히게 합니다. 작은 레이블도 충분한 대비를 유지합니다.</p><div class="type-meta"><span>DISPLAY / −0.06em</span><span>BODY / 1.7 LH</span></div></article>
-          <article class="sample-panel color-panel"><div class="panel-top"><span>01.B / COLOR ROLES</span><span>LIVE TOKENS</span></div><div class="swatch-stack"><div class="swatch swatch-paper"><span>Paper</span><code>--paper</code></div><div class="swatch swatch-surface"><span>Surface</span><code>--surface</code></div><div class="swatch swatch-accent"><span>Accent</span><code>--accent-solid</code></div><div class="swatch swatch-inverse"><span>Inverse</span><code>--inverse-surface</code></div></div><p class="sample-note">코발트가 기본입니다. 포레스트와 코랄에서도 강조 면과 읽기용 글자색을 나누어 사용합니다.</p></article>
-        </div>
-        <div class="token-strip" aria-label="의미별 색상 토큰"><div><span class="token-chip token-ink"></span><code>--ink</code><small>주요 정보</small></div><div><span class="token-chip token-muted"></span><code>--muted</code><small>보조 정보</small></div><div><span class="token-chip token-line"></span><code>--line</code><small>구분</small></div><div><span class="token-chip token-accent"></span><code>--accent-text</code><small>텍스트 강조</small></div></div>
-      </section>
-
-      <section class="catalog-section" id="controls" aria-labelledby="controls-title"><div class="section-heading"><div><span class="eyebrow">02 — INTERACTION</span><h2 id="controls-title">컨트롤 상태</h2></div><p>실제 HTML 요소로 선택, 비활성, 포커스 상태를 확인합니다. 아래 견본은 화면 작성 예시입니다.</p></div>
-        <div class="control-grid"><article class="control-card"><div class="control-card-head"><span>BUTTON / LINK</span><small>PRIMARY • SECONDARY • DISABLED</small></div><h3>행동의 우선순위</h3><div class="button-row"><button class="sample-button primary" type="button" id="action-button">작업 시작 <span aria-hidden="true">↗</span></button><button class="sample-button secondary" type="button">자세히 보기</button><button class="sample-button primary" type="button" disabled>사용 불가</button></div><p class="control-feedback" id="action-feedback" role="status" aria-live="polite">버튼을 눌러 동작을 확인하세요.</p><div class="component-specimen"><span>PACKAGE CSS / .hds-themeToggle</span><button class="hds-themeToggle" type="button" id="theme-toggle-specimen" aria-label="테마 변경"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2"/></svg><span id="theme-toggle-label">기기 설정</span></button><small>React ThemeToggle의 CSS 상태 견본</small></div></article>
-          <article class="control-card"><div class="control-card-head"><span>SELECTION</span><small>RADIO • CHECKBOX</small></div><h3>선택이 보이는 형태</h3><fieldset class="sample-fieldset"><legend>보기 밀도</legend><label class="sample-choice"><input type="radio" name="sample-density" value="comfortable" checked><span>기본 간격</span></label><label class="sample-choice"><input type="radio" name="sample-density" value="compact"><span>촘촘한 간격</span></label></fieldset><label class="check-row"><input type="checkbox" checked><span>업데이트 소식 표시</span></label></article>
-          <article class="control-card form-card"><div class="control-card-head"><span>FIELD / FEEDBACK</span><small>LABEL • HINT • ERROR</small></div><h3>입력의 맥락</h3><label for="sample-name">프로젝트 이름</label><input id="sample-name" type="text" placeholder="예: 새로운 작업" aria-describedby="sample-name-hint" maxlength="36"><p id="sample-name-hint">36자 이내로 입력하세요.</p><label for="sample-disabled">비활성 입력</label><input id="sample-disabled" type="text" value="수정할 수 없음" disabled></article>
-          <article class="control-card status-card"><div class="control-card-head"><span>STATUS / SURFACE</span><small>SELECTED • NEUTRAL</small></div><h3>상태를 구분하는 정보</h3><div class="status-line"><span class="status-pill selected"><i aria-hidden="true"></i> 선택됨</span><span class="status-pill">검토 중</span><span class="status-pill muted">비활성</span></div><div class="status-preview"><span>PREVIEW / 01</span><strong>한 단계씩 명확하게.</strong><p>선택, 상태, 안내는 색만으로 구분하지 않습니다.</p></div></article></div>
-      </section>
-
-      <section class="catalog-section preferences-section" id="preferences" aria-labelledby="preferences-title"><div class="section-heading"><div><span class="eyebrow">03 — PERSONALIZATION</span><h2 id="preferences-title">화면을 조정하세요</h2></div><p>설정은 이 브라우저에 저장됩니다. 기기의 움직임 감소 설정이 우선합니다.</p></div><div class="settings-layout"><div class="settings-intro"><span class="index-large">03<span> / 03</span></span><p>같은 정보, 다른 읽기 환경. 밝기와 강조색, 간격, 모서리, 움직임을 바꾸어 시스템의 반응을 살펴보세요.</p><div class="settings-current" id="settings-current" role="status" aria-live="polite">설정 불러오는 중</div></div><form class="settings-form" id="settings-form"><fieldset><legend>테마 <span>01</span></legend><div class="segmented"><label><input type="radio" name="theme" value="system"><span>기기 설정</span></label><label><input type="radio" name="theme" value="light"><span>밝게</span></label><label><input type="radio" name="theme" value="dark"><span>어둡게</span></label></div></fieldset><fieldset><legend>강조 색상 <span>02</span></legend><div class="accent-choices"><label><input type="radio" name="accent" value="cobalt"><span class="accent-circle cobalt"></span><span>코발트</span></label><label><input type="radio" name="accent" value="forest"><span class="accent-circle forest"></span><span>포레스트</span></label><label><input type="radio" name="accent" value="coral"><span class="accent-circle coral"></span><span>코랄</span></label></div></fieldset><fieldset><legend>간격 <span>03</span></legend><div class="segmented"><label><input type="radio" name="density" value="comfortable"><span>기본</span></label><label><input type="radio" name="density" value="compact"><span>촘촘하게</span></label></div></fieldset><fieldset><legend>모서리 <span>04</span></legend><div class="segmented"><label><input type="radio" name="corners" value="crisp"><span>각지게</span></label><label><input type="radio" name="corners" value="soft"><span>부드럽게</span></label></div></fieldset><fieldset><legend>움직임 <span>05</span></legend><div class="segmented"><label><input type="radio" name="motion" value="full"><span>기본</span></label><label><input type="radio" name="motion" value="reduced"><span>줄이기</span></label></div></fieldset><button class="reset-button" type="button" id="reset-preferences">기본값으로 되돌리기 <span aria-hidden="true">↗</span></button></form></div></section>
-    </main>
-    <footer class="footer"><span>HYEONSE DESIGN SYSTEM</span><p>개인 프로젝트를 위한 시각 언어 · v0.2.0</p><a href="#top">맨 위로 ↑</a></footer>
-  </div>
+  <noscript><p class="no-script">문서는 계속 읽을 수 있어요. 검색·복사·동작 체험은 JavaScript를 켜면 사용할 수 있습니다.</p></noscript>
+  <div id="catalog-root"><!-- hds:content --></div>
+  <!-- hds:client -->
 </body>
 </html>

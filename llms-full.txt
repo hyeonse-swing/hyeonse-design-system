@@ -1,26 +1,27 @@
 # @hyeonse/design-system
 
-Installed package version: 0.2.0
+Installed package version: 0.3.0
 
 ## Setup
 
 - Import @hyeonse/design-system/tokens.css before @hyeonse/design-system/components.css, once each.
 - Run preferenceScript or createPreferenceScript(...) in the document head before CSS paints; match storageKey and defaults with PreferencesProvider.
-- Import JavaScript from @hyeonse/design-system/preferences and React APIs from @hyeonse/design-system/react. Do not import internal src/ or dist/ paths.
+- Import JavaScript from @hyeonse/design-system/preferences, display-setting React APIs from @hyeonse/design-system/react, and form primitives from @hyeonse/design-system/primitives. Do not import internal src/ or dist/ paths.
 - Provide DM Sans and Noto Sans KR font assets in the consuming app if those faces are needed; the package only declares a font stack.
 
 ## Provided
 
-- Role tokens in tokens.css and styles for ThemeToggle and PreferencesPanel in components.css.
+- Role tokens in tokens.css and styles for display settings and Button/TextField/Checkbox/Badge in components.css.
 - Preference validation, first-paint script, provider, hook, and display-setting controls.
+- Button, TextField, Checkbox, and Badge React components with native element attributes and refs.
 
 ## Not provided
 
-- General Button, Input, or page-layout React components.
+- Card and page-layout React components.
 - Font files for consuming applications; provide fonts with the required character coverage separately.
 - A design-token interchange format such as DTCG.
 
-Generated from the package declarations, CSS and authored usage metadata. Do not edit this output.
+Generated from the package declarations, CSS and authored usage metadata. Do not edit this output. Props summaries contain locally declared props; module declarations preserve inherited native attributes and refs.
 
 # API
 
@@ -246,7 +247,7 @@ export declare function PreferencesProvider({ children, storageKey, eventName, d
 }): import("react").JSX.Element;
 ```
 
-### Props
+### Locally declared props
 
 - `children`: `ReactNode`
 - `storageKey?`: `string`
@@ -307,7 +308,7 @@ export declare function ThemeToggle({ locale }: {
 }): import("react").JSX.Element;
 ```
 
-### Props
+### Locally declared props
 
 - `locale?`: `Locale`
 
@@ -344,7 +345,7 @@ export declare function PreferencesPanel({ locale }: {
 }): import("react").JSX.Element;
 ```
 
-### Props
+### Locally declared props
 
 - `locale?`: `Locale`
 
@@ -370,6 +371,158 @@ export declare function PreferencesPanel({ locale }: {
 - It controls only the provided display preferences.
 
 Examples: `hds example display-settings`
+
+## Button
+
+Native button with primary, secondary, and ghost visual variants.
+
+Kind: component · Import: `@hyeonse/design-system/primitives`
+
+```typescript
+export declare function Button({ variant, size, loading, loadingLabel, type, disabled, className, children, ref, 'aria-busy': ariaBusy, 'aria-label': ariaLabel, ...props }: ButtonProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `variant?`: `"primary" | "secondary" | "ghost"`
+- `size?`: `"sm" | "md"`
+- `loading?`: `boolean`
+- `loadingLabel?`: `string`
+
+### Usage
+
+- Import from @hyeonse/design-system/primitives and import components.css after tokens.css.
+- Native button attributes and ref are forwarded; type defaults to button. The caller manages loading state.
+
+### States
+
+- primary/secondary/ghost variants
+- sm/md sizes
+- enabled/disabled/loading
+
+### Accessibility
+
+- Native button keyboard behavior.
+- Loading disables the button, sets aria-busy, and uses loadingLabel as visible and accessible text when supplied.
+
+### Limits
+
+- Loading does not start or track an asynchronous operation.
+- Renders a button element, not a link.
+
+Examples: `hds example form-controls`
+
+## TextField
+
+Labeled single-line input with optional hint and error text.
+
+Kind: component · Import: `@hyeonse/design-system/primitives`
+
+```typescript
+export declare function TextField({ label, hint, error, type, id, className, disabled, ref, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, ...props }: TextFieldProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `label`: `string`
+- `type?`: `TextInputType`
+- `hint?`: `string`
+- `error?`: `string`
+
+### Usage
+
+- Import from @hyeonse/design-system/primitives and import components.css after tokens.css.
+- Native input attributes and ref are forwarded; className applies to the input element.
+
+### States
+
+- text/email/password/search/tel/url types
+- enabled/disabled/readOnly
+- hint/error
+
+### Accessibility
+
+- The label targets the supplied id or a generated id.
+- Hint and error IDs are added to aria-describedby alongside a caller-supplied description; an error sets aria-invalid.
+
+### Limits
+
+- Single-line input only; the caller owns validation and error messages.
+
+Examples: `hds example form-controls`
+
+## Checkbox
+
+Labeled native checkbox with optional hint and error text.
+
+Kind: component · Import: `@hyeonse/design-system/primitives`
+
+```typescript
+export declare function Checkbox({ label, hint, error, id, className, disabled, readOnly, ref, onClick, onChange, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, 'aria-readonly': ariaReadOnly, ...props }: CheckboxProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `label`: `string`
+- `hint?`: `string`
+- `error?`: `string`
+
+### Usage
+
+- Import from @hyeonse/design-system/primitives and import components.css after tokens.css.
+- Native checkbox attributes, checked/defaultChecked, and ref are forwarded; className applies to the input element.
+
+### States
+
+- checked/unchecked
+- enabled/disabled/readOnly
+- hint/error
+
+### Accessibility
+
+- The label targets the supplied id or a generated id.
+- Hint and error IDs are added to aria-describedby alongside a caller-supplied description; an error sets aria-invalid.
+- readOnly exposes aria-readonly and prevents click changes while retaining focus.
+
+### Limits
+
+- A checkbox has no native readOnly behavior; the component cancels clicks to preserve its value.
+- The caller owns validation and error messages.
+
+Examples: `hds example form-controls`
+
+## Badge
+
+Noninteractive span badge for a short status or category.
+
+Kind: component · Import: `@hyeonse/design-system/primitives`
+
+```typescript
+export declare function Badge({ tone, className, children, ref, ...props }: BadgeProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `tone?`: `"neutral" | "accent" | "success" | "warning" | "danger"`
+
+### Usage
+
+- Import from @hyeonse/design-system/primitives and import components.css after tokens.css.
+- Native span attributes and ref are forwarded; include text that communicates the status without color alone.
+
+### States
+
+- neutral/accent/success/warning/danger tones
+
+### Accessibility
+
+- Renders a span with its text content; tone alone does not announce meaning.
+
+### Limits
+
+- No interaction or live-region behavior is added.
+
+Examples: `hds example form-controls`
 
 # Type context
 
@@ -423,6 +576,38 @@ export declare function ThemeToggle({ locale }: {
 export declare function PreferencesPanel({ locale }: {
     locale?: Locale;
 }): import("react").JSX.Element;
+export {};
+```
+
+## @hyeonse/design-system/primitives
+
+```typescript
+import type { ComponentPropsWithRef } from 'react';
+export type ButtonProps = ComponentPropsWithRef<'button'> & {
+    variant?: 'primary' | 'secondary' | 'ghost';
+    size?: 'sm' | 'md';
+    loading?: boolean;
+    loadingLabel?: string;
+};
+export declare function Button({ variant, size, loading, loadingLabel, type, disabled, className, children, ref, 'aria-busy': ariaBusy, 'aria-label': ariaLabel, ...props }: ButtonProps): import("react").JSX.Element;
+type TextInputType = 'text' | 'email' | 'password' | 'search' | 'tel' | 'url';
+export type TextFieldProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children'> & {
+    label: string;
+    type?: TextInputType;
+    hint?: string;
+    error?: string;
+};
+export declare function TextField({ label, hint, error, type, id, className, disabled, ref, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, ...props }: TextFieldProps): import("react").JSX.Element;
+export type CheckboxProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children'> & {
+    label: string;
+    hint?: string;
+    error?: string;
+};
+export declare function Checkbox({ label, hint, error, id, className, disabled, readOnly, ref, onClick, onChange, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, 'aria-readonly': ariaReadOnly, ...props }: CheckboxProps): import("react").JSX.Element;
+export type BadgeProps = ComponentPropsWithRef<'span'> & {
+    tone?: 'neutral' | 'accent' | 'success' | 'warning' | 'danger';
+};
+export declare function Badge({ tone, className, children, ref, ...props }: BadgeProps): import("react").JSX.Element;
 export {};
 ```
 
@@ -505,6 +690,8 @@ Default: `#204cfc`
 - `:root[data-theme='dark'][data-accent='forest']` → `#68dfb1`
 - `:root[data-theme='dark'][data-accent='coral']` → `#ffa58e`
 - @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#9aafff`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])[data-accent='forest']` → `#68dfb1`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])[data-accent='coral']` → `#ffa58e`
 
 ## --palette-cobalt
 
@@ -546,6 +733,8 @@ Default: `var(--accent-solid)`
 - `:root[data-theme='dark'][data-accent='forest']` → `#173029`
 - `:root[data-theme='dark'][data-accent='coral']` → `#35231f`
 - @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#1b2540`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])[data-accent='forest']` → `#173029`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])[data-accent='coral']` → `#35231f`
 
 ## --about-ink
 
@@ -568,6 +757,8 @@ Default: `#dce3ff`
 - `:root[data-theme='dark'][data-accent='forest']` → `#b7e1d1`
 - `:root[data-theme='dark'][data-accent='coral']` → `#e7c1b8`
 - @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#c1c9de`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])[data-accent='forest']` → `#b7e1d1`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])[data-accent='coral']` → `#e7c1b8`
 
 ## --inverse-surface
 
@@ -637,6 +828,204 @@ Control text size
 
 Default: `12px`
 
+## --control-border
+
+Border of form controls
+
+Default: `#747b89`
+
+- `:root[data-theme='dark']` → `#7b8494`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#7b8494`
+
+## --focus-ring
+
+Visible keyboard focus outline
+
+Default: `var(--accent-text)`
+
+## --disabled-ink
+
+Foreground text for disabled controls
+
+Default: `#727987`
+
+- `:root[data-theme='dark']` → `#99a2b2`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#99a2b2`
+
+## --disabled-surface
+
+Surface for disabled controls
+
+Default: `#e9ecf1`
+
+- `:root[data-theme='dark']` → `#202631`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#202631`
+
+## --success-text
+
+Success status text
+
+Default: `#176b4e`
+
+- `:root[data-theme='dark']` → `#8cdeb7`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#8cdeb7`
+
+## --success-surface
+
+Success status background
+
+Default: `#edf8f2`
+
+- `:root[data-theme='dark']` → `#142b23`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#142b23`
+
+## --success-line
+
+Success status border
+
+Default: `#3c8668`
+
+- `:root[data-theme='dark']` → `#4e9a78`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#4e9a78`
+
+## --warning-text
+
+Warning status text
+
+Default: `#80520c`
+
+- `:root[data-theme='dark']` → `#f3cc83`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#f3cc83`
+
+## --warning-surface
+
+Warning status background
+
+Default: `#fff7e3`
+
+- `:root[data-theme='dark']` → `#302719`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#302719`
+
+## --warning-line
+
+Warning status border
+
+Default: `#ab751f`
+
+- `:root[data-theme='dark']` → `#b28d46`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#b28d46`
+
+## --danger-text
+
+Danger or validation-error text
+
+Default: `#b42332`
+
+- `:root[data-theme='dark']` → `#ff9ba5`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#ff9ba5`
+
+## --danger-surface
+
+Danger or validation-error background
+
+Default: `#fff1f2`
+
+- `:root[data-theme='dark']` → `#351f25`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#351f25`
+
+## --danger-line
+
+Danger or validation-error border
+
+Default: `#c64a59`
+
+- `:root[data-theme='dark']` → `#c26b77`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#c26b77`
+
+## --space-1
+
+Spacing step 1 (4px); pair with --space-factor for density-aware spacing
+
+Default: `4px`
+
+## --space-2
+
+Spacing step 2 (8px); pair with --space-factor for density-aware spacing
+
+Default: `8px`
+
+## --space-3
+
+Spacing step 3 (12px); pair with --space-factor for density-aware spacing
+
+Default: `12px`
+
+## --space-4
+
+Spacing step 4 (16px); pair with --space-factor for density-aware spacing
+
+Default: `16px`
+
+## --space-5
+
+Spacing step 5 (24px); pair with --space-factor for density-aware spacing
+
+Default: `24px`
+
+## --space-6
+
+Spacing step 6 (32px); pair with --space-factor for density-aware spacing
+
+Default: `32px`
+
+## --space-7
+
+Spacing step 7 (48px); pair with --space-factor for density-aware spacing
+
+Default: `48px`
+
+## --space-8
+
+Spacing step 8 (64px); pair with --space-factor for density-aware spacing
+
+Default: `64px`
+
+## --text-xs
+
+Extra-small text size
+
+Default: `12px`
+
+## --text-sm
+
+Small text size
+
+Default: `14px`
+
+## --text-base
+
+Base text size
+
+Default: `16px`
+
+## --text-lg
+
+Large text size
+
+Default: `20px`
+
+## --leading-body
+
+Body text line-height
+
+Default: `1.6`
+
+## --duration-fast
+
+Fast interaction transition duration
+
+Default: `140ms`
+
 # Examples
 
 ## display-settings
@@ -688,7 +1077,7 @@ export function DisplaySettings() {
 
 ## token-card
 
-HTML card styled with public role tokens.
+HTML card preview for this repository or an unpacked package; consuming apps import @hyeonse/design-system/tokens.css instead of the preview-only ../dist link.
 
 ### examples/token-card.css
 
@@ -720,8 +1109,8 @@ HTML card styled with public role tokens.
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>역할 토큰으로 만든 카드</title>
-    <!-- These relative paths run in the repository or unpacked package. -->
-    <!-- In a bundler, import @hyeonse/design-system/tokens.css instead. -->
+    <!-- Preview at /examples/token-card.html after building this repository, or from an unpacked package with dist/ beside examples/. -->
+    <!-- The ../dist link is for this standalone preview only. In a consuming app, copy the markup/CSS and import @hyeonse/design-system/tokens.css through its public package path; do not copy this relative link. -->
     <link rel="stylesheet" href="../dist/tokens.css">
     <link rel="stylesheet" href="./token-card.css">
   </head>
@@ -735,4 +1124,55 @@ HTML card styled with public role tokens.
     </main>
   </body>
 </html>
+```
+
+## form-controls
+
+React Button, TextField, Checkbox, and Badge with public imports and native attributes.
+
+### examples/form-controls.tsx
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { Badge, Button, Checkbox, TextField } from '@hyeonse/design-system/primitives';
+import '@hyeonse/design-system/tokens.css';
+import '@hyeonse/design-system/components.css';
+
+type FormValues = { email: string; updates: boolean };
+
+export function FormControls({ onSubmit, saving = false, emailError }: {
+  onSubmit: (values: FormValues) => void;
+  saving?: boolean;
+  emailError?: string;
+}) {
+  const [email, setEmail] = useState('');
+  const [updates, setUpdates] = useState(false);
+
+  return <form onSubmit={event => {
+    event.preventDefault();
+    onSubmit({ email, updates });
+  }}>
+    <TextField
+      label="이메일"
+      name="email"
+      type="email"
+      autoComplete="email"
+      required
+      hint="연락받을 주소를 입력해 주세요."
+      error={emailError}
+      value={email}
+      onChange={event => setEmail(event.currentTarget.value)}
+    />
+    <Checkbox
+      label="업데이트 소식 받기"
+      name="updates"
+      checked={updates}
+      onChange={event => setUpdates(event.currentTarget.checked)}
+    />
+    <Button type="submit" loading={saving} loadingLabel="저장 중">저장</Button>
+    <Badge tone={emailError ? 'danger' : 'neutral'}>{emailError ? '이메일 확인 필요' : '입력 중'}</Badge>
+  </form>;
+}
 ```
