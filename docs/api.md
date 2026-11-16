@@ -1,6 +1,8 @@
 # 공개 API와 통합
 
-패키지 이름은 `@hyeonse/design-system`입니다. 공개 진입점은 `./tokens.css`, `./components.css`, `./preferences`, `./react`입니다. 내부 `src/`나 `dist/` 경로를 소비 앱에서 직접 가져오지 않습니다.
+패키지 이름은 `@hyeonse/design-system`입니다. 실행·스타일 진입점은 `./tokens.css`, `./components.css`, `./preferences`, `./react`입니다. 읽기 전용 데이터 진입점으로 `./catalog.json`, `./catalog.schema.json`도 제공합니다. 내부 `src/`나 `dist/` 경로를 소비 앱에서 직접 가져오지 않습니다.
+
+설치 버전의 공개 내보내기, 타입, 토큰 값과 사용 예제는 [AI 활용 안내](ai.md)에 설명한 `hds` CLI나 카탈로그에서 확인할 수 있습니다. 패키지 루트의 `llms.txt`는 색인이고 `llms-full.txt`는 같은 카탈로그에서 생성한 전체 참조입니다. 카탈로그는 기존 CSS·JavaScript·React 진입점을 대체하지 않습니다.
 
 ## CSS
 
@@ -9,6 +11,8 @@
 ## 설정 유틸
 
 `@hyeonse/design-system/preferences`는 `Preferences` 타입과 다음 값을 공개합니다.
+
+`Preferences`에는 `theme`, `accent`, `density`, `corners`, `motion` 필드가 있습니다. 각각 `system/light/dark`, `cobalt/forest/coral`, `comfortable/compact`, `crisp/soft`, `full/reduced` 중 하나입니다. `defaultPreferences`는 차례대로 `system`, `cobalt`, `comfortable`, `crisp`, `full`을 사용합니다.
 
 | 이름 | 목적 |
 | --- | --- |

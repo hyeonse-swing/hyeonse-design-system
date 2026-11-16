@@ -1,0 +1,978 @@
+{
+  "schemaVersion": 1,
+  "package": {
+    "name": "@hyeonse/design-system",
+    "version": "0.2.0"
+  },
+  "boundaries": {
+    "provided": [
+      "Role tokens in tokens.css and styles for ThemeToggle and PreferencesPanel in components.css.",
+      "Preference validation, first-paint script, provider, hook, and display-setting controls."
+    ],
+    "notProvided": [
+      "General Button, Input, or page-layout React components.",
+      "Font files for consuming applications; provide fonts with the required character coverage separately.",
+      "A design-token interchange format such as DTCG."
+    ]
+  },
+  "setup": [
+    "Import @hyeonse/design-system/tokens.css before @hyeonse/design-system/components.css, once each.",
+    "Run preferenceScript or createPreferenceScript(...) in the document head before CSS paints; match storageKey and defaults with PreferencesProvider.",
+    "Import JavaScript from @hyeonse/design-system/preferences and React APIs from @hyeonse/design-system/react. Do not import internal src/ or dist/ paths.",
+    "Provide DM Sans and Noto Sans KR font assets in the consuming app if those faces are needed; the package only declares a font stack."
+  ],
+  "modules": [
+    {
+      "subpath": "./preferences",
+      "importPath": "@hyeonse/design-system/preferences",
+      "source": "src/preferences.ts",
+      "declarations": "export type ThemePreference = 'system' | 'light' | 'dark';\nexport type AccentPreference = 'cobalt' | 'forest' | 'coral';\nexport type DensityPreference = 'comfortable' | 'compact';\nexport type CornersPreference = 'crisp' | 'soft';\nexport type MotionPreference = 'full' | 'reduced';\nexport type Preferences = {\n    theme: ThemePreference;\n    accent: AccentPreference;\n    density: DensityPreference;\n    corners: CornersPreference;\n    motion: MotionPreference;\n};\nexport declare const preferencesKey = \"hyeonse-site-preferences\";\nexport declare const defaultPreferences: Preferences;\nexport declare function validatePreferences(value: unknown, defaults?: Partial<Preferences>): Preferences;\nexport declare function parsePreferences(raw: string | null, defaults?: Partial<Preferences>): Preferences;\nexport declare function serializePreferences(value: Preferences): string;\nexport declare function resolvedTheme(theme: ThemePreference, systemDark: boolean): 'light' | 'dark';\nexport declare function effectiveMotion(motion: MotionPreference, systemReduced: boolean): MotionPreference;\nexport declare function createPreferenceScript(storageKey?: string, defaults?: Partial<Preferences>): string;\nexport declare const preferenceScript: string;\n",
+      "exports": [
+        {
+          "name": "ThemePreference",
+          "kind": "type",
+          "signature": "export type ThemePreference = 'system' | 'light' | 'dark';"
+        },
+        {
+          "name": "AccentPreference",
+          "kind": "type",
+          "signature": "export type AccentPreference = 'cobalt' | 'forest' | 'coral';"
+        },
+        {
+          "name": "DensityPreference",
+          "kind": "type",
+          "signature": "export type DensityPreference = 'comfortable' | 'compact';"
+        },
+        {
+          "name": "CornersPreference",
+          "kind": "type",
+          "signature": "export type CornersPreference = 'crisp' | 'soft';"
+        },
+        {
+          "name": "MotionPreference",
+          "kind": "type",
+          "signature": "export type MotionPreference = 'full' | 'reduced';"
+        },
+        {
+          "name": "Preferences",
+          "kind": "type",
+          "signature": "export type Preferences = {\n    theme: ThemePreference;\n    accent: AccentPreference;\n    density: DensityPreference;\n    corners: CornersPreference;\n    motion: MotionPreference;\n};"
+        },
+        {
+          "name": "preferencesKey",
+          "kind": "value",
+          "signature": "export declare const preferencesKey = \"hyeonse-site-preferences\";"
+        },
+        {
+          "name": "defaultPreferences",
+          "kind": "value",
+          "signature": "export declare const defaultPreferences: Preferences;"
+        },
+        {
+          "name": "validatePreferences",
+          "kind": "value",
+          "signature": "export declare function validatePreferences(value: unknown, defaults?: Partial<Preferences>): Preferences;"
+        },
+        {
+          "name": "parsePreferences",
+          "kind": "value",
+          "signature": "export declare function parsePreferences(raw: string | null, defaults?: Partial<Preferences>): Preferences;"
+        },
+        {
+          "name": "serializePreferences",
+          "kind": "value",
+          "signature": "export declare function serializePreferences(value: Preferences): string;"
+        },
+        {
+          "name": "resolvedTheme",
+          "kind": "value",
+          "signature": "export declare function resolvedTheme(theme: ThemePreference, systemDark: boolean): 'light' | 'dark';"
+        },
+        {
+          "name": "effectiveMotion",
+          "kind": "value",
+          "signature": "export declare function effectiveMotion(motion: MotionPreference, systemReduced: boolean): MotionPreference;"
+        },
+        {
+          "name": "createPreferenceScript",
+          "kind": "value",
+          "signature": "export declare function createPreferenceScript(storageKey?: string, defaults?: Partial<Preferences>): string;"
+        },
+        {
+          "name": "preferenceScript",
+          "kind": "value",
+          "signature": "export declare const preferenceScript: string;"
+        }
+      ]
+    },
+    {
+      "subpath": "./react",
+      "importPath": "@hyeonse/design-system/react",
+      "source": "src/react.tsx",
+      "declarations": "import type { ReactNode } from 'react';\nimport type { Preferences } from './preferences.js';\nexport type Locale = 'ko' | 'en';\ntype PreferenceContext = {\n    preferences: Preferences;\n    setPreference: <K extends keyof Preferences>(key: K, value: Preferences[K]) => void;\n    resetPreferences: () => void;\n};\nexport declare function PreferencesProvider({ children, storageKey, eventName, defaults }: {\n    children: ReactNode;\n    storageKey?: string;\n    eventName?: string;\n    defaults?: Partial<Preferences>;\n}): import(\"react\").JSX.Element;\nexport declare function usePreferences(): PreferenceContext;\nexport declare function ThemeToggle({ locale }: {\n    locale?: Locale;\n}): import(\"react\").JSX.Element;\nexport declare function PreferencesPanel({ locale }: {\n    locale?: Locale;\n}): import(\"react\").JSX.Element;\nexport {};\n",
+      "exports": [
+        {
+          "name": "Locale",
+          "kind": "type",
+          "signature": "export type Locale = 'ko' | 'en';"
+        },
+        {
+          "name": "PreferencesProvider",
+          "kind": "value",
+          "signature": "export declare function PreferencesProvider({ children, storageKey, eventName, defaults }: {\n    children: ReactNode;\n    storageKey?: string;\n    eventName?: string;\n    defaults?: Partial<Preferences>;\n}): import(\"react\").JSX.Element;"
+        },
+        {
+          "name": "usePreferences",
+          "kind": "value",
+          "signature": "export declare function usePreferences(): PreferenceContext;"
+        },
+        {
+          "name": "ThemeToggle",
+          "kind": "value",
+          "signature": "export declare function ThemeToggle({ locale }: {\n    locale?: Locale;\n}): import(\"react\").JSX.Element;"
+        },
+        {
+          "name": "PreferencesPanel",
+          "kind": "value",
+          "signature": "export declare function PreferencesPanel({ locale }: {\n    locale?: Locale;\n}): import(\"react\").JSX.Element;"
+        }
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "id": "preferencesKey",
+      "kind": "utility",
+      "summary": "Default localStorage key: hyeonse-site-preferences.",
+      "importPath": "@hyeonse/design-system/preferences",
+      "source": "src/preferences.ts",
+      "signature": "export declare const preferencesKey = \"hyeonse-site-preferences\";",
+      "usage": [
+        "Pass the same key to createPreferenceScript and PreferencesProvider when overriding it."
+      ],
+      "states": [],
+      "accessibility": [],
+      "limitations": [],
+      "examples": [
+        "display-settings"
+      ],
+      "keywords": [
+        "storage",
+        "key",
+        "localStorage",
+        "저장",
+        "키"
+      ]
+    },
+    {
+      "id": "defaultPreferences",
+      "kind": "utility",
+      "summary": "Default choices: system theme, cobalt accent, comfortable density, crisp corners, full motion.",
+      "importPath": "@hyeonse/design-system/preferences",
+      "source": "src/preferences.ts",
+      "signature": "export declare const defaultPreferences: Preferences;",
+      "usage": [
+        "Use as the baseline when no valid stored choice or site default exists."
+      ],
+      "states": [
+        "system",
+        "cobalt",
+        "comfortable",
+        "crisp",
+        "full"
+      ],
+      "accessibility": [],
+      "limitations": [
+        "This constant does not include site-specific defaults."
+      ],
+      "examples": [
+        "display-settings"
+      ],
+      "keywords": [
+        "defaults",
+        "theme",
+        "accent",
+        "density",
+        "corners",
+        "motion",
+        "기본값",
+        "테마"
+      ]
+    },
+    {
+      "id": "validatePreferences",
+      "kind": "utility",
+      "summary": "Validate each preference against the allowed choices.",
+      "importPath": "@hyeonse/design-system/preferences",
+      "source": "src/preferences.ts",
+      "signature": "export declare function validatePreferences(value: unknown, defaults?: Partial<Preferences>): Preferences;",
+      "usage": [
+        "A valid stored field wins; missing or invalid fields use valid site defaults, then defaultPreferences."
+      ],
+      "states": [
+        "system/light/dark",
+        "cobalt/forest/coral",
+        "comfortable/compact",
+        "crisp/soft",
+        "full/reduced"
+      ],
+      "accessibility": [],
+      "limitations": [
+        "Non-object and array inputs are treated as empty preferences."
+      ],
+      "examples": [
+        "display-settings"
+      ],
+      "keywords": [
+        "validate",
+        "defaults",
+        "fallback",
+        "기본값",
+        "검증"
+      ]
+    },
+    {
+      "id": "parsePreferences",
+      "kind": "utility",
+      "summary": "Parse and validate a stored JSON preference string.",
+      "importPath": "@hyeonse/design-system/preferences",
+      "source": "src/preferences.ts",
+      "signature": "export declare function parsePreferences(raw: string | null, defaults?: Partial<Preferences>): Preferences;",
+      "usage": [
+        "Malformed JSON and null fall back through validatePreferences with optional site defaults."
+      ],
+      "states": [],
+      "accessibility": [],
+      "limitations": [],
+      "examples": [
+        "display-settings"
+      ],
+      "keywords": [
+        "parse",
+        "storage",
+        "defaults",
+        "저장",
+        "기본값"
+      ]
+    },
+    {
+      "id": "serializePreferences",
+      "kind": "utility",
+      "summary": "Serialize validated preferences to JSON.",
+      "importPath": "@hyeonse/design-system/preferences",
+      "source": "src/preferences.ts",
+      "signature": "export declare function serializePreferences(value: Preferences): string;",
+      "usage": [
+        "Invalid fields fall back to package defaults before serialization."
+      ],
+      "states": [],
+      "accessibility": [],
+      "limitations": [
+        "This function does not accept site-specific defaults."
+      ],
+      "examples": [
+        "display-settings"
+      ],
+      "keywords": [
+        "serialize",
+        "JSON",
+        "storage",
+        "저장"
+      ]
+    },
+    {
+      "id": "resolvedTheme",
+      "kind": "utility",
+      "summary": "Resolve system/light/dark to the effective light or dark theme.",
+      "importPath": "@hyeonse/design-system/preferences",
+      "source": "src/preferences.ts",
+      "signature": "export declare function resolvedTheme(theme: ThemePreference, systemDark: boolean): 'light' | 'dark';",
+      "usage": [
+        "The system choice follows the supplied systemDark boolean."
+      ],
+      "states": [
+        "light",
+        "dark"
+      ],
+      "accessibility": [],
+      "limitations": [],
+      "examples": [
+        "display-settings"
+      ],
+      "keywords": [
+        "theme",
+        "system",
+        "dark",
+        "테마",
+        "기기 설정"
+      ]
+    },
+    {
+      "id": "effectiveMotion",
+      "kind": "utility",
+      "summary": "Resolve the motion choice with the device reduced-motion preference.",
+      "importPath": "@hyeonse/design-system/preferences",
+      "source": "src/preferences.ts",
+      "signature": "export declare function effectiveMotion(motion: MotionPreference, systemReduced: boolean): MotionPreference;",
+      "usage": [
+        "A true systemReduced value forces reduced even when the stored choice is full."
+      ],
+      "states": [
+        "full",
+        "reduced"
+      ],
+      "accessibility": [
+        "Device reduced motion takes precedence."
+      ],
+      "limitations": [],
+      "examples": [
+        "display-settings"
+      ],
+      "keywords": [
+        "motion",
+        "reduced",
+        "움직임",
+        "접근성"
+      ]
+    },
+    {
+      "id": "createPreferenceScript",
+      "kind": "utility",
+      "summary": "Create the inline first-paint preference script with optional key and site defaults.",
+      "importPath": "@hyeonse/design-system/preferences",
+      "source": "src/preferences.ts",
+      "signature": "export declare function createPreferenceScript(storageKey?: string, defaults?: Partial<Preferences>): string;",
+      "usage": [
+        "Insert the result in the document head before CSS paints.",
+        "Pass the same storageKey and defaults to PreferencesProvider."
+      ],
+      "states": [
+        "Sets data-theme, data-theme-preference, data-accent, data-density, data-corners, and data-motion on the document root."
+      ],
+      "accessibility": [
+        "Applies the device reduced-motion preference."
+      ],
+      "limitations": [
+        "The generated script reads storage and media preferences once; PreferencesProvider handles later changes."
+      ],
+      "examples": [
+        "display-settings"
+      ],
+      "keywords": [
+        "script",
+        "head",
+        "first paint",
+        "theme",
+        "테마",
+        "저장",
+        "기본값"
+      ]
+    },
+    {
+      "id": "preferenceScript",
+      "kind": "utility",
+      "summary": "Ready-made first-paint script using the package key and defaults.",
+      "importPath": "@hyeonse/design-system/preferences",
+      "source": "src/preferences.ts",
+      "signature": "export declare const preferenceScript: string;",
+      "usage": [
+        "Insert in the document head before CSS paints."
+      ],
+      "states": [],
+      "accessibility": [
+        "Applies the device reduced-motion preference."
+      ],
+      "limitations": [
+        "Use createPreferenceScript for a different key or site defaults."
+      ],
+      "examples": [
+        "display-settings"
+      ],
+      "keywords": [
+        "script",
+        "head",
+        "theme",
+        "테마",
+        "기본값"
+      ]
+    },
+    {
+      "id": "PreferencesProvider",
+      "kind": "provider",
+      "summary": "Provide display preferences and keep document attributes in sync.",
+      "importPath": "@hyeonse/design-system/react",
+      "source": "src/react.tsx",
+      "signature": "export declare function PreferencesProvider({ children, storageKey, eventName, defaults }: {\n    children: ReactNode;\n    storageKey?: string;\n    eventName?: string;\n    defaults?: Partial<Preferences>;\n}): import(\"react\").JSX.Element;",
+      "usage": [
+        "Wrap consumers of usePreferences, ThemeToggle, and PreferencesPanel.",
+        "The defaults prop supplies valid site defaults for missing or invalid stored fields and reset."
+      ],
+      "states": [
+        "Reads storage on mount; listens for matching-key or cleared storage events and device color/motion changes.",
+        "Updates this tab and dispatches the configured CustomEvent after applying document attributes."
+      ],
+      "accessibility": [
+        "The device reduced-motion preference overrides a full-motion choice."
+      ],
+      "limitations": [
+        "Storage writes may fail; the current tab still updates.",
+        "Server rendering starts with validated defaults before browser storage is read."
+      ],
+      "examples": [
+        "display-settings"
+      ],
+      "keywords": [
+        "provider",
+        "theme",
+        "defaults",
+        "storage",
+        "event",
+        "테마",
+        "화면설정",
+        "기본값",
+        "저장",
+        "움직임"
+      ],
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true
+        },
+        {
+          "name": "storageKey",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "eventName",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "defaults",
+          "type": "Partial<Preferences>",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "usePreferences",
+      "kind": "hook",
+      "summary": "Read preferences and the setPreference/resetPreferences actions from context.",
+      "importPath": "@hyeonse/design-system/react",
+      "source": "src/react.tsx",
+      "signature": "export declare function usePreferences(): PreferenceContext;",
+      "usage": [
+        "Call inside PreferencesProvider.",
+        "resetPreferences restores the validated site defaults."
+      ],
+      "states": [],
+      "accessibility": [],
+      "limitations": [
+        "Throws when used outside PreferencesProvider."
+      ],
+      "examples": [
+        "display-settings"
+      ],
+      "keywords": [
+        "hook",
+        "context",
+        "reset",
+        "preference",
+        "설정",
+        "기본값"
+      ]
+    },
+    {
+      "id": "ThemeToggle",
+      "kind": "component",
+      "summary": "Cycle theme preference through system, light, and dark.",
+      "importPath": "@hyeonse/design-system/react",
+      "source": "src/react.tsx",
+      "signature": "export declare function ThemeToggle({ locale }: {\n    locale?: Locale;\n}): import(\"react\").JSX.Element;",
+      "usage": [
+        "Render inside PreferencesProvider; locale defaults to ko and also accepts en.",
+        "Import components.css for the provided visual styles."
+      ],
+      "states": [
+        "system",
+        "light",
+        "dark"
+      ],
+      "accessibility": [
+        "Native button with a changing accessible label describing current and next modes."
+      ],
+      "limitations": [
+        "Only theme preference is changed; the effective theme still follows the device in system mode."
+      ],
+      "examples": [
+        "display-settings"
+      ],
+      "keywords": [
+        "toggle",
+        "theme",
+        "locale",
+        "테마",
+        "밝게",
+        "어둡게"
+      ],
+      "props": [
+        {
+          "name": "locale",
+          "type": "Locale",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "PreferencesPanel",
+      "kind": "component",
+      "summary": "Display controls for theme, accent, density, corners, and motion.",
+      "importPath": "@hyeonse/design-system/react",
+      "source": "src/react.tsx",
+      "signature": "export declare function PreferencesPanel({ locale }: {\n    locale?: Locale;\n}): import(\"react\").JSX.Element;",
+      "usage": [
+        "Render inside PreferencesProvider; locale defaults to ko and also accepts en.",
+        "Import components.css for the provided visual styles."
+      ],
+      "states": [
+        "system/light/dark",
+        "cobalt/forest/coral",
+        "comfortable/compact",
+        "crisp/soft",
+        "full/reduced"
+      ],
+      "accessibility": [
+        "Uses fieldset legends, native radio inputs, pressed-state accent buttons, and a live status."
+      ],
+      "limitations": [
+        "It controls only the provided display preferences."
+      ],
+      "examples": [
+        "display-settings"
+      ],
+      "keywords": [
+        "panel",
+        "settings",
+        "theme",
+        "accent",
+        "motion",
+        "화면설정",
+        "테마",
+        "강조 색상",
+        "움직임"
+      ],
+      "props": [
+        {
+          "name": "locale",
+          "type": "Locale",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "tokens": [
+    {
+      "name": "--ink",
+      "role": "Primary foreground text",
+      "value": "#101114",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#f2f4f8"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#f2f4f8"
+        }
+      ]
+    },
+    {
+      "name": "--paper",
+      "role": "Page background",
+      "value": "#ffffff",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#111318"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#111318"
+        }
+      ]
+    },
+    {
+      "name": "--muted",
+      "role": "Secondary text",
+      "value": "#5a606b",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#b2b8c4"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#b2b8c4"
+        }
+      ]
+    },
+    {
+      "name": "--line",
+      "role": "Subtle dividing line",
+      "value": "#d8dbe3",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#444a56"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#444a56"
+        }
+      ]
+    },
+    {
+      "name": "--surface",
+      "role": "Grouped content surface",
+      "value": "#f3f5f8",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#1c2028"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#1c2028"
+        }
+      ]
+    },
+    {
+      "name": "--surface-raised",
+      "role": "Raised content surface",
+      "value": "#ffffff",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#282d37"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#282d37"
+        }
+      ]
+    },
+    {
+      "name": "--accent-solid",
+      "role": "Solid accent surface",
+      "value": "#204cfc",
+      "overrides": [
+        {
+          "selector": ":root[data-accent='forest']",
+          "media": null,
+          "value": "#087451"
+        },
+        {
+          "selector": ":root[data-accent='coral']",
+          "media": null,
+          "value": "#b93d20"
+        }
+      ]
+    },
+    {
+      "name": "--accent-text",
+      "role": "Accent text, link, selection, and focus",
+      "value": "#204cfc",
+      "overrides": [
+        {
+          "selector": ":root[data-accent='forest']",
+          "media": null,
+          "value": "#087451"
+        },
+        {
+          "selector": ":root[data-accent='coral']",
+          "media": null,
+          "value": "#b93d20"
+        },
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#9aafff"
+        },
+        {
+          "selector": ":root[data-theme='dark'][data-accent='forest']",
+          "media": null,
+          "value": "#68dfb1"
+        },
+        {
+          "selector": ":root[data-theme='dark'][data-accent='coral']",
+          "media": null,
+          "value": "#ffa58e"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#9aafff"
+        }
+      ]
+    },
+    {
+      "name": "--palette-cobalt",
+      "role": "Cobalt palette reference",
+      "value": "#204cfc",
+      "overrides": []
+    },
+    {
+      "name": "--palette-forest",
+      "role": "Forest palette reference",
+      "value": "#087451",
+      "overrides": []
+    },
+    {
+      "name": "--palette-coral",
+      "role": "Coral palette reference",
+      "value": "#b93d20",
+      "overrides": []
+    },
+    {
+      "name": "--on-accent",
+      "role": "Foreground on solid accent surface",
+      "value": "#ffffff",
+      "overrides": []
+    },
+    {
+      "name": "--blue",
+      "role": "Alias of accent text",
+      "value": "var(--accent-text)",
+      "overrides": []
+    },
+    {
+      "name": "--about-surface",
+      "role": "About section surface",
+      "value": "var(--accent-solid)",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#1b2540"
+        },
+        {
+          "selector": ":root[data-theme='dark'][data-accent='forest']",
+          "media": null,
+          "value": "#173029"
+        },
+        {
+          "selector": ":root[data-theme='dark'][data-accent='coral']",
+          "media": null,
+          "value": "#35231f"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#1b2540"
+        }
+      ]
+    },
+    {
+      "name": "--about-ink",
+      "role": "About section primary text",
+      "value": "#ffffff",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#f5f7ff"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#f5f7ff"
+        }
+      ]
+    },
+    {
+      "name": "--about-muted",
+      "role": "About section secondary text",
+      "value": "#dce3ff",
+      "overrides": [
+        {
+          "selector": ":root[data-accent='forest']",
+          "media": null,
+          "value": "#d4f5e8"
+        },
+        {
+          "selector": ":root[data-accent='coral']",
+          "media": null,
+          "value": "#ffe1d9"
+        },
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#c1c9de"
+        },
+        {
+          "selector": ":root[data-theme='dark'][data-accent='forest']",
+          "media": null,
+          "value": "#b7e1d1"
+        },
+        {
+          "selector": ":root[data-theme='dark'][data-accent='coral']",
+          "media": null,
+          "value": "#e7c1b8"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#c1c9de"
+        }
+      ]
+    },
+    {
+      "name": "--inverse-surface",
+      "role": "Inverse panel surface",
+      "value": "#101114",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#f2f4f8"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#f2f4f8"
+        }
+      ]
+    },
+    {
+      "name": "--inverse-ink",
+      "role": "Text on inverse panel",
+      "value": "#ffffff",
+      "overrides": [
+        {
+          "selector": ":root[data-theme='dark']",
+          "media": null,
+          "value": "#101114"
+        },
+        {
+          "selector": ":root:not([data-theme])",
+          "media": "(prefers-color-scheme: dark)",
+          "value": "#101114"
+        }
+      ]
+    },
+    {
+      "name": "--radius-card",
+      "role": "Card corner radius",
+      "value": "0px",
+      "overrides": [
+        {
+          "selector": ":root[data-corners='soft']",
+          "media": null,
+          "value": "20px"
+        }
+      ]
+    },
+    {
+      "name": "--radius-control",
+      "role": "Control corner radius",
+      "value": "2px",
+      "overrides": [
+        {
+          "selector": ":root[data-corners='soft']",
+          "media": null,
+          "value": "12px"
+        }
+      ]
+    },
+    {
+      "name": "--space-factor",
+      "role": "Multiplier used by compact spacing",
+      "value": "1",
+      "overrides": [
+        {
+          "selector": ":root[data-density='compact']",
+          "media": null,
+          "value": ".8"
+        }
+      ]
+    },
+    {
+      "name": "--font-sans",
+      "role": "Sans-serif font stack; font files are supplied by the app",
+      "value": "'DM Sans', 'Noto Sans KR', sans-serif",
+      "overrides": []
+    },
+    {
+      "name": "--gutter",
+      "role": "Responsive page gutter",
+      "value": "clamp(22px, 4.1vw, 72px)",
+      "overrides": [
+        {
+          "selector": ":root",
+          "media": "(max-width: 700px)",
+          "value": "22px"
+        }
+      ]
+    },
+    {
+      "name": "--control-min-size",
+      "role": "Minimum control size",
+      "value": "44px",
+      "overrides": []
+    },
+    {
+      "name": "--text-control",
+      "role": "Control text size",
+      "value": "12px",
+      "overrides": []
+    }
+  ],
+  "examples": [
+    {
+      "id": "display-settings",
+      "description": "React display settings with first-paint preferences and public imports.",
+      "files": [
+        {
+          "path": "examples/preferences.ts",
+          "language": "typescript",
+          "code": "import { createPreferenceScript } from '@hyeonse/design-system/preferences';\nimport type { Preferences } from '@hyeonse/design-system/preferences';\n\n// Share these values between the document head and the client Provider.\nexport const storageKey = 'example-display-preferences';\nexport const siteDefaults = { corners: 'soft' } satisfies Partial<Preferences>;\nexport const initialPreferenceScript = createPreferenceScript(storageKey, siteDefaults);\n\n// Insert initialPreferenceScript in a <script> in the document head before CSS.\n// Use your framework's script/HTML API; do not concatenate user input into HTML.\n"
+        },
+        {
+          "path": "examples/display-settings.tsx",
+          "language": "tsx",
+          "code": "'use client';\n\nimport { PreferencesPanel, PreferencesProvider, ThemeToggle, usePreferences } from '@hyeonse/design-system/react';\nimport '@hyeonse/design-system/tokens.css';\nimport '@hyeonse/design-system/components.css';\nimport { siteDefaults, storageKey } from './preferences.js';\n\nfunction ReadingPreference() {\n  const { preferences, setPreference } = usePreferences();\n  return <label>\n    <input type=\"checkbox\" checked={preferences.motion === 'reduced'}\n      onChange={event => setPreference('motion', event.target.checked ? 'reduced' : 'full')} />\n    움직임 줄이기\n  </label>;\n}\n\nexport function DisplaySettings() {\n  return <PreferencesProvider storageKey={storageKey} defaults={siteDefaults}>\n    <ThemeToggle locale=\"ko\" />\n    <PreferencesPanel locale=\"ko\" />\n    <ReadingPreference />\n  </PreferencesProvider>;\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "token-card",
+      "description": "HTML card styled with public role tokens.",
+      "files": [
+        {
+          "path": "examples/token-card.css",
+          "language": "css",
+          "code": "/* App-owned markup/styles: the package does not export a Card component. */\n.example-card {\n  box-sizing: border-box;\n  max-width: 42rem;\n  padding: calc(24px * var(--space-factor));\n  border: 1px solid var(--line);\n  border-radius: var(--radius-card);\n  background: var(--surface);\n  color: var(--ink);\n  font-family: var(--font-sans);\n  line-height: 1.7;\n}\n.example-card h2 { margin: 0 0 .5em; }\n.example-card p { color: var(--muted); }\n.example-card a { display: inline-flex; align-items: center; min-height: var(--control-min-size); color: var(--accent-text); text-underline-offset: .2em; }\n.example-card a:focus-visible { outline: 3px solid var(--accent-text); outline-offset: 3px; }\n"
+        },
+        {
+          "path": "examples/token-card.html",
+          "language": "html",
+          "code": "<!doctype html>\n<html lang=\"ko\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <title>역할 토큰으로 만든 카드</title>\n    <!-- These relative paths run in the repository or unpacked package. -->\n    <!-- In a bundler, import @hyeonse/design-system/tokens.css instead. -->\n    <link rel=\"stylesheet\" href=\"../dist/tokens.css\">\n    <link rel=\"stylesheet\" href=\"./token-card.css\">\n  </head>\n  <body>\n    <main>\n      <article class=\"example-card\" aria-labelledby=\"card-title\">\n        <h2 id=\"card-title\">읽기 편한 화면 만들기</h2>\n        <p>본문, 보조 글자, 링크에 서로 다른 역할 토큰을 사용합니다.</p>\n        <a href=\"../docs/foundations.md\">기초 규칙 읽기</a>\n      </article>\n    </main>\n  </body>\n</html>\n"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+# Hyeonse Design System
+
+> @hyeonse/design-system 0.2.0: semantic CSS tokens and React display-preference controls for personal projects.
+
+Use the installed package reference. General Button, Input and Card React components are not exported.
+
+## Start here
+
+- [AI usage](./docs/ai.md): local CLI, JSON lookups and integration workflow.
+- [Setup and API](./docs/api.md): supported imports and first-paint preferences.
+- [Foundations](./docs/foundations.md): token roles and visual principles.
+- [Full generated reference](./llms-full.txt): exact API signatures, token conditions and examples.
+
+## Machine-readable references
+
+- [Catalog](./dist/catalog.json): API, props, tokens, states and examples from this package.
+- [Catalog schema](./schemas/catalog.schema.json): version 1 format.
+
+## Tools
+
+- [Agent skill](./skills/hyeonse-design-system/SKILL.md): task-specific use of this system.
+- [CSS audit](./docs/audit.md): consumer token checks and limitations.
+
+Run the local binary with `npm exec --no -- hds list`, then `npm exec --no -- hds show PreferencesProvider --json`. In this repository, use `npm run hds -- list`. Commands only read the installed package and never fetch or install another package.

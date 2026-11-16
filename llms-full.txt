@@ -1,0 +1,738 @@
+# @hyeonse/design-system
+
+Installed package version: 0.2.0
+
+## Setup
+
+- Import @hyeonse/design-system/tokens.css before @hyeonse/design-system/components.css, once each.
+- Run preferenceScript or createPreferenceScript(...) in the document head before CSS paints; match storageKey and defaults with PreferencesProvider.
+- Import JavaScript from @hyeonse/design-system/preferences and React APIs from @hyeonse/design-system/react. Do not import internal src/ or dist/ paths.
+- Provide DM Sans and Noto Sans KR font assets in the consuming app if those faces are needed; the package only declares a font stack.
+
+## Provided
+
+- Role tokens in tokens.css and styles for ThemeToggle and PreferencesPanel in components.css.
+- Preference validation, first-paint script, provider, hook, and display-setting controls.
+
+## Not provided
+
+- General Button, Input, or page-layout React components.
+- Font files for consuming applications; provide fonts with the required character coverage separately.
+- A design-token interchange format such as DTCG.
+
+Generated from the package declarations, CSS and authored usage metadata. Do not edit this output.
+
+# API
+
+## preferencesKey
+
+Default localStorage key: hyeonse-site-preferences.
+
+Kind: utility · Import: `@hyeonse/design-system/preferences`
+
+```typescript
+export declare const preferencesKey = "hyeonse-site-preferences";
+```
+
+### Usage
+
+- Pass the same key to createPreferenceScript and PreferencesProvider when overriding it.
+
+Examples: `hds example display-settings`
+
+## defaultPreferences
+
+Default choices: system theme, cobalt accent, comfortable density, crisp corners, full motion.
+
+Kind: utility · Import: `@hyeonse/design-system/preferences`
+
+```typescript
+export declare const defaultPreferences: Preferences;
+```
+
+### Usage
+
+- Use as the baseline when no valid stored choice or site default exists.
+
+### States
+
+- system
+- cobalt
+- comfortable
+- crisp
+- full
+
+### Limits
+
+- This constant does not include site-specific defaults.
+
+Examples: `hds example display-settings`
+
+## validatePreferences
+
+Validate each preference against the allowed choices.
+
+Kind: utility · Import: `@hyeonse/design-system/preferences`
+
+```typescript
+export declare function validatePreferences(value: unknown, defaults?: Partial<Preferences>): Preferences;
+```
+
+### Usage
+
+- A valid stored field wins; missing or invalid fields use valid site defaults, then defaultPreferences.
+
+### States
+
+- system/light/dark
+- cobalt/forest/coral
+- comfortable/compact
+- crisp/soft
+- full/reduced
+
+### Limits
+
+- Non-object and array inputs are treated as empty preferences.
+
+Examples: `hds example display-settings`
+
+## parsePreferences
+
+Parse and validate a stored JSON preference string.
+
+Kind: utility · Import: `@hyeonse/design-system/preferences`
+
+```typescript
+export declare function parsePreferences(raw: string | null, defaults?: Partial<Preferences>): Preferences;
+```
+
+### Usage
+
+- Malformed JSON and null fall back through validatePreferences with optional site defaults.
+
+Examples: `hds example display-settings`
+
+## serializePreferences
+
+Serialize validated preferences to JSON.
+
+Kind: utility · Import: `@hyeonse/design-system/preferences`
+
+```typescript
+export declare function serializePreferences(value: Preferences): string;
+```
+
+### Usage
+
+- Invalid fields fall back to package defaults before serialization.
+
+### Limits
+
+- This function does not accept site-specific defaults.
+
+Examples: `hds example display-settings`
+
+## resolvedTheme
+
+Resolve system/light/dark to the effective light or dark theme.
+
+Kind: utility · Import: `@hyeonse/design-system/preferences`
+
+```typescript
+export declare function resolvedTheme(theme: ThemePreference, systemDark: boolean): 'light' | 'dark';
+```
+
+### Usage
+
+- The system choice follows the supplied systemDark boolean.
+
+### States
+
+- light
+- dark
+
+Examples: `hds example display-settings`
+
+## effectiveMotion
+
+Resolve the motion choice with the device reduced-motion preference.
+
+Kind: utility · Import: `@hyeonse/design-system/preferences`
+
+```typescript
+export declare function effectiveMotion(motion: MotionPreference, systemReduced: boolean): MotionPreference;
+```
+
+### Usage
+
+- A true systemReduced value forces reduced even when the stored choice is full.
+
+### States
+
+- full
+- reduced
+
+### Accessibility
+
+- Device reduced motion takes precedence.
+
+Examples: `hds example display-settings`
+
+## createPreferenceScript
+
+Create the inline first-paint preference script with optional key and site defaults.
+
+Kind: utility · Import: `@hyeonse/design-system/preferences`
+
+```typescript
+export declare function createPreferenceScript(storageKey?: string, defaults?: Partial<Preferences>): string;
+```
+
+### Usage
+
+- Insert the result in the document head before CSS paints.
+- Pass the same storageKey and defaults to PreferencesProvider.
+
+### States
+
+- Sets data-theme, data-theme-preference, data-accent, data-density, data-corners, and data-motion on the document root.
+
+### Accessibility
+
+- Applies the device reduced-motion preference.
+
+### Limits
+
+- The generated script reads storage and media preferences once; PreferencesProvider handles later changes.
+
+Examples: `hds example display-settings`
+
+## preferenceScript
+
+Ready-made first-paint script using the package key and defaults.
+
+Kind: utility · Import: `@hyeonse/design-system/preferences`
+
+```typescript
+export declare const preferenceScript: string;
+```
+
+### Usage
+
+- Insert in the document head before CSS paints.
+
+### Accessibility
+
+- Applies the device reduced-motion preference.
+
+### Limits
+
+- Use createPreferenceScript for a different key or site defaults.
+
+Examples: `hds example display-settings`
+
+## PreferencesProvider
+
+Provide display preferences and keep document attributes in sync.
+
+Kind: provider · Import: `@hyeonse/design-system/react`
+
+```typescript
+export declare function PreferencesProvider({ children, storageKey, eventName, defaults }: {
+    children: ReactNode;
+    storageKey?: string;
+    eventName?: string;
+    defaults?: Partial<Preferences>;
+}): import("react").JSX.Element;
+```
+
+### Props
+
+- `children`: `ReactNode`
+- `storageKey?`: `string`
+- `eventName?`: `string`
+- `defaults?`: `Partial<Preferences>`
+
+### Usage
+
+- Wrap consumers of usePreferences, ThemeToggle, and PreferencesPanel.
+- The defaults prop supplies valid site defaults for missing or invalid stored fields and reset.
+
+### States
+
+- Reads storage on mount; listens for matching-key or cleared storage events and device color/motion changes.
+- Updates this tab and dispatches the configured CustomEvent after applying document attributes.
+
+### Accessibility
+
+- The device reduced-motion preference overrides a full-motion choice.
+
+### Limits
+
+- Storage writes may fail; the current tab still updates.
+- Server rendering starts with validated defaults before browser storage is read.
+
+Examples: `hds example display-settings`
+
+## usePreferences
+
+Read preferences and the setPreference/resetPreferences actions from context.
+
+Kind: hook · Import: `@hyeonse/design-system/react`
+
+```typescript
+export declare function usePreferences(): PreferenceContext;
+```
+
+### Usage
+
+- Call inside PreferencesProvider.
+- resetPreferences restores the validated site defaults.
+
+### Limits
+
+- Throws when used outside PreferencesProvider.
+
+Examples: `hds example display-settings`
+
+## ThemeToggle
+
+Cycle theme preference through system, light, and dark.
+
+Kind: component · Import: `@hyeonse/design-system/react`
+
+```typescript
+export declare function ThemeToggle({ locale }: {
+    locale?: Locale;
+}): import("react").JSX.Element;
+```
+
+### Props
+
+- `locale?`: `Locale`
+
+### Usage
+
+- Render inside PreferencesProvider; locale defaults to ko and also accepts en.
+- Import components.css for the provided visual styles.
+
+### States
+
+- system
+- light
+- dark
+
+### Accessibility
+
+- Native button with a changing accessible label describing current and next modes.
+
+### Limits
+
+- Only theme preference is changed; the effective theme still follows the device in system mode.
+
+Examples: `hds example display-settings`
+
+## PreferencesPanel
+
+Display controls for theme, accent, density, corners, and motion.
+
+Kind: component · Import: `@hyeonse/design-system/react`
+
+```typescript
+export declare function PreferencesPanel({ locale }: {
+    locale?: Locale;
+}): import("react").JSX.Element;
+```
+
+### Props
+
+- `locale?`: `Locale`
+
+### Usage
+
+- Render inside PreferencesProvider; locale defaults to ko and also accepts en.
+- Import components.css for the provided visual styles.
+
+### States
+
+- system/light/dark
+- cobalt/forest/coral
+- comfortable/compact
+- crisp/soft
+- full/reduced
+
+### Accessibility
+
+- Uses fieldset legends, native radio inputs, pressed-state accent buttons, and a live status.
+
+### Limits
+
+- It controls only the provided display preferences.
+
+Examples: `hds example display-settings`
+
+# Type context
+
+## @hyeonse/design-system/preferences
+
+```typescript
+export type ThemePreference = 'system' | 'light' | 'dark';
+export type AccentPreference = 'cobalt' | 'forest' | 'coral';
+export type DensityPreference = 'comfortable' | 'compact';
+export type CornersPreference = 'crisp' | 'soft';
+export type MotionPreference = 'full' | 'reduced';
+export type Preferences = {
+    theme: ThemePreference;
+    accent: AccentPreference;
+    density: DensityPreference;
+    corners: CornersPreference;
+    motion: MotionPreference;
+};
+export declare const preferencesKey = "hyeonse-site-preferences";
+export declare const defaultPreferences: Preferences;
+export declare function validatePreferences(value: unknown, defaults?: Partial<Preferences>): Preferences;
+export declare function parsePreferences(raw: string | null, defaults?: Partial<Preferences>): Preferences;
+export declare function serializePreferences(value: Preferences): string;
+export declare function resolvedTheme(theme: ThemePreference, systemDark: boolean): 'light' | 'dark';
+export declare function effectiveMotion(motion: MotionPreference, systemReduced: boolean): MotionPreference;
+export declare function createPreferenceScript(storageKey?: string, defaults?: Partial<Preferences>): string;
+export declare const preferenceScript: string;
+```
+
+## @hyeonse/design-system/react
+
+```typescript
+import type { ReactNode } from 'react';
+import type { Preferences } from './preferences.js';
+export type Locale = 'ko' | 'en';
+type PreferenceContext = {
+    preferences: Preferences;
+    setPreference: <K extends keyof Preferences>(key: K, value: Preferences[K]) => void;
+    resetPreferences: () => void;
+};
+export declare function PreferencesProvider({ children, storageKey, eventName, defaults }: {
+    children: ReactNode;
+    storageKey?: string;
+    eventName?: string;
+    defaults?: Partial<Preferences>;
+}): import("react").JSX.Element;
+export declare function usePreferences(): PreferenceContext;
+export declare function ThemeToggle({ locale }: {
+    locale?: Locale;
+}): import("react").JSX.Element;
+export declare function PreferencesPanel({ locale }: {
+    locale?: Locale;
+}): import("react").JSX.Element;
+export {};
+```
+
+# CSS tokens
+
+Values are CSS expressions, with their original selector and media-query conditions. This is the package catalog format, not a DTCG token interchange file.
+
+## --ink
+
+Primary foreground text
+
+Default: `#101114`
+
+- `:root[data-theme='dark']` → `#f2f4f8`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#f2f4f8`
+
+## --paper
+
+Page background
+
+Default: `#ffffff`
+
+- `:root[data-theme='dark']` → `#111318`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#111318`
+
+## --muted
+
+Secondary text
+
+Default: `#5a606b`
+
+- `:root[data-theme='dark']` → `#b2b8c4`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#b2b8c4`
+
+## --line
+
+Subtle dividing line
+
+Default: `#d8dbe3`
+
+- `:root[data-theme='dark']` → `#444a56`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#444a56`
+
+## --surface
+
+Grouped content surface
+
+Default: `#f3f5f8`
+
+- `:root[data-theme='dark']` → `#1c2028`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#1c2028`
+
+## --surface-raised
+
+Raised content surface
+
+Default: `#ffffff`
+
+- `:root[data-theme='dark']` → `#282d37`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#282d37`
+
+## --accent-solid
+
+Solid accent surface
+
+Default: `#204cfc`
+
+- `:root[data-accent='forest']` → `#087451`
+- `:root[data-accent='coral']` → `#b93d20`
+
+## --accent-text
+
+Accent text, link, selection, and focus
+
+Default: `#204cfc`
+
+- `:root[data-accent='forest']` → `#087451`
+- `:root[data-accent='coral']` → `#b93d20`
+- `:root[data-theme='dark']` → `#9aafff`
+- `:root[data-theme='dark'][data-accent='forest']` → `#68dfb1`
+- `:root[data-theme='dark'][data-accent='coral']` → `#ffa58e`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#9aafff`
+
+## --palette-cobalt
+
+Cobalt palette reference
+
+Default: `#204cfc`
+
+## --palette-forest
+
+Forest palette reference
+
+Default: `#087451`
+
+## --palette-coral
+
+Coral palette reference
+
+Default: `#b93d20`
+
+## --on-accent
+
+Foreground on solid accent surface
+
+Default: `#ffffff`
+
+## --blue
+
+Alias of accent text
+
+Default: `var(--accent-text)`
+
+## --about-surface
+
+About section surface
+
+Default: `var(--accent-solid)`
+
+- `:root[data-theme='dark']` → `#1b2540`
+- `:root[data-theme='dark'][data-accent='forest']` → `#173029`
+- `:root[data-theme='dark'][data-accent='coral']` → `#35231f`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#1b2540`
+
+## --about-ink
+
+About section primary text
+
+Default: `#ffffff`
+
+- `:root[data-theme='dark']` → `#f5f7ff`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#f5f7ff`
+
+## --about-muted
+
+About section secondary text
+
+Default: `#dce3ff`
+
+- `:root[data-accent='forest']` → `#d4f5e8`
+- `:root[data-accent='coral']` → `#ffe1d9`
+- `:root[data-theme='dark']` → `#c1c9de`
+- `:root[data-theme='dark'][data-accent='forest']` → `#b7e1d1`
+- `:root[data-theme='dark'][data-accent='coral']` → `#e7c1b8`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#c1c9de`
+
+## --inverse-surface
+
+Inverse panel surface
+
+Default: `#101114`
+
+- `:root[data-theme='dark']` → `#f2f4f8`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#f2f4f8`
+
+## --inverse-ink
+
+Text on inverse panel
+
+Default: `#ffffff`
+
+- `:root[data-theme='dark']` → `#101114`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#101114`
+
+## --radius-card
+
+Card corner radius
+
+Default: `0px`
+
+- `:root[data-corners='soft']` → `20px`
+
+## --radius-control
+
+Control corner radius
+
+Default: `2px`
+
+- `:root[data-corners='soft']` → `12px`
+
+## --space-factor
+
+Multiplier used by compact spacing
+
+Default: `1`
+
+- `:root[data-density='compact']` → `.8`
+
+## --font-sans
+
+Sans-serif font stack; font files are supplied by the app
+
+Default: `'DM Sans', 'Noto Sans KR', sans-serif`
+
+## --gutter
+
+Responsive page gutter
+
+Default: `clamp(22px, 4.1vw, 72px)`
+
+- @media (max-width: 700px) · `:root` → `22px`
+
+## --control-min-size
+
+Minimum control size
+
+Default: `44px`
+
+## --text-control
+
+Control text size
+
+Default: `12px`
+
+# Examples
+
+## display-settings
+
+React display settings with first-paint preferences and public imports.
+
+### examples/preferences.ts
+
+```typescript
+import { createPreferenceScript } from '@hyeonse/design-system/preferences';
+import type { Preferences } from '@hyeonse/design-system/preferences';
+
+// Share these values between the document head and the client Provider.
+export const storageKey = 'example-display-preferences';
+export const siteDefaults = { corners: 'soft' } satisfies Partial<Preferences>;
+export const initialPreferenceScript = createPreferenceScript(storageKey, siteDefaults);
+
+// Insert initialPreferenceScript in a <script> in the document head before CSS.
+// Use your framework's script/HTML API; do not concatenate user input into HTML.
+```
+
+### examples/display-settings.tsx
+
+```tsx
+'use client';
+
+import { PreferencesPanel, PreferencesProvider, ThemeToggle, usePreferences } from '@hyeonse/design-system/react';
+import '@hyeonse/design-system/tokens.css';
+import '@hyeonse/design-system/components.css';
+import { siteDefaults, storageKey } from './preferences.js';
+
+function ReadingPreference() {
+  const { preferences, setPreference } = usePreferences();
+  return <label>
+    <input type="checkbox" checked={preferences.motion === 'reduced'}
+      onChange={event => setPreference('motion', event.target.checked ? 'reduced' : 'full')} />
+    움직임 줄이기
+  </label>;
+}
+
+export function DisplaySettings() {
+  return <PreferencesProvider storageKey={storageKey} defaults={siteDefaults}>
+    <ThemeToggle locale="ko" />
+    <PreferencesPanel locale="ko" />
+    <ReadingPreference />
+  </PreferencesProvider>;
+}
+```
+
+## token-card
+
+HTML card styled with public role tokens.
+
+### examples/token-card.css
+
+```css
+/* App-owned markup/styles: the package does not export a Card component. */
+.example-card {
+  box-sizing: border-box;
+  max-width: 42rem;
+  padding: calc(24px * var(--space-factor));
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  line-height: 1.7;
+}
+.example-card h2 { margin: 0 0 .5em; }
+.example-card p { color: var(--muted); }
+.example-card a { display: inline-flex; align-items: center; min-height: var(--control-min-size); color: var(--accent-text); text-underline-offset: .2em; }
+.example-card a:focus-visible { outline: 3px solid var(--accent-text); outline-offset: 3px; }
+```
+
+### examples/token-card.html
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>역할 토큰으로 만든 카드</title>
+    <!-- These relative paths run in the repository or unpacked package. -->
+    <!-- In a bundler, import @hyeonse/design-system/tokens.css instead. -->
+    <link rel="stylesheet" href="../dist/tokens.css">
+    <link rel="stylesheet" href="./token-card.css">
+  </head>
+  <body>
+    <main>
+      <article class="example-card" aria-labelledby="card-title">
+        <h2 id="card-title">읽기 편한 화면 만들기</h2>
+        <p>본문, 보조 글자, 링크에 서로 다른 역할 토큰을 사용합니다.</p>
+        <a href="../docs/foundations.md">기초 규칙 읽기</a>
+      </article>
+    </main>
+  </body>
+</html>
+```

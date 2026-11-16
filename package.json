@@ -1,15 +1,17 @@
 {
   "name": "@hyeonse/design-system",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "repository": { "type": "git", "url": "https://github.com/hyeonse-swing/hyeonse-design-system.git" },
   "type": "module",
   "sideEffects": ["./dist/tokens.css", "./dist/components.css"],
-  "files": ["dist", "scripts/audit-tokens.mjs", "THIRD_PARTY_NOTICES.md", "licenses"],
-  "bin": { "hds-audit": "./scripts/audit-tokens.mjs" },
+  "files": ["dist", "scripts/audit-tokens.mjs", "scripts/hds.mjs", "scripts/catalog-format.mjs", "docs/*.md", "skills", "schemas/catalog.schema.json", "examples", "llms.txt", "llms-full.txt", "THIRD_PARTY_NOTICES.md", "licenses"],
+  "bin": { "hds": "./scripts/hds.mjs", "hds-audit": "./scripts/audit-tokens.mjs" },
   "exports": {
     "./tokens.css": "./dist/tokens.css",
     "./components.css": "./dist/components.css",
+    "./catalog.json": "./dist/catalog.json",
+    "./catalog.schema.json": "./schemas/catalog.schema.json",
     "./preferences": {
       "types": "./dist/preferences.d.ts",
       "default": "./dist/preferences.js"
@@ -21,7 +23,11 @@
   },
   "scripts": {
     "build": "node scripts/build.mjs",
+    "build:site": "npm run build && node scripts/build-site.mjs",
     "check": "tsc --noEmit",
+    "check:examples": "tsc -p tsconfig.examples.json",
+    "hds": "node scripts/hds.mjs",
+    "verify": "npm run check && npm run build:site && npm run check:examples && npm test",
     "test": "node --test tests/*.test.mjs"
   },
   "peerDependencies": { "react": ">=19 <20" },

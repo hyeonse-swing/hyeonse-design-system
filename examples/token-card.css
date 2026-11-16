@@ -1,0 +1,16 @@
+/* App-owned markup/styles: the package does not export a Card component. */
+.example-card {
+  box-sizing: border-box;
+  max-width: 42rem;
+  padding: calc(24px * var(--space-factor));
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  line-height: 1.7;
+}
+.example-card h2 { margin: 0 0 .5em; }
+.example-card p { color: var(--muted); }
+.example-card a { display: inline-flex; align-items: center; min-height: var(--control-min-size); color: var(--accent-text); text-underline-offset: .2em; }
+.example-card a:focus-visible { outline: 3px solid var(--accent-text); outline-offset: 3px; }

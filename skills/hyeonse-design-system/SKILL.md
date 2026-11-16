@@ -5,7 +5,9 @@ description: Build, extend, map, migrate, review, or document interfaces using H
 
 # Hyeonse Design System
 
-Use the installed package and this skill's [visual contract](references/foundations.md) as the visual contract. Inspect the target app and the user's requested scope before choosing an operation. Preserve existing behavior and purpose; do not expand a screen request into an app-wide migration.
+Use the installed package and this skill's [visual contract](references/foundations.md) for personal-project design-system work. Inspect the target app and requested scope first. Preserve existing behavior and purpose; a screen request does not authorize an app-wide migration.
+
+For package API, token values, or examples, query the installed version with `npm exec --no -- hds list`, `hds show <export-name>`, `hds tokens [name]`, or `hds example <id>` (use `npm run hds -- ...` inside this repository). Check its public TypeScript declarations before coding. Read [package integration](references/api.md) only when integrating CSS, preferences, or React. The copied skill text is guidance, not a versioned API catalog.
 
 ## Route the request
 
