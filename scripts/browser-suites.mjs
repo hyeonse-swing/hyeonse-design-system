@@ -264,6 +264,12 @@ export async function exerciseExpandedAccessibility(page, base, check, snapshot)
   }
   await scope.locator('button').filter({ hasText: /^토스트 알림$/ }).click();
   await page.locator('.hds-toast').waitFor();
+  // A fixed toast can cover the underlying status text on narrow screens.
+  // Scan the visible notification, then close it and inspect the whole page so
+  // both surfaces retain every axe rule without an indeterminate bgOverlap.
+  await check(page, '.hds-toast');
+  await page.locator('.hds-toast__close').click();
+  await page.locator('.hds-toast').waitFor({ state: 'hidden' });
   await check(page);
   checked.push('open/toast', 'open/select', 'open/combobox', 'open/nested-select');
   return checked;
