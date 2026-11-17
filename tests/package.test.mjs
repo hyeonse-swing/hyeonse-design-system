@@ -26,7 +26,9 @@ test('packed package exposes its own CLI/catalog/docs and usable React examples 
     assert(![...files].some(path => /\.(woff2?|ttf|otf)$/.test(path)), 'fonts remain consumer-owned assets');
     assert(!files.has('metadata/catalog.mjs'), 'runtime does not depend on authoring tools');
     writeFileSync(join(directory, 'package.json'), JSON.stringify({ name: 'hds-consumer-check', private: true, type: 'module' }));
-    execute('npm', ['install', '--offline', '--ignore-scripts', '--no-audit', '--no-fund', join(directory, packed.filename)], directory);
+    // A clean consumer may need runtime dependency metadata that npm ci did not
+    // cache. Keep CLI reads offline below, but allow package installation to fetch it.
+    execute('npm', ['install', '--prefer-offline', '--ignore-scripts', '--no-audit', '--no-fund', join(directory, packed.filename)], directory);
     const installedRoot = join(directory, 'node_modules/@hyeonse/design-system');
     const installedPackage = JSON.parse(readFileSync(join(installedRoot, 'package.json'), 'utf8'));
     assert.equal(installedPackage.version, packed.version);
