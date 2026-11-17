@@ -2,7 +2,15 @@
 
 작업 중인 앱에 설치된 `@hyeonse/design-system` 버전을 기준으로 답을 찾습니다. 먼저 화면의 목적과 기존 동작을 확인하고, 필요한 공개 API·역할 토큰·예제만 조회하세요. 카탈로그는 사용 가능한 항목을 찾는 자료이고, 실제 통합 계약은 해당 버전의 공개 내보내기와 TypeScript 선언입니다.
 
-공개 안정 태그 `v0.3.0`을 설치하면 `Button`, `TextField`, `Checkbox`, `Badge`를 사용할 수 있습니다. [버전 고정 `v0.4.0` 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.0.tgz)는 `layout`, `fields`, `overlays`, `display`를 추가합니다. npm 레지스트리나 GitHub `v0.4.0` 태그 릴리스는 아닙니다. `v0.2.0`에는 기본 컴포넌트가 없으며, `v0.1.0`에는 `hds`와 구조화 카탈로그도 없습니다. 현재 아카이브와 이전 GitHub 태그의 설치 절차는 [README](../README.md)에 있습니다.
+공개 안정 태그 `v0.3.0`을 설치하면 `Button`, `TextField`, `Checkbox`, `Badge`를 사용할 수 있습니다. 웹사이트의 버전 고정 `v0.4.0` 아카이브는 `layout`, `fields`, `overlays`, `display`를 추가했고 이후 `v0.4.x` 아카이브에도 포함됩니다. 이 웹 아카이브들은 npm 레지스트리나 GitHub `v0.4.x` 태그 릴리스가 아닙니다. `v0.2.0`에는 기본 컴포넌트가 없으며, `v0.1.0`에는 `hds`와 구조화 카탈로그도 없습니다. 새 설치는 [현재 릴리스 매니페스트](https://design-system.hyeonse.dev/releases/manifest.json)의 버전·URL·해시를 확인하고, 기존 앱은 설치된 버전을 유지하며 먼저 조회하세요. 설치 예시는 [README](../README.md)에 있습니다.
+
+## 기존 앱에 처음 연결할 때
+
+앱의 React·React DOM 버전, CSS 진입점, 테마·설정 저장 방식, 기존 컴포넌트와 적용할 화면 범위를 먼저 확인합니다. 필요한 공개 서브패스가 설치 버전에 있는지 `npm exec --no -- hds list --json`의 `package.version`과 `package.json`의 `exports`로 확인하세요. `v0.4.x`의 React 컴포넌트는 React·React DOM 19가 필요합니다. 범위에 맞는 예제와 타입을 조회한 뒤 CSS를 앱의 전역 진입점에서 `tokens.css`, `components.css` 순서로 한 번씩 불러옵니다. 기존 전역 토큰이나 리셋과 겹치는 부분도 확인하세요.
+
+화면 설정을 쓰는 경우 `createPreferenceScript(storageKey?, defaults?)`를 문서 `<head>`에서 CSS보다 먼저 실행하고 `PreferencesProvider`에 동일한 `storageKey`·`defaults`를 전달합니다. 프레임워크의 서버 문서와 클라이언트 컴포넌트 경계에 맞춰 배치하세요. 기존 설정 저장이 있으면 키와 값의 대응을 먼저 정합니다. 적용한 화면의 첫 페인트, 밝음·어두움, 키보드와 좁은 화면을 확인하고 확인하지 못한 조건을 기록합니다. [API 문서](api.md)와 패키지의 `examples/`가 통합 예시입니다.
+
+패키지에는 복사 가능한 `skills/hyeonse-design-system/`도 포함됩니다. 앱에 설치된 **같은 버전**의 `node_modules/@hyeonse/design-system/skills/hyeonse-design-system/` 폴더 전체를 프로젝트 스킬 디렉터리로 복사하면 `references/`가 함께 유지됩니다. 스킬은 안내이고 API의 근거는 설치된 패키지의 CLI·타입·CSS입니다.
 
 ## 읽기 전용 조회
 

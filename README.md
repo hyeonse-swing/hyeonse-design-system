@@ -4,10 +4,10 @@
 
 ## 사용
 
-`v0.4.1` [설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.1.tgz)는 `v0.4.0`에서 추가한 폼·오버레이·표시·레이아웃 컴포넌트와 공통 5단계 크기를 포함합니다. 필드의 Grid 늘어남과 오른쪽 내장 버튼의 테두리 겹침을 고치고, 기본 회색을 밝게·초점 상태를 진하게 조정했습니다. 쇼케이스에는 HDS `Select`와 섹션 스크롤 탐색을 적용했습니다. 공개 API 시그니처는 그대로입니다. `v0.4.0` 아카이브는 변경 없이 보존합니다. npm 레지스트리나 GitHub `v0.4.x` 태그로 발행한 패키지는 아닙니다. 기존 GitHub 안정 태그 `v0.3.0`에는 기본 컴포넌트 네 개만 있습니다.
+`v0.4.2` [설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.2.tgz)는 `v0.4.0`에서 추가한 폼·오버레이·표시·레이아웃 컴포넌트와 공통 5단계 크기를 포함합니다. 필드의 Grid 늘어남과 오른쪽 내장 버튼의 테두리 겹침을 고치고, 기본 회색을 밝게·초점 상태를 진하게 조정했습니다. 쇼케이스에는 HDS `Select`와 섹션 스크롤 탐색을 적용했습니다. v0.4.2는 설치본에서 스킬과 참조를 함께 복사하는 절차, 설치 버전의 API 조회, 기존 앱의 CSS·화면 설정 통합 안내를 보완했습니다. 공개 API 시그니처는 그대로입니다. `v0.4.0`·`v0.4.1` 아카이브는 변경 없이 보존합니다. npm 레지스트리나 GitHub `v0.4.x` 태그로 발행한 패키지는 아닙니다. 기존 GitHub 안정 태그 `v0.3.0`에는 기본 컴포넌트 네 개만 있습니다.
 
 ```sh
-npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.1.tgz
+npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.2.tgz
 
 # 기존 v0.3.0 태그가 필요한 프로젝트만
 npm install github:hyeonse-swing/hyeonse-design-system#v0.3.0
@@ -27,11 +27,14 @@ npm run build:site
 python3 -m http.server 4347 --bind 127.0.0.1 --directory .site
 ```
 
-개인용 스킬은 소비 프로젝트에서 다음 명령으로 추가할 수 있습니다.
+개인용 스킬은 **설치한 패키지와 같은 버전**에서 폴더 전체를 복사할 수 있습니다. 아래 예시는 소비 프로젝트의 `.agents/skills/`에 설치하며 전역 설정은 바꾸지 않습니다. 사용하는 에이전트가 다른 프로젝트 스킬 위치를 요구하면 목적지만 바꾸세요. `SKILL.md`와 `references/`를 함께 유지해야 합니다.
 
 ```sh
-npx skills add hyeonse-swing/hyeonse-design-system --skill hyeonse-design-system
+mkdir -p .agents/skills
+cp -R node_modules/@hyeonse/design-system/skills/hyeonse-design-system .agents/skills/
 ```
+
+복사한 스킬은 작업 흐름 안내입니다. 실제 API·토큰은 소비 앱에 설치된 패키지의 `hds` CLI와 공개 선언으로 확인하세요. [기존 앱 통합 절차](docs/ai.md#기존-앱에-처음-연결할-때)를 참고하세요.
 
 ## AI와 함께 찾기
 
