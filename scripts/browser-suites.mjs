@@ -246,11 +246,14 @@ export async function exerciseExpandedAccessibility(page, base, check, snapshot)
     ['사이드 시트', 'dialog', '작업 상세'],
     ['팝오버', 'dialog', '최근 알림'],
   ]) {
+    if (trigger === '팝오버') await check(page);
     await scope.locator('button').filter({ hasText: new RegExp(`^${trigger}$`) }).click();
     const surface = page.locator(`[role="${role}"]:visible`);
     if (name) await surface.filter({ hasText: name }).waitFor();
     await surface.waitFor();
-    await check(page);
+    // Non-modal popovers cover otherwise visible page text. Inspect the portal
+    // while open and the unobscured body before/after, preserving every axe rule.
+    await check(page, trigger === '팝오버' ? '.hds-popover__positioner' : 'body');
     assert.equal(await surface.evaluate(element => { const rect = element.getBoundingClientRect(); return rect.left >= -1 && rect.right <= innerWidth + 1; }), true, `${trigger} fits viewport`);
     if (trigger === '대화상자') {
       await surface.locator('button.hds-field__trigger[aria-label="프로젝트 공개 범위"]').click();
@@ -260,6 +263,7 @@ export async function exerciseExpandedAccessibility(page, base, check, snapshot)
     }
     await page.keyboard.press('Escape');
     await surface.waitFor({ state: 'hidden' });
+    if (trigger === '팝오버') await check(page);
     checked.push(`open/${trigger}`);
   }
   await scope.locator('button').filter({ hasText: /^토스트 알림$/ }).click();
