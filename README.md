@@ -4,10 +4,10 @@
 
 ## 사용
 
-현재 `v0.4.0` 패키지는 [버전 고정 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.0.tgz)로 제공합니다. 폼·오버레이·표시·레이아웃 컴포넌트와 공통 5단계 크기를 포함합니다. npm 레지스트리나 GitHub `v0.4.0` 태그로 발행한 패키지는 아닙니다. 기존 GitHub 안정 태그 `v0.3.0`에는 기본 컴포넌트 네 개만 있습니다.
+`v0.4.1` [설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.1.tgz)는 `v0.4.0`에서 추가한 폼·오버레이·표시·레이아웃 컴포넌트와 공통 5단계 크기를 포함합니다. 필드의 Grid 늘어남과 오른쪽 내장 버튼의 테두리 겹침을 고치고, 기본 회색을 밝게·초점 상태를 진하게 조정했습니다. 쇼케이스에는 HDS `Select`와 섹션 스크롤 탐색을 적용했습니다. 공개 API 시그니처는 그대로입니다. `v0.4.0` 아카이브는 변경 없이 보존합니다. npm 레지스트리나 GitHub `v0.4.x` 태그로 발행한 패키지는 아닙니다. 기존 GitHub 안정 태그 `v0.3.0`에는 기본 컴포넌트 네 개만 있습니다.
 
 ```sh
-npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.0.tgz
+npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.1.tgz
 
 # 기존 v0.3.0 태그가 필요한 프로젝트만
 npm install github:hyeonse-swing/hyeonse-design-system#v0.3.0

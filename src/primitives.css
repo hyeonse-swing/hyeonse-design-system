@@ -47,6 +47,7 @@
 .hds-textField,
 .hds-checkbox {
   display: grid;
+  align-content: start;
   gap: calc(var(--space-1) * var(--space-factor));
   min-width: 0;
   color: var(--ink);
@@ -73,11 +74,11 @@
   background: var(--surface-raised);
   font: inherit;
   font-size: var(--hds-control-font);
-  line-height: var(--leading-body);
+  line-height: 1.4;
   transition: border-color var(--duration-fast) ease;
 }
 
-.hds-textField__input:hover:not(:disabled):not([aria-invalid='true']) { border-color: var(--accent-text); }
+.hds-textField__input:is(:hover, :focus):not(:disabled):not([aria-invalid='true']) { border-color: var(--ink); }
 .hds-textField__input[aria-invalid='true'] { border-color: var(--danger-text); }
 .hds-textField__input:disabled {
   color: var(--disabled-ink);

@@ -103,6 +103,10 @@ export function Textarea({ label, hint, error, size, id, className, disabled, re
   </FieldShell>;
 }
 
+function FieldChevron() {
+  return <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 7.5 5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+}
+
 export type FieldOption = { value: string; label: string; disabled?: boolean };
 function optionLabel(options: readonly FieldOption[], value: string | null | undefined) {
   return value == null ? '' : options.find(option => option.value === value)?.label ?? value;
@@ -126,7 +130,7 @@ export function Select({ label, hint, error, size, options, name, form, id, requ
     <BaseSelect.Root id={triggerId} items={options} name={name} form={form} required={required} disabled={disabled} readOnly={readOnly} value={selected.current} inputRef={selected.inputRef} onValueChange={next => { onValueChange?.(next); selected.change(next); }}>
       <BaseSelect.Label className="hds-field__label">{label}</BaseSelect.Label>
       <BaseSelect.Trigger ref={ref} id={triggerId} className={`hds-field__control hds-field__trigger${className ? ` ${className}` : ''}`} aria-label={label} aria-describedby={description({ hintId, errorId, describedBy })} aria-invalid={error ? true : invalid}>
-        <BaseSelect.Value placeholder={placeholder} /><BaseSelect.Icon className="hds-field__chevron" aria-hidden="true">⌄</BaseSelect.Icon>
+        <BaseSelect.Value placeholder={placeholder} /><BaseSelect.Icon className="hds-field__chevron" aria-hidden="true"><FieldChevron /></BaseSelect.Icon>
       </BaseSelect.Trigger>
       <BaseSelect.Portal><BaseSelect.Positioner sideOffset={4} alignItemWithTrigger={false} data-hds-size={resolvedSize} className="hds-field__positioner"><BaseSelect.Popup className="hds-field__popup"><BaseSelect.List className="hds-field__list">
         {options.map(option => <BaseSelect.Item key={option.value} value={option.value} label={option.label} disabled={option.disabled} className="hds-field__option"><BaseSelect.ItemText>{option.label}</BaseSelect.ItemText><BaseSelect.ItemIndicator aria-hidden="true">✓</BaseSelect.ItemIndicator></BaseSelect.Item>)}
@@ -162,7 +166,7 @@ export function Combobox({ label, hint, error, size, options, name, form, id, re
     <BaseCombobox.Root<string, false, FieldOption> items={items} name={name} form={form} required={required} disabled={disabled} readOnly={readOnly} value={selected.current} inputRef={selected.inputRef} onValueChange={next => { onValueChange?.(next); selected.change(next); }} inputValue={inputValue !== undefined ? inputValue : query} onInputValueChange={next => { onInputValueChange?.(next); if (inputValue === undefined) setQuery(next); }}>
       <BaseCombobox.InputGroup className="hds-field__inputGroup">
         <BaseCombobox.Input ref={ref} id={inputId} placeholder={placeholder} className={`hds-field__control hds-field__comboInput${className ? ` ${className}` : ''}`} aria-describedby={description({ hintId, errorId, describedBy })} aria-invalid={error ? true : invalid} />
-        <BaseCombobox.Trigger className="hds-field__iconButton" aria-label={openLabel} disabled={disabled || readOnly}><span aria-hidden="true">⌄</span></BaseCombobox.Trigger>
+        <BaseCombobox.Trigger className="hds-field__iconButton" aria-label={openLabel} disabled={disabled || readOnly}><FieldChevron /></BaseCombobox.Trigger>
       </BaseCombobox.InputGroup>
       <BaseCombobox.Portal><BaseCombobox.Positioner sideOffset={4} data-hds-size={resolvedSize} className="hds-field__positioner"><BaseCombobox.Popup className="hds-field__popup">
         <BaseCombobox.Empty className="hds-field__empty">{emptyText}</BaseCombobox.Empty>
@@ -200,7 +204,7 @@ export function MultiSelect({ label, hint, error, size, options, name, form, id,
           {selected.map(item => { const itemLabel = options.find(option => option.value === item)?.label ?? item; return <BaseCombobox.Chip key={item} role="group" className="hds-field__chip" aria-label={itemLabel} aria-description={chipDescription}>{itemLabel}<BaseCombobox.ChipRemove className="hds-field__chipRemove" aria-label={removeLabel(itemLabel)} disabled={disabled || readOnly}><span aria-hidden="true">×</span></BaseCombobox.ChipRemove></BaseCombobox.Chip>; })}
           <BaseCombobox.Input ref={ref} id={inputId} placeholder={selected.length ? '' : placeholder} className="hds-field__comboInput hds-field__multiInput" aria-describedby={description({ hintId, errorId, describedBy })} aria-invalid={error ? true : invalid} aria-description={selected.length ? inputDescription(selected.length) : undefined} />
         </BaseCombobox.Chips>}</BaseCombobox.Value>
-        <BaseCombobox.Trigger className="hds-field__iconButton" aria-label={openLabel} disabled={disabled || readOnly}><span aria-hidden="true">⌄</span></BaseCombobox.Trigger>
+        <BaseCombobox.Trigger className="hds-field__iconButton" aria-label={openLabel} disabled={disabled || readOnly}><FieldChevron /></BaseCombobox.Trigger>
       </BaseCombobox.InputGroup>
       <BaseCombobox.Portal><BaseCombobox.Positioner sideOffset={4} data-hds-size={resolvedSize} className="hds-field__positioner"><BaseCombobox.Popup className="hds-field__popup">
         <BaseCombobox.Empty className="hds-field__empty">{emptyText}</BaseCombobox.Empty>

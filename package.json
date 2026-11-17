@@ -1,6 +1,6 @@
 {
   "name": "@hyeonse/design-system",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -75,7 +75,8 @@
     "check:browser": "tsc -p tsconfig.browser.json",
     "verify:browser": "node scripts/check-browser.mjs",
     "verify:freeze": "npm run verify && npm run verify:sizing && npm run verify:browser",
-    "verify:sizing": "node scripts/check-sizing.mjs"
+    "verify:sizing": "node scripts/check-sizing.mjs",
+    "verify:fields": "node scripts/check-field-layout.mjs"
   },
   "peerDependencies": {
     "react": ">=19 <20",

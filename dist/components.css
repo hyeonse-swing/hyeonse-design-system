@@ -240,6 +240,7 @@
 .hds-textField,
 .hds-checkbox {
   display: grid;
+  align-content: start;
   gap: calc(var(--space-1) * var(--space-factor));
   min-width: 0;
   color: var(--ink);
@@ -266,11 +267,11 @@
   background: var(--surface-raised);
   font: inherit;
   font-size: var(--hds-control-font);
-  line-height: var(--leading-body);
+  line-height: 1.4;
   transition: border-color var(--duration-fast) ease;
 }
 
-.hds-textField__input:hover:not(:disabled):not([aria-invalid='true']) { border-color: var(--accent-text); }
+.hds-textField__input:is(:hover, :focus):not(:disabled):not([aria-invalid='true']) { border-color: var(--ink); }
 .hds-textField__input[aria-invalid='true'] { border-color: var(--danger-text); }
 .hds-textField__input:disabled {
   color: var(--disabled-ink);
@@ -362,6 +363,7 @@
 .hds-field {
   box-sizing: border-box;
   display: grid;
+  align-content: start;
   gap: calc(var(--hds-layout-gap, var(--space-1)) * var(--space-factor));
   min-width: 0;
   color: var(--ink);
@@ -387,7 +389,7 @@
   font-size: var(--hds-control-font, var(--text-base));
   line-height: 1.4;
 }
-.hds-field__control:hover:not(:disabled):not([aria-invalid='true']) { border-color: var(--accent-text); }
+.hds-field__control:is(:hover, :focus):not(:disabled):not([aria-disabled='true']):not([aria-invalid='true']) { border-color: var(--ink); }
 .hds-field__control::placeholder, .hds-field__multiInput::placeholder { color: var(--muted); opacity: 1; }
 .hds-field__control[aria-invalid='true'], .hds-field__radioGroup[aria-invalid='true'] { border-color: var(--danger-text); }
 .hds-field__control:disabled, .hds-field__control[aria-disabled='true'] { color: var(--disabled-ink); background: var(--disabled-surface); cursor: not-allowed; }
@@ -408,7 +410,8 @@
 .hds-field__textarea { min-height: calc(var(--hds-control-height, 36px) * 3); resize: vertical; }
 .hds-field__trigger { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); text-align: left; cursor: pointer; }
 .hds-field__trigger[data-disabled], .hds-field__trigger[aria-disabled='true'] { cursor: not-allowed; }
-.hds-field__chevron { flex: none; color: var(--muted); font-size: calc(var(--hds-control-font) + 4px); line-height: 1; }
+.hds-field__chevron { display: inline-flex; flex: none; align-items: center; color: var(--muted); line-height: 1; }
+.hds-field__chevron svg, .hds-field__iconButton svg { display: block; width: var(--hds-indicator-size); height: var(--hds-indicator-size); }
 .hds-field__positioner { z-index: 1100; pointer-events: auto; width: min(var(--anchor-width), calc(100vw - 24px)); max-width: calc(100vw - 24px); }
 .hds-field__popup {
   box-sizing: border-box;
@@ -442,7 +445,7 @@
 .hds-field__option [data-selected] { flex: none; }
 .hds-field__empty { padding: calc(var(--hds-control-px) * var(--space-factor)); color: var(--muted); font-size: var(--hds-control-font, var(--text-sm)); }
 .hds-field__inputGroup, .hds-field__numberGroup, .hds-field__passwordGroup { position: relative; display: flex; min-width: 0; align-items: stretch; }
-.hds-field__inputGroup .hds-field__comboInput { padding-right: calc(max(var(--hds-target-min), var(--hds-control-height)) + var(--hds-control-px) * var(--space-factor)); }
+.hds-field__inputGroup .hds-field__control.hds-field__comboInput { padding-right: calc(max(var(--hds-target-min), var(--hds-control-height)) + var(--hds-control-px) * var(--space-factor)); }
 .hds-field__iconButton, .hds-field__stepper, .hds-field__passwordToggle {
   box-sizing: border-box;
   min-width: max(var(--hds-target-min, 24px), var(--hds-control-height, var(--control-min-size)));
@@ -455,16 +458,20 @@
   font-size: var(--hds-control-font, var(--text-sm));
   cursor: pointer;
 }
-.hds-field__iconButton { position: absolute; top: 0; right: 0; bottom: 0; border-left: 0; font-size: var(--text-lg); }
-.hds-field__iconButton:hover:not(:disabled), .hds-field__stepper:hover:not(:disabled), .hds-field__passwordToggle:hover:not(:disabled) { color: var(--accent-text); background: var(--surface); }
+.hds-field__iconButton { position: absolute; top: 0; right: 0; bottom: 0; display: inline-flex; align-items: center; justify-content: center; min-height: 0; border: 0; border-radius: max(0px, calc(var(--radius-control) - 1px)); background: transparent; padding: 0; }
+.hds-field__iconButton:hover:not(:disabled), .hds-field__passwordToggle:hover:not(:disabled) { color: var(--accent-text); }
+.hds-field__stepper:hover:not(:disabled) { color: var(--accent-text); background: var(--surface); }
+.hds-field__multiGroup > .hds-field__iconButton { top: -1px; right: -1px; bottom: -1px; }
 .hds-field__iconButton:disabled, .hds-field__stepper:disabled, .hds-field__passwordToggle:disabled { color: var(--disabled-ink); background: var(--disabled-surface); cursor: not-allowed; }
 .hds-field__multiGroup { box-sizing: border-box; min-height: max(var(--hds-target-min, 24px), var(--hds-control-height, var(--control-min-size))); border: 1px solid var(--control-border); border-radius: var(--radius-control); background: var(--surface-raised); }
 .hds-field__multiGroup:focus-within { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+.hds-field__multiGroup:is(:hover, :focus-within):not(:has(:disabled)):not(:has([aria-invalid='true'])) { border-color: var(--ink); }
+.hds-field__inputGroup:focus-within > .hds-field__control:not([aria-invalid='true']), .hds-field__passwordGroup:focus-within > .hds-field__control:not([aria-invalid='true']) { border-color: var(--ink); }
 .hds-field__multiGroup:has([aria-invalid='true']) { border-color: var(--danger-text); }
-.hds-field__chips { display: flex; flex: 1; flex-wrap: wrap; gap: var(--space-1); min-width: 0; padding: var(--space-1); padding-right: calc(max(var(--hds-target-min), var(--hds-control-height)) + var(--hds-control-px) * var(--space-factor)); }
+.hds-field__chips { box-sizing: border-box; display: flex; align-items: center; flex: 1; flex-wrap: wrap; gap: var(--space-1); min-width: 0; padding: var(--space-1); padding-right: calc(max(var(--hds-target-min), var(--hds-control-height)) + var(--space-1)); }
 .hds-field__chip { display: inline-flex; align-items: center; gap: var(--space-1); min-width: 0; max-width: 100%; padding-left: var(--space-2); border: 1px solid var(--line); border-radius: var(--radius-control); background: var(--surface); font-size: var(--hds-control-font, var(--text-sm)); overflow-wrap: anywhere; }
-.hds-field__chipRemove { min-width: max(var(--hds-target-min, 24px), var(--hds-control-height, var(--control-min-size))); min-height: max(var(--hds-target-min, 24px), var(--hds-control-height, var(--control-min-size))); border: 0; border-radius: var(--radius-control); color: var(--ink); background: transparent; font: inherit; font-size: var(--text-lg); cursor: pointer; }
-.hds-field__multiInput { flex: 1 1 120px; min-width: 80px; min-height: max(var(--hds-target-min, 24px), var(--hds-control-height, var(--control-min-size))); border: 0; outline: none; color: var(--ink); background: transparent; font: inherit; font-size: var(--hds-control-font, var(--text-base)); }
+.hds-field__chipRemove { box-sizing: border-box; flex: none; min-width: max(var(--hds-target-min, 24px), calc(var(--hds-control-height) - 12px)); min-height: max(var(--hds-target-min, 24px), calc(var(--hds-control-height) - 12px)); padding: 0; border: 0; border-radius: var(--radius-control); color: var(--ink); background: transparent; font: inherit; font-size: var(--hds-control-font); cursor: pointer; }
+.hds-field__multiInput { box-sizing: border-box; flex: 1 1 120px; min-width: 80px; min-height: max(var(--hds-target-min, 24px), calc(var(--hds-control-height) - 10px)); padding: 0 var(--space-1); border: 0; outline: none; color: var(--ink); background: transparent; font: inherit; font-size: var(--hds-control-font, var(--text-base)); }
 .hds-field__multiInput:focus-visible { outline: none; }
 .hds-field__switch { box-sizing: border-box; display: inline-flex; align-items: center; width: calc(var(--hds-control-height, 36px) * 1.5); min-width: var(--hds-target-min, 24px); height: max(var(--hds-target-min, 24px), var(--hds-control-height, var(--control-min-size))); padding: 5px; border: 1px solid var(--control-border); border-radius: 999px; background: var(--disabled-surface); cursor: pointer; }
 .hds-field__switch[data-checked] { border-color: var(--accent-text); background: var(--accent-solid); }
@@ -472,20 +479,21 @@
 .hds-field__switchThumb { display: block; width: calc(var(--hds-control-height, 36px) - 12px); height: calc(var(--hds-control-height, 36px) - 12px); border-radius: 50%; background: var(--control-border); box-shadow: var(--shadow-popover); transition: transform var(--duration-fast) ease; }
 .hds-field__switch[data-checked] .hds-field__switchThumb { background: var(--on-accent); transform: translateX(calc(var(--hds-control-height, 36px) * .5)); }
 .hds-field__radioGroup { display: flex; flex-wrap: wrap; gap: calc(var(--hds-layout-gap) * var(--space-factor)); min-width: 0; }
-.hds-field__radioOption { display: inline-flex; align-items: center; gap: var(--space-2); min-height: max(var(--hds-target-min, 24px), var(--hds-control-height, var(--control-min-size))); padding: calc(var(--hds-control-py) * var(--space-factor)) calc(var(--hds-control-px) * var(--space-factor)); border: 1px solid var(--control-border); border-radius: var(--radius-control); font-size: var(--hds-control-font, var(--text-sm)); cursor: pointer; }
+.hds-field__radioOption { box-sizing: border-box; display: inline-flex; align-items: center; gap: var(--space-2); min-height: max(var(--hds-target-min, 24px), var(--hds-control-height, var(--control-min-size))); padding: calc(var(--hds-control-py) * var(--space-factor)) calc(var(--hds-control-px) * var(--space-factor)); border: 1px solid var(--control-border); border-radius: var(--radius-control); font-size: var(--hds-control-font, var(--text-sm)); cursor: pointer; }
 .hds-field__radioOption:has([data-checked]) { border-color: var(--accent-text); color: var(--accent-text); }
 .hds-field__radioOption:has([data-disabled]) { color: var(--disabled-ink); cursor: not-allowed; }
-.hds-field__radio { display: inline-flex; align-items: center; justify-content: center; flex: none; width: var(--hds-indicator-size, 18px); height: var(--hds-indicator-size, 18px); border: 2px solid currentColor; border-radius: 50%; }
+.hds-field__radio { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; flex: none; width: var(--hds-indicator-size, 18px); height: var(--hds-indicator-size, 18px); border: 2px solid currentColor; border-radius: 50%; }
 .hds-field__radioIndicator { width: calc(var(--hds-indicator-size, 18px) * .4); height: calc(var(--hds-indicator-size, 18px) * .4); border-radius: 50%; background: currentColor; }
 .hds-field__slider { display: block; width: 100%; min-height: max(var(--hds-target-min, 24px), var(--hds-control-height, var(--control-min-size))); margin: 0; accent-color: var(--accent-solid); cursor: pointer; }
 .hds-field__slider:disabled { cursor: not-allowed; }
 .hds-field__numberInput { border-top-right-radius: 0; border-bottom-right-radius: 0; }
-.hds-field__stepper { flex: none; border-left: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.hds-field__stepper { flex: none; border-left: 0; border-radius: 0; }
+.hds-field__stepper:last-child { border-top-right-radius: var(--radius-control); border-bottom-right-radius: var(--radius-control); }
 .hds-field__file { padding: 0 var(--hds-control-px, var(--space-3)) 0 0; font-size: var(--hds-control-font, var(--text-sm)); }
-.hds-field__file::file-selector-button { min-height: max(var(--hds-target-min, 24px), var(--hds-control-height, var(--control-min-size))); margin-right: var(--space-2); padding: 0 calc(var(--hds-control-px) * var(--space-factor)); border: 1px solid var(--control-border); border-radius: var(--radius-control); color: var(--ink); background: var(--surface); font: inherit; cursor: pointer; }
+.hds-field__file::file-selector-button { box-sizing: border-box; min-height: calc(max(var(--hds-target-min, 24px), var(--hds-control-height, var(--control-min-size))) - 2px); margin-right: var(--space-2); padding: 0 calc(var(--hds-control-px) * var(--space-factor)); border: 0; border-right: 1px solid var(--control-border); border-radius: 0; color: var(--ink); background: var(--surface); font: inherit; cursor: pointer; }
 .hds-field__passwordInput { padding-right: calc(8em + var(--hds-control-px, 12px)); }
-.hds-field__passwordToggle { position: absolute; top: 0; right: 0; bottom: 0; padding: 0 calc(var(--hds-control-px) * var(--space-factor)); border-left: 0; font-size: var(--text-sm); }
-.hds-fieldsDemo__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: var(--space-5); min-width: 0; }
+.hds-field__passwordToggle { position: absolute; top: 0; right: 0; bottom: 0; min-height: 0; border: 0; border-radius: max(0px, calc(var(--radius-control) - 1px)); background: transparent; padding: 0 calc(var(--hds-control-px) * var(--space-factor)); font-size: var(--hds-control-font); }
+.hds-fieldsDemo__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); align-items: start; gap: var(--space-5); min-width: 0; }
 .hds-fieldsDemo__fieldset { display: grid; gap: var(--space-5); min-width: 0; margin: 0; padding: 0; border: 0; }
 @media (forced-colors: active) {
   .hds-field__control, .hds-field__popup, .hds-field__option, .hds-field__iconButton, .hds-field__stepper, .hds-field__passwordToggle, .hds-field__radioOption, .hds-field__multiGroup, .hds-field__switch { color: CanvasText; background: Canvas; border-color: CanvasText; }
@@ -719,7 +727,7 @@
 .hds-pagination{display:flex;align-items:center;flex-wrap:wrap;gap:calc(var(--hds-layout-gap) * var(--space-factor))}
 .hds-stepper li{display:flex;align-items:center;gap:calc(var(--hds-layout-gap) * var(--space-factor));color:var(--muted)}
 .hds-stepper li[data-status='current']{color:var(--accent-text);font-weight:700}
-.hds-stepper__number{display:grid;place-items:center;width:var(--hds-control-height);height:var(--hds-control-height);border:1px solid currentColor;border-radius:50%}
+.hds-stepper__number{box-sizing:border-box;display:grid;place-items:center;width:var(--hds-control-height);height:var(--hds-control-height);border:1px solid currentColor;border-radius:50%}
 .hds-stepper small{display:block;font-weight:400}
 .hds-segmented{width:max-content;border:1px solid var(--line);border-radius:var(--radius-control);padding:calc(var(--hds-layout-gap) * var(--space-factor))}
 .hds-segmented .hds-toggle{border:0}

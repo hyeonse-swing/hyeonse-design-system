@@ -1,11 +1,13 @@
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import { PreferencesPanel, PreferencesProvider, ThemeToggle, usePreferences } from '../dist/react.js';
 import { Badge, Button, Checkbox, TextField } from '../dist/primitives.js';
+import { Select } from '../dist/fields.js';
 import type { ButtonProps } from '../dist/primitives.js';
 import catalog from '../dist/catalog.json';
 import { SizingDemo } from './SizingDemo.js';
 import { ComponentLibrary } from './ComponentLibrary.js';
+import { SectionNavigation } from './SectionNavigation.js';
 
 type Token = (typeof catalog.tokens)[number];
 type TokenGroup = 'all' | 'color' | 'space' | 'type' | 'other';
@@ -87,7 +89,6 @@ function TokenExplorer() {
   const [group, setGroup] = useState<TokenGroup>('all');
   const [values, setValues] = useState<Record<string, string>>({});
   const { preferences } = usePreferences();
-  const controlId = useId();
   useEffect(() => {
     const update = () => {
       const style = getComputedStyle(document.documentElement);
@@ -114,9 +115,11 @@ function TokenExplorer() {
     </div>
     <div className="token-toolbar">
       <TextField label="토큰 검색" type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="예: accent, forest, spacing" />
-      <div className="native-select"><label htmlFor={controlId}>종류</label><select id={controlId} value={group} onChange={event => setGroup(event.target.value as TokenGroup)}>
-        <option value="all">모든 토큰</option><option value="color">색과 상태</option><option value="space">간격과 크기</option><option value="type">글자</option><option value="other">모서리와 움직임</option>
-      </select></div>
+      <Select label="종류" value={group} onValueChange={value => { if (value) setGroup(value as TokenGroup); }} options={[
+        { value: 'all', label: '모든 토큰' }, { value: 'color', label: '색과 상태' },
+        { value: 'space', label: '간격과 크기' }, { value: 'type', label: '글자' },
+        { value: 'other', label: '모서리와 움직임' },
+      ]} />
     </div>
     <div className="results-heading"><p role="status">{filtered.length} / {catalog.tokens.length}개 토큰</p><span>현재 화면의 계산된 값</span></div>
     {filtered.length ? <div className="token-list">
@@ -137,14 +140,15 @@ function ButtonPlayground() {
   const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [count, setCount] = useState(0);
-  const id = useId();
   const code = `<Button variant="${variant}"${loading ? ' loading loadingLabel="저장 중…"' : ''}${disabled ? ' disabled' : ''}>\n  변경 사항 저장\n</Button>`;
   return <article className="component-card" id="component-button">
     <div className="component-title"><span className="component-index">01</span><h3>Button</h3><Badge>동작</Badge></div>
     <p>행동의 우선순위와 처리 중 상태를 표현해요. 기본 <code>type="button"</code>으로 폼을 뜻하지 않게 제출하는 일을 막습니다.</p>
     <div className="playground">
       <div className="playground-stage"><Button variant={variant} loading={loading} loadingLabel="저장 중…" disabled={disabled} onClick={() => setCount(count + 1)}>변경 사항 저장 <Arrow /></Button><p role="status" className="demo-status">{count ? `${count}번 동작했어요.` : '눌러서 동작을 확인하세요.'}</p></div>
-      <div className="playground-options"><div className="native-select"><label htmlFor={id}>모양</label><select id={id} value={variant} onChange={event => setVariant(event.target.value as typeof variant)}><option value="primary">Primary</option><option value="secondary">Secondary</option><option value="ghost">Ghost</option></select></div><Checkbox label="로딩 상태" checked={loading} onChange={event => setLoading(event.target.checked)} /><Checkbox label="비활성 상태" checked={disabled} onChange={event => setDisabled(event.target.checked)} /></div>
+      <div className="playground-options"><Select label="모양" value={variant} onValueChange={value => { if (value) setVariant(value as typeof variant); }} options={[
+        { value: 'primary', label: 'Primary' }, { value: 'secondary', label: 'Secondary' }, { value: 'ghost', label: 'Ghost' },
+      ]} /><Checkbox label="로딩 상태" checked={loading} onChange={event => setLoading(event.target.checked)} /><Checkbox label="비활성 상태" checked={disabled} onChange={event => setDisabled(event.target.checked)} /></div>
     </div>
     <CodeBlock code={code} label="Button 예제" />
   </article>;
@@ -239,7 +243,7 @@ function Catalog() {
   return <>
     <a className="skip-link" href="#main">본문으로 건너뛰기</a>
     <header className="masthead"><a className="brand" href="#overview"><span className="brand-mark" aria-hidden="true">H<span>·</span></span><span>HYEONSE <br />DESIGN SYSTEM</span></a><div className="masthead-actions"><span className="build-version">v{version}</span><ThemeToggle /><a className="source-link" href="https://github.com/hyeonse-swing/hyeonse-design-system" target="_blank" rel="noreferrer">GitHub <Arrow /></a></div></header>
-    <div className="catalog-shell"><aside className="catalog-sidebar"><div className="sidebar-intro"><span className="eyebrow">THE WORKING REFERENCE</span><p>만드는 화면이 달라도,<br />같은 기준으로.</p></div><nav aria-label="문서 목차">{sections.map(([id, label, number]) => <a key={id} href={`#${id}`}><span>{number}</span>{label}<span className="nav-arrow" aria-hidden="true">↗</span></a>)}</nav><div className="sidebar-bottom"><span className="system-status"><i aria-hidden="true" /> VERSION {version}</span><p>명확한 형태.<br />유연한 화면.</p><a href="./docs/verification.md">이전 통합 검증 기록 <Arrow /></a></div></aside>
+    <div className="catalog-shell"><aside className="catalog-sidebar"><div className="sidebar-intro"><span className="eyebrow">THE WORKING REFERENCE</span><p>만드는 화면이 달라도,<br />같은 기준으로.</p></div><SectionNavigation sections={sections} /><div className="sidebar-bottom"><span className="system-status"><i aria-hidden="true" /> VERSION {version}</span><p>명확한 형태.<br />유연한 화면.</p><a href="./docs/verification.md">이전 통합 검증 기록 <Arrow /></a></div></aside>
     <main id="main">
       <section className="hero" id="overview" aria-labelledby="hero-title"><div className="hero-top"><p className="eyebrow">01 / A PERSONAL DESIGN SYSTEM</p><span className="hero-edition">DESIGNED TO BE USED</span></div><h1 id="hero-title">명확한 기준.<br /><em>일관된 인터페이스.</em></h1><p className="hero-description">색과 간격부터 입력과 피드백까지.<br />직접 사용하고 검증할 수 있는 작은 디자인 시스템입니다.</p><div className="hero-actions"><a className="primary-link" href="#components">컴포넌트 사용해 보기 <Arrow /></a><a className="text-link" href="#start">프로젝트에 연결하기 <Arrow /></a></div><div className="hero-specimen" role="group" aria-label="디자인 시스템 미리보기"><div className="specimen-heading"><span className="specimen-mark">H<span>·</span></span><div><span className="eyebrow">ONE SYSTEM, MANY CONTEXTS</span><strong>작은 디테일을 함께.</strong></div><Badge tone="success">준비됨</Badge></div><div className="specimen-body"><p>필요한 것에 집중할 수 있도록,<br />같은 규칙이 화면 곳곳을 이어 줍니다.</p><div className="specimen-palette" role="group" aria-label="지원 강조색"><span title="Cobalt" /><span title="Forest" /><span title="Coral" /></div></div><div className="specimen-footer"><code>tokens → components → your product</code><a href="#tokens" aria-label="토큰 탐색으로 이동"><Arrow /></a></div></div><dl className="system-metrics"><div><dt>역할 토큰</dt><dd>{catalog.tokens.length}<span>TOKENS</span></dd></div><div><dt>컴포넌트 API</dt><dd>{componentCount}<span>UI EXPORTS</span></dd></div><div><dt>화면 설정</dt><dd>5<span>PREFERENCES</span></dd></div></dl></section>
       <TokenExplorer /><Components /><Preferences /><Start /><ApiReference />

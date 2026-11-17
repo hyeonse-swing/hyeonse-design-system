@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "package": {
     "name": "@hyeonse/design-system",
-    "version": "0.4.0"
+    "version": "0.4.1"
   },
   "boundaries": {
     "provided": [
@@ -5452,17 +5452,17 @@
     {
       "name": "--control-border",
       "role": "Border of form controls",
-      "value": "#747b89",
+      "value": "#858d9a",
       "overrides": [
         {
           "selector": ":root[data-theme='dark']",
           "media": null,
-          "value": "#7b8494"
+          "value": "#737e90"
         },
         {
           "selector": ":root:not([data-theme])",
           "media": "(prefers-color-scheme: dark)",
-          "value": "#7b8494"
+          "value": "#737e90"
         }
       ]
     },

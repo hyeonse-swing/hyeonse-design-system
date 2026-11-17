@@ -1,6 +1,6 @@
 # @hyeonse/design-system
 
-Installed package version: 0.4.0
+Installed package version: 0.4.1
 
 ## Setup
 
@@ -3311,10 +3311,10 @@ Default: `12px`
 
 Border of form controls
 
-Default: `#747b89`
+Default: `#858d9a`
 
-- `:root[data-theme='dark']` → `#7b8494`
-- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#7b8494`
+- `:root[data-theme='dark']` → `#737e90`
+- @media (prefers-color-scheme: dark) · `:root:not([data-theme])` → `#737e90`
 
 ## --focus-ring
 
