@@ -4,9 +4,11 @@ import { join } from 'node:path';
 import subsetFont from 'subset-font';
 
 export async function showcaseCharacters(root) {
-  const files = ['index.html', 'src/react.tsx', 'src/primitives.tsx'];
-  for (const file of await readdir(join(root, 'showcase'))) {
-    if (/\.(ts|tsx)$/.test(file)) files.push(`showcase/${file}`);
+  const files = ['index.html'];
+  for (const directory of ['src', 'showcase']) {
+    for (const file of await readdir(join(root, directory))) {
+      if (/\.(ts|tsx)$/.test(file)) files.push(`${directory}/${file}`);
+    }
   }
   const texts = await Promise.all(files.map(file => readFile(join(root, file), 'utf8')));
   return [...new Set([...texts.join('')].filter(character => character.codePointAt(0) > 0xff))].sort().join('');

@@ -2,6 +2,7 @@ node_modules
 .DS_Store
 *.log
 *.tgz
+!releases/*.tgz
 output/
 .site/
 .vercel/

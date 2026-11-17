@@ -4,7 +4,8 @@
   align-items: center;
   justify-content: center;
   gap: calc(var(--space-2) * var(--space-factor));
-  min-height: max(44px, var(--control-min-size));
+  min-height: max(var(--hds-target-min), var(--hds-control-height));
+  min-width: max(var(--hds-target-min), var(--hds-control-height));
   border: 1px solid transparent;
   border-radius: var(--radius-control);
   font-family: var(--font-sans);
@@ -17,14 +18,10 @@
     color var(--duration-fast) ease;
 }
 
-.hds-button--sm {
-  padding: calc(var(--space-1) * var(--space-factor)) calc(var(--space-3) * var(--space-factor));
-  font-size: var(--text-sm);
-}
-
-.hds-button--md {
-  padding: calc(var(--space-2) * var(--space-factor)) calc(var(--space-4) * var(--space-factor));
-  font-size: var(--text-base);
+.hds-button {
+  padding: calc(var(--hds-control-py) * var(--space-factor)) calc(var(--hds-control-px) * var(--space-factor));
+  font-size: var(--hds-control-font);
+  line-height: 1.4;
 }
 
 .hds-button--primary { color: var(--on-accent); background: var(--accent-solid); }
@@ -59,7 +56,7 @@
 .hds-textField__label,
 .hds-checkbox__text {
   color: var(--ink);
-  font-size: var(--text-sm);
+  font-size: var(--hds-control-font);
   font-weight: 700;
   line-height: var(--leading-body);
 }
@@ -68,14 +65,14 @@
   box-sizing: border-box;
   display: block;
   width: 100%;
-  min-height: max(44px, var(--control-min-size));
-  padding: calc(var(--space-2) * var(--space-factor)) calc(var(--space-3) * var(--space-factor));
+  min-height: max(var(--hds-target-min), var(--hds-control-height));
+  padding: calc(var(--hds-control-py) * var(--space-factor)) calc(var(--hds-control-px) * var(--space-factor));
   border: 1px solid var(--control-border);
   border-radius: var(--radius-control);
   color: var(--ink);
   background: var(--surface-raised);
   font: inherit;
-  font-size: var(--text-base);
+  font-size: var(--hds-control-font);
   line-height: var(--leading-body);
   transition: border-color var(--duration-fast) ease;
 }
@@ -109,15 +106,16 @@
   display: inline-flex;
   align-items: center;
   gap: calc(var(--space-2) * var(--space-factor));
-  min-height: max(44px, var(--control-min-size));
+  min-height: max(var(--hds-target-min), var(--hds-control-height));
   width: fit-content;
+  min-width: var(--hds-target-min);
   cursor: pointer;
 }
 
 .hds-checkbox__input {
   flex: none;
-  width: 20px;
-  height: 20px;
+  width: var(--hds-indicator-size);
+  height: var(--hds-indicator-size);
   margin: 0;
   accent-color: var(--accent-solid);
   cursor: inherit;
@@ -131,13 +129,13 @@
   display: inline-flex;
   align-items: center;
   width: fit-content;
-  padding: calc(var(--space-1) * var(--space-factor)) calc(var(--space-2) * var(--space-factor));
+  padding: calc(var(--hds-control-py) * .5 * var(--space-factor)) calc(var(--hds-control-px) * .65 * var(--space-factor));
   border: 1px solid var(--line);
   border-radius: var(--radius-control);
   color: var(--ink);
   background: var(--surface);
   font-family: var(--font-sans);
-  font-size: var(--text-xs);
+  font-size: max(11px, calc(var(--hds-control-font) - 2px));
   font-weight: 700;
   line-height: var(--leading-body);
 }

@@ -52,6 +52,9 @@
   --text-lg: 20px;
   --leading-body: 1.6;
   --duration-fast: 140ms;
+  --overlay-scrim: rgba(0, 0, 0, .48);
+  --shadow-popover: 0 8px 28px rgba(0, 0, 0, .16);
+  --shadow-dialog: 0 24px 72px rgba(0, 0, 0, .24);
 }
 
 @media (max-width: 700px) {

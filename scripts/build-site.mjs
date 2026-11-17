@@ -4,16 +4,18 @@ import { relative, resolve } from 'node:path';
 import { build } from 'esbuild';
 import { createPreferenceScript } from '../dist/preferences.js';
 import { ensureFonts } from './ensure-fonts.mjs';
+import { prepareRelease, copyReleases } from './site-release.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const output = resolve(root, '.site');
 await ensureFonts(root);
+const manifest = prepareRelease(root);
 rmSync(output, { recursive: true, force: true });
 mkdirSync(output, { recursive: true });
 
 // Publish the showcase and its references, without development/output directories.
 const publicPaths = [
-  'showcase.css', 'favicon.svg', 'dist', 'docs', 'examples',
+  'robots.txt', 'showcase.css', 'favicon.svg', 'dist', 'docs', 'examples',
   'schemas', 'skills', 'llms.txt', 'llms-full.txt', 'README.md',
   'LICENSE', 'THIRD_PARTY_NOTICES.md', 'licenses',
 ];
@@ -52,3 +54,6 @@ const html = template
   .replace('<!-- hds:client -->', `<script type="module" src="./${clientPath}"></script>`);
 writeFileSync(resolve(output, 'index.html'), html);
 console.log(`Static showcase rendered; browser bundle ${clientPath}; ${publicPaths.length} reference paths.`);
+
+copyReleases(resolve(root, 'releases'), resolve(output, 'releases'), manifest);
+console.log(`Package archive ready: ${manifest.file} (${manifest.size} bytes, sha256 ${manifest.sha256}).`);

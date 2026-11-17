@@ -18,7 +18,23 @@ type PreferenceContext = {
 
 const Context = createContext<PreferenceContext | null>(null);
 
-function applyPreferences(preferences: Preferences, eventName: string) {
+type PreferenceGroup = {
+  current: Preferences;
+  listeners: Map<(next: Preferences) => void, string>;
+};
+const preferenceGroups = new WeakMap<Document, Map<string, PreferenceGroup>>();
+
+function samePreferences(left: Preferences, right: Preferences): boolean {
+  return left.theme === right.theme && left.accent === right.accent &&
+    left.density === right.density && left.corners === right.corners && left.motion === right.motion;
+}
+
+function updateGroup(group: PreferenceGroup, next: Preferences) {
+  group.current = next;
+  for (const listener of group.listeners.keys()) listener(next);
+}
+
+function applyPreferences(preferences: Preferences, eventNames: Iterable<string>) {
   const root = document.documentElement;
   const dark = window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
   const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
@@ -28,12 +44,14 @@ function applyPreferences(preferences: Preferences, eventName: string) {
   root.dataset.density = preferences.density;
   root.dataset.corners = preferences.corners;
   root.dataset.motion = effectiveMotion(preferences.motion, reduced);
-  window.dispatchEvent(new CustomEvent(eventName, { detail: preferences }));
+  for (const eventName of new Set(eventNames)) {
+    window.dispatchEvent(new CustomEvent(eventName, { detail: { ...preferences } }));
+  }
 }
 
-function readPreferences(storageKey: string, defaults: Preferences): Preferences {
+function tryReadPreferences(storageKey: string, defaults: Preferences): Preferences | undefined {
   try { return parsePreferences(window.localStorage.getItem(storageKey), defaults); }
-  catch { return { ...defaults }; }
+  catch { return undefined; }
 }
 
 export function PreferencesProvider({ children, storageKey = preferencesKey, eventName = defaultEventName, defaults }: {
@@ -44,22 +62,47 @@ export function PreferencesProvider({ children, storageKey = preferencesKey, eve
   ]);
   const [preferences, setPreferences] = useState<Preferences>(resolvedDefaults);
   const preferencesRef = useRef<Preferences>(resolvedDefaults);
+  const lastStorageKeyRef = useRef<string | null>(null);
 
   useLayoutEffect(() => {
-    const stored = readPreferences(storageKey, resolvedDefaults);
-    preferencesRef.current = stored;
-    setPreferences(stored);
-    applyPreferences(stored, eventName);
+    const ownerDocument = document;
+    const sameKey = lastStorageKeyRef.current === storageKey;
+    lastStorageKeyRef.current = storageKey;
+    let groups = preferenceGroups.get(ownerDocument);
+    if (!groups) {
+      groups = new Map();
+      preferenceGroups.set(ownerDocument, groups);
+    }
+    let group = groups.get(storageKey);
+    const initial = group?.current ?? tryReadPreferences(storageKey, resolvedDefaults) ??
+      (sameKey ? preferencesRef.current : { ...resolvedDefaults });
+    if (!group) {
+      group = { current: initial, listeners: new Map() };
+      groups.set(storageKey, group);
+    }
+    const currentGroup = group;
+    const receive = (next: Preferences) => {
+      preferencesRef.current = next;
+      setPreferences(next);
+    };
+    currentGroup.listeners.set(receive, eventName);
+    receive(initial);
+    applyPreferences(initial, [eventName]);
 
     const themeQuery = window.matchMedia?.('(prefers-color-scheme: dark)');
     const motionQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-    const onSystemChange = () => applyPreferences(preferencesRef.current, eventName);
+    const onSystemChange = () => applyPreferences(preferencesRef.current, [eventName]);
     const onStorage = (event: StorageEvent) => {
+      // Synthetic events with no area may identify a key, but cannot identify a clear.
+      if (event.storageArea === null && event.key === null) return;
+      try {
+        if (event.storageArea !== null && event.storageArea !== window.localStorage) return;
+      } catch { return; }
       if (event.key !== storageKey && event.key !== null) return;
-      const next = readPreferences(storageKey, resolvedDefaults);
-      preferencesRef.current = next;
-      setPreferences(next);
-      applyPreferences(next, eventName);
+      const next = tryReadPreferences(storageKey, resolvedDefaults);
+      if (!next || samePreferences(next, currentGroup.current)) return;
+      updateGroup(currentGroup, next);
+      applyPreferences(next, currentGroup.listeners.values());
     };
     themeQuery?.addEventListener('change', onSystemChange);
     motionQuery?.addEventListener('change', onSystemChange);
@@ -68,16 +111,25 @@ export function PreferencesProvider({ children, storageKey = preferencesKey, eve
       themeQuery?.removeEventListener('change', onSystemChange);
       motionQuery?.removeEventListener('change', onSystemChange);
       window.removeEventListener('storage', onStorage);
+      currentGroup.listeners.delete(receive);
+      if (currentGroup.listeners.size === 0) {
+        groups.delete(storageKey);
+        if (groups.size === 0) preferenceGroups.delete(ownerDocument);
+      }
     };
   }, [storageKey, eventName, resolvedDefaults]);
 
   const save = useCallback((next: Preferences) => {
     const safe = validatePreferences(next, resolvedDefaults);
-    preferencesRef.current = safe;
-    setPreferences(safe);
+    const group = preferenceGroups.get(document)?.get(storageKey);
+    if (group) updateGroup(group, safe);
+    else {
+      preferencesRef.current = safe;
+      setPreferences(safe);
+    }
     try { window.localStorage.setItem(storageKey, serializePreferences(safe)); }
     catch { /* Settings still work for this tab when storage is unavailable. */ }
-    applyPreferences(safe, eventName);
+    applyPreferences(safe, group ? group.listeners.values() : [eventName]);
   }, [storageKey, eventName, resolvedDefaults]);
 
   const setPreference = useCallback(<K extends keyof Preferences>(key: K, value: Preferences[K]) => {

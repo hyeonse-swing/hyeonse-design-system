@@ -1,6 +1,6 @@
 {
   "name": "@hyeonse/design-system",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -45,6 +45,22 @@
     "./primitives": {
       "types": "./dist/primitives.d.ts",
       "default": "./dist/primitives.js"
+    },
+    "./fields": {
+      "types": "./dist/fields.d.ts",
+      "default": "./dist/fields.js"
+    },
+    "./overlays": {
+      "types": "./dist/overlays.d.ts",
+      "default": "./dist/overlays.js"
+    },
+    "./display": {
+      "types": "./dist/display.d.ts",
+      "default": "./dist/display.js"
+    },
+    "./layout": {
+      "types": "./dist/layout.d.ts",
+      "default": "./dist/layout.js"
     }
   },
   "scripts": {
@@ -53,26 +69,39 @@
     "check": "tsc --noEmit",
     "check:examples": "tsc -p tsconfig.examples.json",
     "hds": "node scripts/hds.mjs",
-    "verify": "npm run check && npm run build:site && npm run check:examples && npm run check:showcase && npm test",
+    "verify": "npm run check && npm run build:site && npm run check:examples && npm run check:showcase && npm run check:browser && npm test",
     "test": "node --test tests/*.test.mjs",
-    "check:showcase": "tsc -p tsconfig.showcase.json"
+    "check:showcase": "tsc -p tsconfig.showcase.json",
+    "check:browser": "tsc -p tsconfig.browser.json",
+    "verify:browser": "node scripts/check-browser.mjs",
+    "verify:freeze": "npm run verify && npm run verify:sizing && npm run verify:browser",
+    "verify:sizing": "node scripts/check-sizing.mjs"
   },
   "peerDependencies": {
-    "react": ">=19 <20"
+    "react": ">=19 <20",
+    "react-dom": ">=19 <20"
   },
   "peerDependenciesMeta": {
     "react": {
+      "optional": true
+    },
+    "react-dom": {
       "optional": true
     }
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
     "@types/react-dom": "19.3.0",
+    "axe-core": "4.14.0",
     "esbuild": "0.28.2",
     "jsdom": "31.0.1",
+    "playwright": "1.65.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "subset-font": "2.9.0",
     "typescript": "~5.9.3"
+  },
+  "dependencies": {
+    "@base-ui/react": "1.9.0"
   }
 }

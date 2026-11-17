@@ -3,5 +3,16 @@
   "framework": null,
   "installCommand": "npm ci",
   "buildCommand": "npm run build:site",
-  "outputDirectory": ".site"
+  "outputDirectory": ".site",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, follow"
+        }
+      ]
+    }
+  ]
 }

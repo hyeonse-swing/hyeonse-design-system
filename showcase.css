@@ -120,3 +120,45 @@ details[open] > summary .expand-icon { transform: rotate(45deg); }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 :root[data-motion='reduced'] { scroll-behavior: auto; }
 @media (forced-colors: active) { .token-symbol, .foundation-colors i, .specimen-palette span { forced-color-adjust: none; }.primary-link { border: 1px solid ButtonText; }.brand-mark, .specimen-mark { border-color: ButtonText; } }
+
+/* The expanded component library keeps demos separate from the documentation chrome. */
+.component-library { margin: 28px 0 56px; min-width: 0; }
+.library-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, .8fr); align-items: end; gap: 24px; margin-bottom: 24px; }
+.library-heading h3 { font-size: clamp(22px, 3vw, 30px); line-height: 1.35; margin: 10px 0 0; letter-spacing: -.045em; }
+.library-heading p, .library-description { color: var(--muted); font-size: 13px; line-height: 1.8; }
+.library-categories { display: flex; flex-wrap: wrap; gap: 8px; }
+.library-categories .hds-button { font-size: 13px; }
+.library-index { display: flex; flex-wrap: wrap; gap: 7px; margin: 20px 0; }
+.library-index code { padding: 5px 8px; border: 1px solid var(--line); color: var(--muted); font-size: 10px; overflow-wrap: anywhere; }
+.library-stage { border: 1px solid var(--line); background: var(--paper); border-radius: var(--radius-card); padding: clamp(16px, 3vw, 28px); min-width: 0; }
+.library-stage [data-suite] { display: grid; gap: 24px; min-width: 0; }
+.library-stage [data-suite] > * { min-width: 0; }
+.library-stage h3 { font-size: 18px; margin: 8px 0 16px; }
+.library-stage h4 { font-size: 15px; margin: 12px 0; }
+.library-stage p { line-height: 1.7; }
+.library-stage .demo-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.library-stage .demo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.core-components-heading { font-size: 20px; margin: 40px 0 24px; }
+@media (max-width: 640px) { .library-heading { display: block; }.library-heading p { margin-top: 18px; }.library-stage .demo-grid { grid-template-columns: minmax(0, 1fr); }.library-categories .hds-button { flex: 1 1 auto; } }
+
+.library-stage .hds-demoOverlays__controls { display: flex; flex-wrap: wrap; gap: 12px; }
+.hds-demoOverlays__form { display: grid; gap: 16px; }
+.library-stage .demo-group { display: grid; align-content: start; gap: 18px; min-width: 0; }
+.library-stage .demo-group > h3 { margin: 8px 0 0; }
+.library-stage .demo-group > p { margin: 0; }
+.library-stage .demo-group + .demo-group { padding-top: 20px; border-top: 1px solid var(--line); }
+.library-stage .demo-grid > .demo-group + .demo-group { padding-top: 0; border-top: 0; }
+.library-stage .demo-ratio { display: grid; place-items: center; color: var(--muted); background: var(--surface); border: 1px dashed var(--control-border); border-radius: var(--radius-control); }
+.library-stage .demo-scroll-list { margin: 0; padding: 16px 32px; line-height: 1.9; }
+
+.sizing-demo { margin-block: 24px; }
+.sizing-picker { display: flex; flex-wrap: wrap; gap: 8px; border: 0; padding: 0; margin: 16px 0; }
+.sizing-picker legend { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.sizing-picker label { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 4px 12px; border: 1px solid var(--control-border); cursor: pointer; }
+.sizing-picker label:has(:checked) { color: var(--accent-text); border-color: var(--accent-text); }
+.sizing-picker input { accent-color: var(--accent-solid); }
+.sizing-button-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+.sizing-surface { padding-block: calc(var(--hds-layout-padding) * var(--space-factor)); border: 1px solid var(--line); background: var(--surface); }
+.sizing-demo pre { white-space: pre-wrap; overflow-wrap: anywhere; overflow: auto; padding: 16px; font-size: 12px; line-height: 1.6; border: 1px solid var(--line); }
+.sizing-note { font-size: 13px; color: var(--muted); }
+@media (any-pointer: coarse) { .sizing-picker label { min-height: 44px; } }

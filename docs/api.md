@@ -1,6 +1,14 @@
 # 공개 API와 통합
 
-패키지 이름은 `@hyeonse/design-system`입니다. `v0.3.0`은 `./tokens.css`, `./components.css`, `./preferences`, `./react`, `./primitives`, `./catalog.json`, `./catalog.schema.json`을 제공합니다. `./primitives`는 `v0.3.0`에서 추가되었으며 `v0.2.0`에는 없습니다. 사용 중인 패키지의 `package.json`과 타입 선언을 기준으로 확인하세요. 내부 `src/`나 `dist/` 경로를 직접 가져오지 않습니다.
+패키지 이름은 `@hyeonse/design-system`입니다. 공개 안정 태그 `v0.3.0`은 `./tokens.css`, `./components.css`, `./preferences`, `./react`, `./primitives`, `./catalog.json`, `./catalog.schema.json`을 제공합니다. 버전 고정 [패키지 아카이브 `v0.4.0`](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.0.tgz)은 `./layout`, `./fields`, `./overlays`, `./display`를 추가합니다. GitHub `v0.4.0` 태그나 npm 레지스트리 릴리스는 아닙니다. `./primitives`는 `v0.3.0`에서 추가되었으며 `v0.2.0`에는 없습니다. 사용 중인 패키지의 `package.json`과 타입 선언을 기준으로 확인하세요. 내부 `src/`나 `dist/` 경로를 직접 가져오지 않습니다.
+
+## 설치
+
+```sh
+npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.0.tgz
+```
+
+[릴리스 매니페스트](https://design-system.hyeonse.dev/releases/manifest.json)의 `version`, `url`, `sha256`, `integrity`로 버전과 파일 무결성을 확인하세요. 기존 GitHub `v0.3.0` 태그에는 기본 컴포넌트 네 개가 있고 새 `layout`·`fields`·`overlays`·`display` 진입점은 없습니다. `v0.4.0`의 Base UI 1.9.0 포털은 WebKit VoiceOver 초점 가드의 이름 누락([상위 이슈 #5237](https://github.com/mui/base-ui/issues/5237))이 남아 있습니다. [브라우저 검증 범위](code-freeze.md#브라우저-검사-범위)를 확인하세요.
 
 ## CSS
 
@@ -9,7 +17,7 @@
 @import '@hyeonse/design-system/components.css';
 ```
 
-`tokens.css`는 의미별 색상, 간격, 글자 크기, 조작 상태 토큰과 화면 설정 선택자를 제공합니다. `components.css`는 설정 UI와 네 가지 기본 컴포넌트 클래스를 포함합니다. 전역 리셋이나 앱의 모든 HTML 요소 스타일을 적용하지 않습니다. 두 파일을 각각 한 번 불러오세요. 토큰 역할은 [기초 규칙](foundations.md), 컴포넌트 사용은 [컴포넌트 안내](components.md)에 있습니다.
+`tokens.css`는 의미별 색상, 간격, 글자 크기, 조작 상태 토큰과 화면 설정 선택자를 제공합니다. `components.css`는 설정 UI와 컴포넌트 스타일을 포함합니다. 전역 리셋이나 앱의 모든 HTML 요소 스타일을 적용하지 않습니다. 두 파일을 각각 한 번 불러오세요. 토큰 역할은 [기초 규칙](foundations.md), 컴포넌트 사용은 [컴포넌트 안내](components.md)에 있습니다.
 
 ## 화면 설정 유틸
 
@@ -44,11 +52,26 @@ export function Settings() {
 }
 ```
 
-Provider는 현재 탭의 값을 갱신한 뒤 저장 가능한 환경에서 localStorage에 기록하고 설정 변경 이벤트를 보냅니다. 이벤트 기본 이름은 `hyeonse:preferences`이며 `eventName`으로 변경할 수 있습니다. 기존 이벤트의 `detail` 계약은 유지됩니다. 다른 탭의 저장 변경과 기기 색상·움직임 변경도 반영합니다. 저장소에 접근할 수 없는 환경에서도 기본값으로 동작합니다. 초기화 역시 사이트 기본값을 사용합니다. 기기의 움직임 감소 설정은 앱에서 `motion='full'`을 골라도 우선합니다.
+Provider는 현재 탭의 값을 갱신한 뒤 저장 가능한 환경에서 localStorage에 기록하고 설정 변경 이벤트를 보냅니다. 이벤트 기본 이름은 `hyeonse:preferences`이며 `eventName`으로 변경할 수 있습니다. 이벤트의 `detail`은 현재 `Preferences` 값의 사본입니다. 같은 문서에서 같은 `storageKey`를 사용하는 Provider는 값을 공유하므로 `defaults`도 동일하게 지정하세요. 이 Provider들에서 저장·초기화·다른 탭의 저장 변경이 일어나면, 현재 등록된 서로 다른 `eventName`마다 이벤트가 한 번씩 전달됩니다. 이벤트마다 독립된 `detail` 사본을 받습니다. 서로 다른 저장 키를 사용해도 화면의 `data-*` 속성은 문서 루트 하나에 적용되며, 마지막으로 적용한 Provider의 값이 보입니다. 다른 탭의 저장 변경과 기기 색상·움직임 변경도 반영합니다. 저장소에 접근할 수 없는 환경에서도 기본값으로 시작하고 현재 탭의 선택은 유지됩니다. 기기의 움직임 감소 설정은 앱에서 `motion='full'`을 골라도 우선합니다.
 
 ## 기본 컴포넌트
 
-`@hyeonse/design-system/primitives`는 `Button`, `TextField`, `Checkbox`, `Badge`와 각각의 Props 타입을 제공합니다. React 19 네이티브 속성과 `ref`를 전달합니다. `Input`, `Card`, `Dialog`, `Select`는 내보내지 않습니다. props, 상태, 폼 예제는 [컴포넌트 안내](components.md)를 확인하세요. 이 진입점은 `v0.2.0`에 없습니다.
+`@hyeonse/design-system/primitives`는 `Button`, `TextField`, `Checkbox`, `Badge`와 각각의 Props 타입을 제공합니다. React 19 네이티브 속성과 `ref`를 전달합니다. 이 진입점은 `v0.2.0`에 없습니다.
+
+`v0.4.0` 아카이브의 새 진입점은 다음과 같습니다. 이 API를 쓰는 소비 앱은 React와 React DOM 19가 필요하며, CSS는 `tokens.css` 다음 `components.css` 순서로 불러옵니다. 패키지에는 MIT 라이선스의 `@base-ui/react@1.9.0`이 런타임 의존성으로 고정되어 있습니다. 컴포넌트별 상태와 예제는 [컴포넌트 안내](components.md)를 확인하세요.
+
+| 공개 진입점 | 런타임 내보내기 |
+| --- | --- |
+| `@hyeonse/design-system/layout` | `SizeProvider`, `Container`, `Stack`, `Inline`, `Grid` |
+| `@hyeonse/design-system/fields` | `Input`, `Textarea`, `Select`, `Combobox`, `MultiSelect`, `Switch`, `RadioGroup`, `Slider`, `NumberField`, `DateField`, `FileInput`, `PasswordField` |
+| `@hyeonse/design-system/overlays` | `DropdownMenu`, `ContextMenu`, `Dialog`, `AlertDialog`, `Sheet`, `Popover`, `Tooltip`, `ToastProvider`, `useToast` |
+| `@hyeonse/design-system/display` | `Tabs`, `TabsList`, `TabsTab`, `TabsPanel`; `Accordion`, `AccordionItem`, `AccordionHeader`, `AccordionTrigger`, `AccordionPanel`; `Collapsible`, `CollapsibleTrigger`, `CollapsiblePanel`; `Breadcrumb`, `Pagination`, `Stepper`, `SegmentedControl`, `Toggle`; `Card`; `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell`, `TableCaption`; `Alert`, `Avatar`, `Separator`, `Skeleton`, `Spinner`, `Progress`, `EmptyState`, `AspectRatio`, `ScrollArea`, `Label`, `VisuallyHidden` |
+
+`display` 목록에는 Tabs·Accordion·Table 등의 조합용 하위 요소가 포함됩니다. 각 내보내기가 독립된 완성형 컴포넌트라는 뜻은 아닙니다. 타입 내보내기는 각 진입점의 공개 선언에서 확인하세요.
+
+`layout`은 `Size`(`'xs' | 'sm' | 'md' | 'lg' | 'xl'`)와 각 Props 타입도 내보냅니다. `SizeProvider`의 `size`는 필수이며 DOM 요소를 추가하지 않습니다. `Container`, `Stack`, `Inline`, `Grid`의 `size`는 선택 사항이고, 생략하면 상위 레이아웃이나 Provider의 값을 상속합니다. 어디에도 지정하지 않으면 `md`입니다. 자식 컴포넌트의 명시적 `size`가 상속값보다 우선하며, 포털로 표시되는 필드 목록과 오버레이도 크기 범위를 유지합니다. `Stack`·`Inline`·`Grid`의 `gap`은 같은 다섯 단계의 별도 간격 설정입니다. `Grid`는 `columns?: 1 | 2 | 3 | 4`, `minItemWidth?: string`, `Container`는 `fluid?: boolean`을 받습니다. `Inline`은 `align`, `justify`, `wrap`을 지원합니다. [크기 예제](components.md#크기와-레이아웃)를 참고하세요.
+
+`v0.4.0`의 시각 크기 `size`는 네이티브 `<input size={number}>`의 문자 너비와 다릅니다. `TextField`, `Checkbox`, `Input`, `Slider`, `DateField`, `FileInput`, `PasswordField`에서 네이티브 숫자 속성이 필요하면 `inputSize?: number`를 사용하세요. CSS 크기 단계와 최소 조작 영역은 [기초 규칙](foundations.md#크기와-밀도)을 참고하세요.
 
 ## 버전별 조회
 

@@ -10,7 +10,7 @@ rmSync(resolve(root, 'dist'), { recursive: true, force: true });
 mkdirSync(resolve(root, 'dist'), { recursive: true });
 execFileSync(resolve(root, 'node_modules/.bin/tsc'), ['-p', resolve(root, 'tsconfig.json')], { stdio: 'inherit' });
 cpSync(resolve(root, 'src/tokens.css'), resolve(root, 'dist/tokens.css'));
-writeFileSync(resolve(root, 'dist/components.css'), ['components.css', 'primitives.css'].map(name => readFileSync(resolve(root, 'src', name), 'utf8').trimEnd()).join('\n\n') + '\n');
+writeFileSync(resolve(root, 'dist/components.css'), ['sizing.css', 'components.css', 'primitives.css', 'fields.css', 'overlays.css', 'display.css'].map(name => readFileSync(resolve(root, 'src', name), 'utf8').trimEnd()).join('\n\n') + '\n');
 
 const catalog = buildCatalog(root);
 writeFileSync(resolve(root, 'dist/catalog.json'), JSON.stringify(catalog, null, 2) + '\n');

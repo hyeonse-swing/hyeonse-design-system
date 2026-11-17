@@ -4,6 +4,8 @@ import { PreferencesPanel, PreferencesProvider, ThemeToggle, usePreferences } fr
 import { Badge, Button, Checkbox, TextField } from '../dist/primitives.js';
 import type { ButtonProps } from '../dist/primitives.js';
 import catalog from '../dist/catalog.json';
+import { SizingDemo } from './SizingDemo.js';
+import { ComponentLibrary } from './ComponentLibrary.js';
 
 type Token = (typeof catalog.tokens)[number];
 type TokenGroup = 'all' | 'color' | 'space' | 'type' | 'other';
@@ -13,7 +15,7 @@ const sections = [
   ['components', '컴포넌트', '03'], ['preferences', '화면 설정', '04'],
   ['start', '시작하기', '05'], ['api', 'API 참조', '06'],
 ] as const;
-const primitiveNames = ['Button', 'TextField', 'Checkbox', 'Badge'];
+const componentCount = catalog.entries.filter(entry => entry.kind === 'component').length;
 const version = catalog.package.version;
 const formCode = `import { Button, TextField, Checkbox, Badge }
   from '@hyeonse/design-system/primitives';
@@ -69,7 +71,7 @@ function CopyButton({ value, label = '복사' }: { value: string; label?: string
 function CodeBlock({ code, label, language = 'TSX' }: { code: string; label: string; language?: string }) {
   return <div className="code-block">
     <div className="code-heading"><span>{language}</span><CopyButton value={code} label={`${label} 복사`} /></div>
-    <pre tabIndex={0} aria-label={label}><code>{code}</code></pre>
+    <pre tabIndex={0} role="group" aria-label={label}><code>{code}</code></pre>
   </div>;
 }
 
@@ -107,7 +109,7 @@ function TokenExplorer() {
     <h3 id="tokens-heading" className="sr-only">디자인 토큰 탐색</h3>
     <div className="foundation-notes">
       <div><span className="foundation-number">Aa</span><h3>읽기의 위계</h3><p>DM Sans와 Noto Sans KR. 작은 레이블부터 본문까지 정해진 글자 크기와 행간을 사용해요.</p></div>
-      <div><span className="foundation-space" aria-hidden="true"><i /><i /><i /><i /></span><h3>일정한 간격</h3><p>4px부터 64px까지. 촘촘한 밀도에서도 조작 영역은 44px 이상을 유지해요.</p></div>
+      <div><span className="foundation-space" aria-hidden="true"><i /><i /><i /><i /></span><h3>일정한 간격</h3><p>4px부터 64px까지. 다섯 단계 크기로 조절하고, 터치 기기는 조작 영역 44px를 유지해요.</p></div>
       <div><span className="foundation-colors" aria-hidden="true"><i /><i /><i /></span><h3>역할을 가진 색</h3><p>바탕·글자·조작 경계·상태를 나눠, 밝고 어두운 화면 모두에서 같은 의미를 전달해요.</p></div>
     </div>
     <div className="token-toolbar">
@@ -184,8 +186,11 @@ function FormPlayground() {
 
 function Components() {
   return <section id="components" className="catalog-section">
-    <SectionTitle number="03" eyebrow="COMPONENTS" title="바로 쓰는 기본 컴포넌트.">아래 UI는 패키지에서 직접 가져왔어요. 상태를 바꾸고 사용 코드를 확인해 보세요.</SectionTitle>
+    <SectionTitle number="03" eyebrow="COMPONENTS" title="자주 쓰는 화면 요소, 같은 기준으로.">아래 UI는 패키지에서 직접 가져왔어요. 상태를 바꾸고 사용 코드를 확인해 보세요.</SectionTitle>
     <div className="import-note"><code>@hyeonse/design-system/primitives</code><span>React 19 · 기본 HTML 속성과 ref 지원</span></div>
+    <SizingDemo />
+    <ComponentLibrary />
+    <h3 className="core-components-heading">기본 버튼·입력·상태 표시</h3>
     <div className="components-grid"><ButtonPlayground /><FormPlayground /></div>
     <article className="badge-example" id="component-badge"><div className="component-title"><span className="component-index">04</span><h3>Badge</h3></div><p>색과 함께 상태를 텍스트로 전해요. 자동 알림 역할을 부여하지 않아 알림이 필요한 곳에서만 직접 정할 수 있어요.</p><div className="badge-row"><Badge>대기</Badge><Badge tone="accent">선택됨</Badge><Badge tone="success">완료</Badge><Badge tone="warning">확인 필요</Badge><Badge tone="danger">오류</Badge></div><CodeBlock code={'<Badge tone="success">완료</Badge>'} label="Badge 예제" /></article>
     <div className="state-notes"><p><strong>키보드</strong> Tab으로 이동하고 Enter·Space로 조작해 보세요.</p><p><strong>입력 상태</strong> 오류에는 안내 문구와 <code>aria-invalid</code>가 함께 적용돼요.</p><p><strong>실제 기본값</strong> 밀도가 바뀌어도 조작 영역과 레이블은 유지돼요.</p></div>
@@ -205,8 +210,9 @@ function Preferences() {
 function Start() {
   return <section id="start" className="catalog-section">
     <SectionTitle number="05" eyebrow="GET STARTED" title="작게 가져와, 바로 연결하기.">CSS만 사용하거나 필요한 React 컴포넌트를 가져올 수 있어요. 전역 리셋이나 앱 전체 이관은 필요하지 않습니다.</SectionTitle>
-    <aside className="release-notice"><Badge tone="accent">v{version}</Badge><p>GitHub 태그로 버전을 고정해 설치하세요. 이 버전에는 화면 설정과 함께 Button, TextField, Checkbox, Badge가 포함돼요.</p></aside>
-    <ol className="setup-steps"><li><div><span className="step-number">01</span><h3>패키지 준비</h3><p>사용할 프로젝트에서 GitHub의 정식 버전을 설치해요.</p></div><CodeBlock language="SHELL" label="패키지 설치 명령" code={`npm install github:hyeonse-swing/hyeonse-design-system#v${version}`} /></li><li><div><span className="step-number">02</span><h3>스타일 한 번 불러오기</h3><p>토큰을 먼저, 컴포넌트 스타일을 뒤에 불러와요. 글꼴은 앱의 자산으로 준비하세요.</p></div><CodeBlock language="CSS" label="공개 스타일 가져오기" code={"@import '@hyeonse/design-system/tokens.css';\n@import '@hyeonse/design-system/components.css';"} /></li><li><div><span className="step-number">03</span><h3>필요한 만큼 사용하기</h3><p>기본 컴포넌트는 Provider 없이 사용해요. 방문자 설정이 필요할 때만 Provider를 연결합니다.</p></div><CodeBlock label="컴포넌트 가져오기" code={"import { Button, TextField }\n  from '@hyeonse/design-system/primitives';\n\n<TextField label=\"이름\" name=\"name\" />\n<Button onClick={onSave}>저장</Button>"} /></li></ol>
+    <aside className="release-notice"><Badge tone="accent">v{version}</Badge><p>현재 v0.4.0 패키지는 이 사이트의 버전 고정 아카이브로 제공합니다. 폼·메뉴·레이어·탐색·피드백·레이아웃 컴포넌트를 포함해요. npm 레지스트리나 GitHub v0.4.0 태그 릴리스는 아닙니다.</p></aside>
+    <ol className="setup-steps"><li><div><span className="step-number">01</span><h3>패키지 설치</h3><p>소비 프로젝트에서 아래 아카이브 URL을 설치해요. 기존 GitHub v0.3.0 태그에는 기본 컴포넌트 네 개만 있습니다. <a href="./releases/manifest.json">릴리스 매니페스트</a>에서 버전과 파일 무결성을 확인할 수 있어요.</p></div><CodeBlock language="SHELL" label="패키지 설치 명령" code={`npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-${version}.tgz`} /></li><li><div><span className="step-number">02</span><h3>스타일 한 번 불러오기</h3><p>토큰을 먼저, 컴포넌트 스타일을 뒤에 불러와요. 글꼴은 앱의 자산으로 준비하세요.</p></div><CodeBlock language="CSS" label="공개 스타일 가져오기" code={"@import '@hyeonse/design-system/tokens.css';\n@import '@hyeonse/design-system/components.css';"} /></li><li><div><span className="step-number">03</span><h3>필요한 만큼 사용하기</h3><p>필요한 모듈에서 컴포넌트를 가져와요. 화면 설정과 토스트는 각각 Provider를 연결합니다.</p></div><CodeBlock label="컴포넌트 가져오기" code={"import { Button, TextField }\n  from '@hyeonse/design-system/primitives';\n\n<TextField label=\"이름\" name=\"name\" />\n<Button onClick={onSave}>저장</Button>"} /></li></ol>
+    <p className="section-footnote">WebKit에서 Base UI의 이름 없는 초점 가드가 남아 있어요. 실제 VoiceOver 읽기 검증도 완료되지 않았습니다. <a href="https://github.com/mui/base-ui/issues/5237" target="_blank" rel="noreferrer">상위 이슈 #5237 <span className="sr-only">새 창</span></a>와 <a href="./docs/code-freeze.md">검증 범위</a>를 확인하세요.</p>
     <div className="document-links"><a href="./docs/api.md">전체 통합 문서 <Arrow /></a><a href="./docs/components.md">컴포넌트 사용 기준 <Arrow /></a><a href="./docs/ai.md">AI·CLI 사용 안내 <Arrow /></a><a href="./llms-full.txt">생성된 전체 참조 <Arrow /></a></div>
   </section>;
 }
@@ -235,7 +241,7 @@ function Catalog() {
     <header className="masthead"><a className="brand" href="#overview"><span className="brand-mark" aria-hidden="true">H<span>·</span></span><span>HYEONSE <br />DESIGN SYSTEM</span></a><div className="masthead-actions"><span className="build-version">v{version}</span><ThemeToggle /><a className="source-link" href="https://github.com/hyeonse-swing/hyeonse-design-system" target="_blank" rel="noreferrer">GitHub <Arrow /></a></div></header>
     <div className="catalog-shell"><aside className="catalog-sidebar"><div className="sidebar-intro"><span className="eyebrow">THE WORKING REFERENCE</span><p>만드는 화면이 달라도,<br />같은 기준으로.</p></div><nav aria-label="문서 목차">{sections.map(([id, label, number]) => <a key={id} href={`#${id}`}><span>{number}</span>{label}<span className="nav-arrow" aria-hidden="true">↗</span></a>)}</nav><div className="sidebar-bottom"><span className="system-status"><i aria-hidden="true" /> VERSION {version}</span><p>명확한 형태.<br />유연한 화면.</p><a href="./docs/verification.md">이전 통합 검증 기록 <Arrow /></a></div></aside>
     <main id="main">
-      <section className="hero" id="overview" aria-labelledby="hero-title"><div className="hero-top"><p className="eyebrow">01 / A PERSONAL DESIGN SYSTEM</p><span className="hero-edition">DESIGNED TO BE USED</span></div><h1 id="hero-title">명확한 기준.<br /><em>일관된 인터페이스.</em></h1><p className="hero-description">색과 간격부터 입력과 피드백까지.<br />직접 사용하고 검증할 수 있는 작은 디자인 시스템입니다.</p><div className="hero-actions"><a className="primary-link" href="#components">컴포넌트 사용해 보기 <Arrow /></a><a className="text-link" href="#start">프로젝트에 연결하기 <Arrow /></a></div><div className="hero-specimen" aria-label="디자인 시스템 미리보기"><div className="specimen-heading"><span className="specimen-mark">H<span>·</span></span><div><span className="eyebrow">ONE SYSTEM, MANY CONTEXTS</span><strong>작은 디테일을 함께.</strong></div><Badge tone="success">준비됨</Badge></div><div className="specimen-body"><p>필요한 것에 집중할 수 있도록,<br />같은 규칙이 화면 곳곳을 이어 줍니다.</p><div className="specimen-palette" aria-label="지원 강조색"><span title="Cobalt" /><span title="Forest" /><span title="Coral" /></div></div><div className="specimen-footer"><code>tokens → components → your product</code><a href="#tokens" aria-label="토큰 탐색으로 이동"><Arrow /></a></div></div><dl className="system-metrics"><div><dt>역할 토큰</dt><dd>{catalog.tokens.length}<span>TOKENS</span></dd></div><div><dt>기본 컴포넌트</dt><dd>{primitiveNames.length}<span>PRIMITIVES</span></dd></div><div><dt>화면 설정</dt><dd>5<span>PREFERENCES</span></dd></div></dl></section>
+      <section className="hero" id="overview" aria-labelledby="hero-title"><div className="hero-top"><p className="eyebrow">01 / A PERSONAL DESIGN SYSTEM</p><span className="hero-edition">DESIGNED TO BE USED</span></div><h1 id="hero-title">명확한 기준.<br /><em>일관된 인터페이스.</em></h1><p className="hero-description">색과 간격부터 입력과 피드백까지.<br />직접 사용하고 검증할 수 있는 작은 디자인 시스템입니다.</p><div className="hero-actions"><a className="primary-link" href="#components">컴포넌트 사용해 보기 <Arrow /></a><a className="text-link" href="#start">프로젝트에 연결하기 <Arrow /></a></div><div className="hero-specimen" role="group" aria-label="디자인 시스템 미리보기"><div className="specimen-heading"><span className="specimen-mark">H<span>·</span></span><div><span className="eyebrow">ONE SYSTEM, MANY CONTEXTS</span><strong>작은 디테일을 함께.</strong></div><Badge tone="success">준비됨</Badge></div><div className="specimen-body"><p>필요한 것에 집중할 수 있도록,<br />같은 규칙이 화면 곳곳을 이어 줍니다.</p><div className="specimen-palette" role="group" aria-label="지원 강조색"><span title="Cobalt" /><span title="Forest" /><span title="Coral" /></div></div><div className="specimen-footer"><code>tokens → components → your product</code><a href="#tokens" aria-label="토큰 탐색으로 이동"><Arrow /></a></div></div><dl className="system-metrics"><div><dt>역할 토큰</dt><dd>{catalog.tokens.length}<span>TOKENS</span></dd></div><div><dt>컴포넌트 API</dt><dd>{componentCount}<span>UI EXPORTS</span></dd></div><div><dt>화면 설정</dt><dd>5<span>PREFERENCES</span></dd></div></dl></section>
       <TokenExplorer /><Components /><Preferences /><Start /><ApiReference />
       <footer className="footer"><div><span>HYEONSE DESIGN SYSTEM</span><p>개인 프로젝트에서 함께 쓰는 화면의 기준.</p></div><a href="#overview">처음으로 ↑</a></footer>
     </main></div>

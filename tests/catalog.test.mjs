@@ -11,6 +11,9 @@ import catalogMetadata from '../metadata/catalog.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const catalog = buildCatalog(root);
+const runtimeModules = new Map(await Promise.all(catalog.modules.map(async module => [
+  module.subpath, await import(new URL(`../dist/${module.subpath.slice(2)}.js`, import.meta.url)),
+])));
 const byId = id => catalog.entries.find(entry => entry.id === id);
 const byToken = name => catalog.tokens.find(token => token.name === name);
 
@@ -55,11 +58,8 @@ test('catalog is JSON-safe and conforms to its published schema', () => {
 });
 
 test('every shipped runtime export has an authored entry and declarations include supporting types', () => {
-  const runtime = new Map([
-    ['./preferences', preferenceRuntime],
-    ['./react', reactRuntime],
-    ['./primitives', primitiveRuntime],
-  ]);
+  const runtime = runtimeModules;
+  assert.deepEqual([...runtime.keys()], ['./preferences', './react', './primitives', './fields', './overlays', './display', './layout']);
   assert.deepEqual(catalog.modules.map(module => module.subpath), [...runtime.keys()]);
   for (const module of catalog.modules) {
     const shipped = runtime.get(module.subpath);
@@ -75,7 +75,7 @@ test('every shipped runtime export has an authored entry and declarations includ
   assert.match(catalog.modules.find(module => module.subpath === './react').declarations, /type PreferenceContext =/);
   assert.ok(catalog.modules.find(module => module.subpath === './preferences').exports.some(item => item.name === 'Preferences' && item.kind === 'type'));
   assert.ok(catalog.modules.find(module => module.subpath === './primitives').exports.some(item => item.name === 'ButtonProps' && item.kind === 'type'));
-  assert.deepEqual(catalog.entries.map(entry => entry.id).sort(), [...Object.keys(preferenceRuntime), ...Object.keys(reactRuntime), ...Object.keys(primitiveRuntime)].sort());
+  assert.deepEqual(catalog.entries.map(entry => entry.id).sort(), [...runtime.values()].flatMap(module => Object.keys(module)).sort());
 });
 
 test('React props come from declarations and utility defaults match runtime', () => {
@@ -97,9 +97,9 @@ test('React props come from declarations and utility defaults match runtime', ()
   assert.match(byId('PreferencesProvider').states.join(' '), /storage events/);
   assert.match(byId('effectiveMotion').accessibility.join(' '), /reduced motion/);
   assert.deepEqual(byId('Button').props.map(prop => prop.name), ['variant', 'size', 'loading', 'loadingLabel']);
-  assert.deepEqual(byId('TextField').props.map(prop => [prop.name, prop.required]), [['label', true], ['type', false], ['hint', false], ['error', false]]);
-  assert.deepEqual(byId('Checkbox').props.map(prop => [prop.name, prop.required]), [['label', true], ['hint', false], ['error', false]]);
-  assert.deepEqual(byId('Badge').props.map(prop => prop.name), ['tone']);
+  assert.deepEqual(byId('TextField').props.map(prop => [prop.name, prop.required]), [['size', false], ['inputSize', false], ['label', true], ['type', false], ['hint', false], ['error', false]]);
+  assert.deepEqual(byId('Checkbox').props.map(prop => [prop.name, prop.required]), [['size', false], ['inputSize', false], ['label', true], ['hint', false], ['error', false]]);
+  assert.deepEqual(byId('Badge').props.map(prop => prop.name), ['size', 'tone']);
   for (const id of ['Button', 'TextField', 'Checkbox', 'Badge']) {
     assert.equal(byId(id).importPath, '@hyeonse/design-system/primitives');
     assert.match(byId(id).usage.join(' '), /attributes.*ref are forwarded/);
@@ -108,6 +108,14 @@ test('React props come from declarations and utility defaults match runtime', ()
   assert.match(byId('Button').props.find(prop => prop.name === 'variant').type, /primary.*secondary.*ghost/);
   assert.match(byId('TextField').signature, /TextFieldProps/);
   assert.match(catalog.modules.find(module => module.subpath === './primitives').declarations, /ComponentPropsWithRef<'input'>/);
+});
+
+test('component summaries preserve portable public type references', () => {
+  assert.equal(byId('Dialog').props.find(prop => prop.name === 'trigger').type, 'ReactElement');
+  assert.equal(byId('Tabs').props.find(prop => prop.name === 'className').type, 'string');
+  for (const module of catalog.modules) assert(!module.declarations.includes(root), module.importPath);
+  assert(!JSON.stringify(catalog).includes(root), 'Catalog must not expose the checkout directory');
+  assert(!JSON.stringify(catalog).includes('/node_modules/'), 'Types use public module references');
 });
 
 test('all base CSS custom properties have roles and conditional values retain selectors and media', () => {
@@ -154,7 +162,7 @@ test('catalog rejects stale or missing authored API and token descriptions', () 
 });
 
 test('examples are embedded from files, with stable IDs and public imports', () => {
-  assert.deepEqual(catalog.examples.map(example => example.id), ['display-settings', 'token-card', 'form-controls']);
+  assert.deepEqual(catalog.examples.map(example => example.id), ['layout-sizing', 'display-settings', 'token-card', 'form-controls', 'expanded-forms', 'overlay-patterns', 'display-patterns']);
   for (const example of catalog.examples) {
     for (const file of example.files) assert.equal(file.code, readFileSync(resolve(root, file.path), 'utf8'));
   }

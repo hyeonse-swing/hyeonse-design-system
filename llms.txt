@@ -1,8 +1,8 @@
 # Hyeonse Design System
 
-> @hyeonse/design-system 0.3.0: semantic CSS tokens, React display preferences, and basic form primitives for personal projects.
+> @hyeonse/design-system 0.4.0: semantic CSS tokens, React preferences, forms, overlays, navigation, layout, and feedback for personal projects.
 
-Use the installed package reference. Button, TextField, Checkbox, and Badge are exported from the primitives module. Card and page-layout React components are not exported.
+Use the installed package reference. Existing primitives are in /primitives; input and selection controls are in /fields; menus, dialogs and notifications are in /overlays; navigation, tables, cards and feedback are in /display. Check the installed version before using an export.
 
 ## Start here
 

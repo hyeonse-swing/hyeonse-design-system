@@ -2,7 +2,7 @@
 
 작업 중인 앱에 설치된 `@hyeonse/design-system` 버전을 기준으로 답을 찾습니다. 먼저 화면의 목적과 기존 동작을 확인하고, 필요한 공개 API·역할 토큰·예제만 조회하세요. 카탈로그는 사용 가능한 항목을 찾는 자료이고, 실제 통합 계약은 해당 버전의 공개 내보내기와 TypeScript 선언입니다.
 
-`v0.3.0`을 설치하면 `Button`, `TextField`, `Checkbox`, `Badge`를 사용할 수 있습니다. `v0.2.0`에는 이 컴포넌트가 없으며, `v0.1.0`에는 `hds`와 구조화 카탈로그도 없습니다. GitHub 태그 설치 절차는 [README](../README.md)에 있습니다.
+공개 안정 태그 `v0.3.0`을 설치하면 `Button`, `TextField`, `Checkbox`, `Badge`를 사용할 수 있습니다. [버전 고정 `v0.4.0` 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.0.tgz)는 `layout`, `fields`, `overlays`, `display`를 추가합니다. npm 레지스트리나 GitHub `v0.4.0` 태그 릴리스는 아닙니다. `v0.2.0`에는 기본 컴포넌트가 없으며, `v0.1.0`에는 `hds`와 구조화 카탈로그도 없습니다. 현재 아카이브와 이전 GitHub 태그의 설치 절차는 [README](../README.md)에 있습니다.
 
 ## 읽기 전용 조회
 
@@ -33,7 +33,11 @@ CLI를 사용할 수 없는 환경에서는 패키지의 공개 `./catalog.json`
 
 ## 적용 경계
 
-화면 설정 API는 `@hyeonse/design-system/react`의 `PreferencesProvider`, `usePreferences`, `ThemeToggle`, `PreferencesPanel`입니다. `v0.3.0`의 기본 컴포넌트는 `@hyeonse/design-system/primitives`의 `Button`, `TextField`, `Checkbox`, `Badge`입니다. 일반 `Input`, `Card`, `Dialog`, `Select` React 내보내기는 없습니다. 토큰으로 만든 앱 고유 카드는 소비 앱 소유입니다. `examples/token-card.html`과 `examples/token-card.css`가 그 예입니다.
+화면 설정 API는 `@hyeonse/design-system/react`의 `PreferencesProvider`, `usePreferences`, `ThemeToggle`, `PreferencesPanel`입니다. `v0.3.0`의 기본 컴포넌트는 `@hyeonse/design-system/primitives`의 `Button`, `TextField`, `Checkbox`, `Badge`입니다. `v0.4.0` 아카이브에서는 `SizeProvider`·`Container`·`Stack`·`Inline`·`Grid`가 `/layout`, `Input`·`Select`가 `/fields`, `Dialog`가 `/overlays`, `Card`가 `/display`에 있습니다. `/display`에는 Tabs·Table 같은 조합의 하위 요소도 있으므로 내보내기 수를 독립 컴포넌트 수로 해석하지 마세요. 토큰으로 만든 앱 고유 카드 예제는 `examples/token-card.html`과 `examples/token-card.css`에 있습니다.
+
+`v0.4.0` 아카이브를 설치한 소비 앱에서는 `npm exec --no -- hds list --json`, `npm exec --no -- hds show Select --json`, `npm exec --no -- hds show useToast --json`처럼 조회하세요. 이 저장소에서 소스를 확인할 때는 로컬 빌드 후 `npm run hds -- ...`를 사용합니다. 이전 GitHub 태그를 설치한 앱의 결과와 혼동하지 말고, 사용 전 `package.version` 및 공개 서브패스를 확인하세요. 필드의 값·검색어·선택 상태, 오버레이의 열림 상태와 이벤트, 표시 요소의 조합 구조는 [컴포넌트 안내](components.md)와 공개 타입 선언을 함께 읽으세요.
+
+`v0.4.0` 크기 API를 사용할 때는 `hds show SizeProvider`, `hds show Grid`, `hds show Input` 등으로 `size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'`과 별도 `inputSize?: number`를 구분하세요. 생략한 크기는 상위 Provider·레이아웃에서 상속하고 기본은 `md`이며, 자식의 명시적 크기는 상속값을 덮어씁니다. 포털로 열린 UI도 같은 크기를 유지합니다. 터치 포인터 환경의 최소 조작 영역은 44px이고, 일반 포인터의 `xs`는 28px 높이입니다. [크기와 밀도](foundations.md#크기와-밀도)를 참고하세요.
 
 설정 기본값을 바꾼다면 첫 페인트 스크립트의 `createPreferenceScript(storageKey?, defaults?)`와 `PreferencesProvider`의 `storageKey?`, `defaults?`를 함께 맞춥니다. 유효한 저장값이 기본값보다 우선합니다. `examples/preferences.ts`와 `examples/display-settings.tsx`는 이 조합을 보여줍니다. 세부 공개 계약은 [API 문서](api.md), 기본 컴포넌트 사용은 [컴포넌트 안내](components.md), 시각 역할은 [기초 규칙](foundations.md)을 참고하세요.
 

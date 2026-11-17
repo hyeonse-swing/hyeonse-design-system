@@ -4,7 +4,17 @@ import { createContext, useCallback, useContext, useId, useLayoutEffect, useMemo
 import { effectiveMotion, parsePreferences, preferencesKey, resolvedTheme, serializePreferences, validatePreferences, } from './preferences.js';
 const defaultEventName = 'hyeonse:preferences';
 const Context = createContext(null);
-function applyPreferences(preferences, eventName) {
+const preferenceGroups = new WeakMap();
+function samePreferences(left, right) {
+    return left.theme === right.theme && left.accent === right.accent &&
+        left.density === right.density && left.corners === right.corners && left.motion === right.motion;
+}
+function updateGroup(group, next) {
+    group.current = next;
+    for (const listener of group.listeners.keys())
+        listener(next);
+}
+function applyPreferences(preferences, eventNames) {
     const root = document.documentElement;
     const dark = window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
@@ -14,14 +24,16 @@ function applyPreferences(preferences, eventName) {
     root.dataset.density = preferences.density;
     root.dataset.corners = preferences.corners;
     root.dataset.motion = effectiveMotion(preferences.motion, reduced);
-    window.dispatchEvent(new CustomEvent(eventName, { detail: preferences }));
+    for (const eventName of new Set(eventNames)) {
+        window.dispatchEvent(new CustomEvent(eventName, { detail: { ...preferences } }));
+    }
 }
-function readPreferences(storageKey, defaults) {
+function tryReadPreferences(storageKey, defaults) {
     try {
         return parsePreferences(window.localStorage.getItem(storageKey), defaults);
     }
     catch {
-        return { ...defaults };
+        return undefined;
     }
 }
 export function PreferencesProvider({ children, storageKey = preferencesKey, eventName = defaultEventName, defaults }) {
@@ -30,21 +42,52 @@ export function PreferencesProvider({ children, storageKey = preferencesKey, eve
     ]);
     const [preferences, setPreferences] = useState(resolvedDefaults);
     const preferencesRef = useRef(resolvedDefaults);
+    const lastStorageKeyRef = useRef(null);
     useLayoutEffect(() => {
-        const stored = readPreferences(storageKey, resolvedDefaults);
-        preferencesRef.current = stored;
-        setPreferences(stored);
-        applyPreferences(stored, eventName);
-        const themeQuery = window.matchMedia?.('(prefers-color-scheme: dark)');
-        const motionQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-        const onSystemChange = () => applyPreferences(preferencesRef.current, eventName);
-        const onStorage = (event) => {
-            if (event.key !== storageKey && event.key !== null)
-                return;
-            const next = readPreferences(storageKey, resolvedDefaults);
+        const ownerDocument = document;
+        const sameKey = lastStorageKeyRef.current === storageKey;
+        lastStorageKeyRef.current = storageKey;
+        let groups = preferenceGroups.get(ownerDocument);
+        if (!groups) {
+            groups = new Map();
+            preferenceGroups.set(ownerDocument, groups);
+        }
+        let group = groups.get(storageKey);
+        const initial = group?.current ?? tryReadPreferences(storageKey, resolvedDefaults) ??
+            (sameKey ? preferencesRef.current : { ...resolvedDefaults });
+        if (!group) {
+            group = { current: initial, listeners: new Map() };
+            groups.set(storageKey, group);
+        }
+        const currentGroup = group;
+        const receive = (next) => {
             preferencesRef.current = next;
             setPreferences(next);
-            applyPreferences(next, eventName);
+        };
+        currentGroup.listeners.set(receive, eventName);
+        receive(initial);
+        applyPreferences(initial, [eventName]);
+        const themeQuery = window.matchMedia?.('(prefers-color-scheme: dark)');
+        const motionQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+        const onSystemChange = () => applyPreferences(preferencesRef.current, [eventName]);
+        const onStorage = (event) => {
+            // Synthetic events with no area may identify a key, but cannot identify a clear.
+            if (event.storageArea === null && event.key === null)
+                return;
+            try {
+                if (event.storageArea !== null && event.storageArea !== window.localStorage)
+                    return;
+            }
+            catch {
+                return;
+            }
+            if (event.key !== storageKey && event.key !== null)
+                return;
+            const next = tryReadPreferences(storageKey, resolvedDefaults);
+            if (!next || samePreferences(next, currentGroup.current))
+                return;
+            updateGroup(currentGroup, next);
+            applyPreferences(next, currentGroup.listeners.values());
         };
         themeQuery?.addEventListener('change', onSystemChange);
         motionQuery?.addEventListener('change', onSystemChange);
@@ -53,17 +96,28 @@ export function PreferencesProvider({ children, storageKey = preferencesKey, eve
             themeQuery?.removeEventListener('change', onSystemChange);
             motionQuery?.removeEventListener('change', onSystemChange);
             window.removeEventListener('storage', onStorage);
+            currentGroup.listeners.delete(receive);
+            if (currentGroup.listeners.size === 0) {
+                groups.delete(storageKey);
+                if (groups.size === 0)
+                    preferenceGroups.delete(ownerDocument);
+            }
         };
     }, [storageKey, eventName, resolvedDefaults]);
     const save = useCallback((next) => {
         const safe = validatePreferences(next, resolvedDefaults);
-        preferencesRef.current = safe;
-        setPreferences(safe);
+        const group = preferenceGroups.get(document)?.get(storageKey);
+        if (group)
+            updateGroup(group, safe);
+        else {
+            preferencesRef.current = safe;
+            setPreferences(safe);
+        }
         try {
             window.localStorage.setItem(storageKey, serializePreferences(safe));
         }
         catch { /* Settings still work for this tab when storage is unavailable. */ }
-        applyPreferences(safe, eventName);
+        applyPreferences(safe, group ? group.listeners.values() : [eventName]);
     }, [storageKey, eventName, resolvedDefaults]);
     const setPreference = useCallback((key, value) => {
         save({ ...preferencesRef.current, [key]: value });

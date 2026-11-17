@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# Search exclusion is delivered through X-Robots-Tag and HTML noindex.

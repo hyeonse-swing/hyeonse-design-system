@@ -1,0 +1,80 @@
+/* Size is independent of display density. Context is carried through React portals. */
+:root { --hds-target-min: 24px; }
+[data-hds-size="xs"] {
+  --hds-control-height: 28px;
+  --hds-control-font: 12px;
+  --hds-control-px: 8px;
+  --hds-control-py: 2px;
+  --hds-layout-gap: 4px;
+  --hds-layout-padding: 8px;
+  --hds-indicator-size: 14px;
+  --hds-container-width: 480px;
+}
+[data-hds-size="sm"] {
+  --hds-control-height: 32px;
+  --hds-control-font: 13px;
+  --hds-control-px: 10px;
+  --hds-control-py: 3px;
+  --hds-layout-gap: 8px;
+  --hds-layout-padding: 12px;
+  --hds-indicator-size: 16px;
+  --hds-container-width: 640px;
+}
+:root,
+[data-hds-size="md"] {
+  --hds-control-height: 36px;
+  --hds-control-font: 14px;
+  --hds-control-px: 12px;
+  --hds-control-py: 4px;
+  --hds-layout-gap: 12px;
+  --hds-layout-padding: 16px;
+  --hds-indicator-size: 18px;
+  --hds-container-width: 800px;
+}
+[data-hds-size="lg"] {
+  --hds-control-height: 40px;
+  --hds-control-font: 15px;
+  --hds-control-px: 14px;
+  --hds-control-py: 5px;
+  --hds-layout-gap: 16px;
+  --hds-layout-padding: 24px;
+  --hds-indicator-size: 20px;
+  --hds-container-width: 1040px;
+}
+[data-hds-size="xl"] {
+  --hds-control-height: 48px;
+  --hds-control-font: 16px;
+  --hds-control-px: 16px;
+  --hds-control-py: 8px;
+  --hds-layout-gap: 24px;
+  --hds-layout-padding: 32px;
+  --hds-indicator-size: 22px;
+  --hds-container-width: 1280px;
+}
+
+/* Keep small visual variants usable on touch and hybrid devices. */
+@media (any-pointer: coarse) { :root { --hds-target-min: 44px; } }
+
+.hds-stack, .hds-inline, .hds-grid, .hds-container { box-sizing: border-box; min-width: 0; }
+.hds-stack, .hds-inline, .hds-grid { gap: calc(var(--hds-gap-override, var(--hds-layout-gap)) * var(--space-factor)); }
+.hds-stack { display: flex; flex-direction: column; }
+.hds-inline { display: flex; flex-wrap: wrap; }
+.hds-inline[data-wrap='false'] { flex-wrap: nowrap; }
+.hds-stack[data-align='start'], .hds-inline[data-align='start'] { align-items: flex-start; }
+.hds-stack[data-align='center'], .hds-inline[data-align='center'] { align-items: center; }
+.hds-stack[data-align='end'], .hds-inline[data-align='end'] { align-items: flex-end; }
+.hds-stack[data-align='stretch'], .hds-inline[data-align='stretch'] { align-items: stretch; }
+.hds-inline[data-justify='start'] { justify-content: flex-start; }
+.hds-inline[data-justify='center'] { justify-content: center; }
+.hds-inline[data-justify='end'] { justify-content: flex-end; }
+.hds-inline[data-justify='between'] { justify-content: space-between; }
+.hds-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, max(var(--hds-grid-min), calc((100% - (var(--hds-grid-columns) - 1) * var(--hds-gap-override, var(--hds-layout-gap)) * var(--space-factor)) / var(--hds-grid-columns)))), 1fr)); }
+.hds-container { width: 100%; max-width: var(--hds-container-width); margin-inline: auto; padding-inline: calc(var(--hds-layout-padding) * var(--space-factor)); }
+.hds-container[data-fluid='true'] { max-width: none; }
+/* Reset overrides on each new layout so a parent's gap does not leak into it. */
+.hds-stack, .hds-inline, .hds-grid { --hds-gap-override: initial; }
+[data-hds-gap='xs'] { --hds-gap-override: 4px; }
+[data-hds-gap='sm'] { --hds-gap-override: 8px; }
+[data-hds-gap='md'] { --hds-gap-override: 12px; }
+[data-hds-gap='lg'] { --hds-gap-override: 16px; }
+[data-hds-gap='xl'] { --hds-gap-override: 24px; }

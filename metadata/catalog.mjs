@@ -1,14 +1,18 @@
 // Explanatory text is authored here. Signatures, React props, CSS values, and
 // example source are read from the shipped files by build-catalog.mjs.
+import { fieldEntries } from './fields.mjs';
+import { overlayEntries } from './overlays.mjs';
+import { displayEntries } from './display.mjs';
 export const catalogMetadata = {
   boundaries: {
     provided: [
-      'Role tokens in tokens.css and styles for display settings and Button/TextField/Checkbox/Badge in components.css.',
+      'Role tokens in tokens.css and styles for display settings, forms, overlays, navigation, layout, and feedback in components.css.',
       'Preference validation, first-paint script, provider, hook, and display-setting controls.',
       'Button, TextField, Checkbox, and Badge React components with native element attributes and refs.',
+      'Reusable input and selection controls, menus, dialogs, tooltips, toast notifications, navigation, tables, cards, and feedback components.',
     ],
     notProvided: [
-      'Card and page-layout React components.',
+      'An application router, server data fetching, rich-text editor, chart engine, or virtualized data grid.',
       'Font files for consuming applications; provide fonts with the required character coverage separately.',
       'A design-token interchange format such as DTCG.',
     ],
@@ -16,10 +20,20 @@ export const catalogMetadata = {
   setup: [
     'Import @hyeonse/design-system/tokens.css before @hyeonse/design-system/components.css, once each.',
     'Run preferenceScript or createPreferenceScript(...) in the document head before CSS paints; match storageKey and defaults with PreferencesProvider.',
-    'Import JavaScript from @hyeonse/design-system/preferences, display-setting React APIs from @hyeonse/design-system/react, and form primitives from @hyeonse/design-system/primitives. Do not import internal src/ or dist/ paths.',
+    'Import utilities from /preferences, display settings from /react, existing primitives from /primitives, expanded forms from /fields, menus and dialogs from /overlays, navigation/feedback from /display, and size scopes and layouts from /layout. Do not import internal src/ or dist/ paths.',
+    'Interactive React components require React and React DOM 19. The package uses Base UI 1.9.0 for accessible interaction foundations.',
     'Provide DM Sans and Noto Sans KR font assets in the consuming app if those faces are needed; the package only declares a font stack.',
   ],
   entries: {
+    SizeProvider: {"kind": "provider", "summary": "Provide one size to nested components, including React portals.", "usage": ["Pass one required size: xs, sm, md, lg, or xl; adds no DOM element.", "Children inherit this size unless they supply an explicit size."], "states": ["xs/sm/md/lg/xl"], "accessibility": ["Touch controls retain at least 44px targets."], "limitations": ["Layout adds no application landmarks or route behavior."], "examples": ["layout-sizing"], "keywords": ["size", "layout", "spacing", "크기", "사이징", "레이아웃"]},
+    Stack: {"kind": "component", "summary": "Vertical layout with inherited size and optional gap override.", "usage": ["Use size for child components and gap for spacing only.", "Omitted size inherits the nearest provider or layout; default md. Explicit child size wins."], "states": ["xs/sm/md/lg/xl"], "accessibility": ["Touch controls retain at least 44px targets."], "limitations": ["Layout adds no application landmarks or route behavior."], "examples": ["layout-sizing"], "keywords": ["size", "layout", "spacing", "크기", "사이징", "레이아웃"]},
+    Inline: {"kind": "component", "summary": "Wrapping horizontal layout with alignment and justification.", "usage": ["Use wrap=false only when content is known to fit; wrapping is the default.", "Omitted size inherits the nearest provider or layout; default md. Explicit child size wins."], "states": ["xs/sm/md/lg/xl"], "accessibility": ["Touch controls retain at least 44px targets."], "limitations": ["Layout adds no application landmarks or route behavior."], "examples": ["layout-sizing"], "keywords": ["size", "layout", "spacing", "크기", "사이징", "레이아웃"]},
+    Grid: {"kind": "component", "summary": "Responsive grid with a preferred column count.", "usage": ["columns accepts 1–4; columns collapse as available width drops below minItemWidth.", "Omitted size inherits the nearest provider or layout; default md. Explicit child size wins."], "states": ["xs/sm/md/lg/xl"], "accessibility": ["Touch controls retain at least 44px targets."], "limitations": ["Layout adds no application landmarks or route behavior."], "examples": ["layout-sizing"], "keywords": ["size", "layout", "spacing", "크기", "사이징", "레이아웃"]},
+    Container: {"kind": "component", "summary": "Centered fluid content container with a size-based maximum width.", "usage": ["Use fluid to remove the maximum width while retaining scaled horizontal padding.", "Omitted size inherits the nearest provider or layout; default md. Explicit child size wins."], "states": ["xs/sm/md/lg/xl"], "accessibility": ["Touch controls retain at least 44px targets."], "limitations": ["Layout adds no application landmarks or route behavior."], "examples": ["layout-sizing"], "keywords": ["size", "layout", "spacing", "크기", "사이징", "레이아웃"]},
+
+    ...fieldEntries,
+    ...overlayEntries,
+    ...displayEntries,
     preferencesKey: {
       kind: 'utility', summary: 'Default localStorage key: hyeonse-site-preferences.',
       usage: ['Pass the same key to createPreferenceScript and PreferencesProvider when overriding it.'],
@@ -111,7 +125,7 @@ export const catalogMetadata = {
     Button: {
       kind: 'component', summary: 'Native button with primary, secondary, and ghost visual variants.',
       usage: ['Import from @hyeonse/design-system/primitives and import components.css after tokens.css.', 'Native button attributes and ref are forwarded; type defaults to button. The caller manages loading state.'],
-      states: ['primary/secondary/ghost variants', 'sm/md sizes', 'enabled/disabled/loading'],
+      states: ['primary/secondary/ghost variants', 'xs/sm/md/lg/xl sizes; inherited md default', 'enabled/disabled/loading'],
       accessibility: ['Native button keyboard behavior.', 'Loading disables the button, sets aria-busy, and uses loadingLabel as visible and accessible text when supplied.'],
       limitations: ['Loading does not start or track an asynchronous operation.', 'Renders a button element, not a link.'],
       examples: ['form-controls'], keywords: ['button', 'action', 'loading', 'disabled', '버튼', '작업'],
@@ -194,12 +208,26 @@ export const catalogMetadata = {
     '--text-lg': 'Large text size',
     '--leading-body': 'Body text line-height',
     '--duration-fast': 'Fast interaction transition duration',
+    '--overlay-scrim': 'Background scrim behind modal overlays',
+    '--shadow-popover': 'Elevation shadow for menus, select popups, and popovers',
+    '--shadow-dialog': 'Elevation shadow for modal dialogs and sheets',
   },
   examples: [
+    { id: 'layout-sizing', description: 'Five size steps, inherited component sizing and responsive layout primitives.', files: ['examples/layout-sizing.tsx'] },
     { id: 'display-settings', description: 'React display settings with first-paint preferences and public imports.', files: ['examples/preferences.ts', 'examples/display-settings.tsx'] },
     { id: 'token-card', description: 'HTML card preview for this repository or an unpacked package; consuming apps import @hyeonse/design-system/tokens.css instead of the preview-only ../dist link.', files: ['examples/token-card.css', 'examples/token-card.html'] },
     { id: 'form-controls', description: 'React Button, TextField, Checkbox, and Badge with public imports and native attributes.', files: ['examples/form-controls.tsx'] },
+    { id: 'expanded-forms', description: 'Text, selection, search, number, date, and file controls with public imports.', files: ['examples/expanded-forms.tsx'] },
+    { id: 'overlay-patterns', description: 'Menus, dialogs, sheets, popovers, tooltips, and scoped toast notifications.', files: ['examples/overlay-patterns.tsx'] },
+    { id: 'display-patterns', description: 'Navigation, semantic tables, cards, progress, and feedback patterns.', files: ['examples/display-patterns.tsx'] },
   ],
 };
 
+// Size contracts live in authored guidance as well as the public declarations.
+const sizedEntries = ['Button', 'TextField', 'Checkbox', 'Badge', 'Input', 'Textarea', 'Select', 'Combobox', 'MultiSelect', 'Switch', 'RadioGroup', 'Slider', 'NumberField', 'PasswordField', 'DateField', 'FileInput', 'DropdownMenu', 'ContextMenu', 'Dialog', 'AlertDialog', 'Sheet', 'Popover', 'Tooltip', 'ToastProvider', 'Tabs', 'Accordion', 'Collapsible', 'Breadcrumb', 'Pagination', 'Stepper', 'SegmentedControl', 'Toggle', 'Card', 'Table', 'Alert', 'Avatar', 'Separator', 'Skeleton', 'Spinner', 'Progress', 'EmptyState', 'AspectRatio', 'ScrollArea', 'Label'];
+for (const name of sizedEntries) {
+  const entry = catalogMetadata.entries[name];
+  entry.usage = [...entry.usage, 'size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.'];
+  entry.keywords.push('size', '사이징');
+}
 export default catalogMetadata;

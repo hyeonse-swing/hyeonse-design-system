@@ -97,11 +97,20 @@ function reactProps(declaration, checker) {
   const properties = checker.getPropertiesOfType(type).filter(property =>
     property.getDeclarations()?.some(propDeclaration => propDeclaration.getSourceFile() === declaration.getSourceFile()));
   if (!properties.length) fail(`locally declared React props unavailable for ${declaration.name?.text}`);
-  return properties.map(property => ({
-    name: property.name,
-    type: checker.typeToString(checker.getTypeOfSymbolAtLocation(property, parameter), parameter, ts.TypeFormatFlags.NoTruncation),
-    required: !(property.flags & ts.SymbolFlags.Optional),
-  }));
+  return properties.map(property => {
+    // Keep the authored public type reference. Expanding third-party generics can
+    // emit machine-specific node_modules paths and make catalogs non-portable.
+    const authored = property.getDeclarations()?.find(item =>
+      item.getSourceFile() === declaration.getSourceFile() && item.type);
+    return {
+      name: property.name,
+      type: authored?.type?.getText(declaration.getSourceFile()) ?? checker.typeToString(
+        checker.getTypeOfSymbolAtLocation(property, parameter), parameter,
+        ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
+      ),
+      required: !(property.flags & ts.SymbolFlags.Optional),
+    };
+  });
 }
 
 function splitDeclarations(body, context) {

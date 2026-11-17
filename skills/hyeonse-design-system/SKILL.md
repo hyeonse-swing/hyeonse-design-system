@@ -7,7 +7,7 @@ description: Build, extend, map, migrate, review, or document interfaces using H
 
 Use the installed package and this skill's [visual contract](references/foundations.md) for personal-project design-system work. Inspect the target app and requested scope first. Preserve existing behavior and purpose; a screen request does not authorize an app-wide migration.
 
-For package API, token values, or examples, query the installed version with `npm exec --no -- hds list`, `hds show <export-name>`, `hds tokens [name]`, or `hds example <id>` (use `npm run hds -- ...` inside this repository). Check its public TypeScript declarations before coding. Read [package integration](references/api.md) only when integrating CSS, preferences, or React. The copied skill text is guidance, not a versioned API catalog.
+For package API, token values, or examples, query the installed version with `npm exec --no -- hds list`, `hds show <export-name>`, `hds tokens [name]`, or `hds example <id>` (use `npm run hds -- ...` inside this repository). Check its public TypeScript declarations before coding. Read [package integration](references/api.md) when integrating CSS, preferences, or React components. The `layout`, `fields`, `overlays`, and `display` subpaths are in the versioned v0.4.0 package archive at https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.0.tgz, not the older GitHub v0.3.0 tag; verify the installed package version and exports before using them. The copied skill text is guidance, not a versioned API catalog.
 
 ## Route the request
 

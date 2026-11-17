@@ -1,23 +1,25 @@
 # @hyeonse/design-system
 
-Installed package version: 0.3.0
+Installed package version: 0.4.0
 
 ## Setup
 
 - Import @hyeonse/design-system/tokens.css before @hyeonse/design-system/components.css, once each.
 - Run preferenceScript or createPreferenceScript(...) in the document head before CSS paints; match storageKey and defaults with PreferencesProvider.
-- Import JavaScript from @hyeonse/design-system/preferences, display-setting React APIs from @hyeonse/design-system/react, and form primitives from @hyeonse/design-system/primitives. Do not import internal src/ or dist/ paths.
+- Import utilities from /preferences, display settings from /react, existing primitives from /primitives, expanded forms from /fields, menus and dialogs from /overlays, navigation/feedback from /display, and size scopes and layouts from /layout. Do not import internal src/ or dist/ paths.
+- Interactive React components require React and React DOM 19. The package uses Base UI 1.9.0 for accessible interaction foundations.
 - Provide DM Sans and Noto Sans KR font assets in the consuming app if those faces are needed; the package only declares a font stack.
 
 ## Provided
 
-- Role tokens in tokens.css and styles for display settings and Button/TextField/Checkbox/Badge in components.css.
+- Role tokens in tokens.css and styles for display settings, forms, overlays, navigation, layout, and feedback in components.css.
 - Preference validation, first-paint script, provider, hook, and display-setting controls.
 - Button, TextField, Checkbox, and Badge React components with native element attributes and refs.
+- Reusable input and selection controls, menus, dialogs, tooltips, toast notifications, navigation, tables, cards, and feedback components.
 
 ## Not provided
 
-- Card and page-layout React components.
+- An application router, server data fetching, rich-text editor, chart engine, or virtualized data grid.
 - Font files for consuming applications; provide fonts with the required character coverage separately.
 - A design-token interchange format such as DTCG.
 
@@ -379,13 +381,13 @@ Native button with primary, secondary, and ghost visual variants.
 Kind: component · Import: `@hyeonse/design-system/primitives`
 
 ```typescript
-export declare function Button({ variant, size, loading, loadingLabel, type, disabled, className, children, ref, 'aria-busy': ariaBusy, 'aria-label': ariaLabel, ...props }: ButtonProps): import("react").JSX.Element;
+export declare function Button({ variant, size, loading, loadingLabel, type, disabled, className, children, ref, 'aria-busy': ariaBusy, 'aria-label': ariaLabel, 'aria-labelledby': ariaLabelledBy, ...props }: ButtonProps): import("react").JSX.Element;
 ```
 
 ### Locally declared props
 
-- `variant?`: `"primary" | "secondary" | "ghost"`
-- `size?`: `"sm" | "md"`
+- `variant?`: `'primary' | 'secondary' | 'ghost'`
+- `size?`: `HdsSize`
 - `loading?`: `boolean`
 - `loadingLabel?`: `string`
 
@@ -393,11 +395,12 @@ export declare function Button({ variant, size, loading, loadingLabel, type, dis
 
 - Import from @hyeonse/design-system/primitives and import components.css after tokens.css.
 - Native button attributes and ref are forwarded; type defaults to button. The caller manages loading state.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
 
 ### States
 
 - primary/secondary/ghost variants
-- sm/md sizes
+- xs/sm/md/lg/xl sizes; inherited md default
 - enabled/disabled/loading
 
 ### Accessibility
@@ -419,11 +422,13 @@ Labeled single-line input with optional hint and error text.
 Kind: component · Import: `@hyeonse/design-system/primitives`
 
 ```typescript
-export declare function TextField({ label, hint, error, type, id, className, disabled, ref, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, ...props }: TextFieldProps): import("react").JSX.Element;
+export declare function TextField({ label, hint, error, size, inputSize, type, id, className, disabled, ref, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, ...props }: TextFieldProps): import("react").JSX.Element;
 ```
 
 ### Locally declared props
 
+- `size?`: `HdsSize`
+- `inputSize?`: `number`
 - `label`: `string`
 - `type?`: `TextInputType`
 - `hint?`: `string`
@@ -433,6 +438,7 @@ export declare function TextField({ label, hint, error, type, id, className, dis
 
 - Import from @hyeonse/design-system/primitives and import components.css after tokens.css.
 - Native input attributes and ref are forwarded; className applies to the input element.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
 
 ### States
 
@@ -458,11 +464,13 @@ Labeled native checkbox with optional hint and error text.
 Kind: component · Import: `@hyeonse/design-system/primitives`
 
 ```typescript
-export declare function Checkbox({ label, hint, error, id, className, disabled, readOnly, ref, onClick, onChange, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, 'aria-readonly': ariaReadOnly, ...props }: CheckboxProps): import("react").JSX.Element;
+export declare function Checkbox({ label, hint, error, size, inputSize, id, className, disabled, readOnly, ref, onClick, onChange, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, 'aria-readonly': ariaReadOnly, ...props }: CheckboxProps): import("react").JSX.Element;
 ```
 
 ### Locally declared props
 
+- `size?`: `HdsSize`
+- `inputSize?`: `number`
 - `label`: `string`
 - `hint?`: `string`
 - `error?`: `string`
@@ -471,6 +479,7 @@ export declare function Checkbox({ label, hint, error, id, className, disabled, 
 
 - Import from @hyeonse/design-system/primitives and import components.css after tokens.css.
 - Native checkbox attributes, checked/defaultChecked, and ref are forwarded; className applies to the input element.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
 
 ### States
 
@@ -498,17 +507,19 @@ Noninteractive span badge for a short status or category.
 Kind: component · Import: `@hyeonse/design-system/primitives`
 
 ```typescript
-export declare function Badge({ tone, className, children, ref, ...props }: BadgeProps): import("react").JSX.Element;
+export declare function Badge({ size, tone, className, children, ref, ...props }: BadgeProps): import("react").JSX.Element;
 ```
 
 ### Locally declared props
 
-- `tone?`: `"neutral" | "accent" | "success" | "warning" | "danger"`
+- `size?`: `HdsSize`
+- `tone?`: `'neutral' | 'accent' | 'success' | 'warning' | 'danger'`
 
 ### Usage
 
 - Import from @hyeonse/design-system/primitives and import components.css after tokens.css.
 - Native span attributes and ref are forwarded; include text that communicates the status without color alone.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
 
 ### States
 
@@ -523,6 +534,1957 @@ export declare function Badge({ tone, className, children, ref, ...props }: Badg
 - No interaction or live-region behavior is added.
 
 Examples: `hds example form-controls`
+
+## Input
+
+Styled native single-line input for custom compositions.
+
+Kind: component · Import: `@hyeonse/design-system/fields`
+
+```typescript
+export declare function Input({ type, size, inputSize, className, ref, ...props }: InputProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `type?`: `TextualType`
+- `size?`: `HdsSize`
+- `inputSize?`: `number`
+
+### Usage
+
+- Import from @hyeonse/design-system/fields; load tokens.css before components.css.
+- The caller owns validation, error text, and controlled state.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- text/email/search/tel/url
+- disabled/readOnly/required
+- controlled/uncontrolled
+
+### Accessibility
+
+- Provide an associated label or aria-label at the call site.
+- Native input semantics and ref are retained.
+
+### Limits
+
+- No built-in label or error message; use a labeled field when those are needed.
+
+Examples: `hds example expanded-forms`
+
+## Textarea
+
+Labeled native multiline input with hint and error.
+
+Kind: component · Import: `@hyeonse/design-system/fields`
+
+```typescript
+export declare function Textarea({ label, hint, error, size, id, className, disabled, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: TextareaProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `label`: `string`
+- `hint?`: `string`
+- `error?`: `string`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import from @hyeonse/design-system/fields; load tokens.css before components.css.
+- The caller owns validation, error text, and controlled state.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- enabled/disabled/readOnly
+- hint/error
+- controlled/uncontrolled
+
+### Accessibility
+
+- Label, hint, and error are linked with unique IDs; error sets aria-invalid.
+- Native textarea ref and form behavior remain available.
+
+### Limits
+
+- The caller sets rows, maxLength, and validation rules.
+
+Examples: `hds example expanded-forms`
+
+## Select
+
+Labeled single-choice dropdown from fixed options.
+
+Kind: component · Import: `@hyeonse/design-system/fields`
+
+```typescript
+export declare function Select({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: SelectProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `label`: `string`
+- `hint?`: `string`
+- `error?`: `string`
+- `size?`: `HdsSize`
+- `options`: `readonly FieldOption[]`
+- `name?`: `string`
+- `form?`: `string`
+- `id?`: `string`
+- `required?`: `boolean`
+- `disabled?`: `boolean`
+- `readOnly?`: `boolean`
+- `value?`: `string | null`
+- `defaultValue?`: `string | null`
+- `onValueChange?`: `(value: string | null) => void`
+- `placeholder?`: `string`
+- `className?`: `string`
+- `aria-describedby?`: `string`
+- `aria-invalid?`: `boolean | 'grammar' | 'spelling'`
+- `ref?`: `Ref<HTMLButtonElement>`
+
+### Usage
+
+- Import from @hyeonse/design-system/fields; load tokens.css before components.css.
+- The caller owns validation, error text, and controlled state.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- empty/selected
+- enabled/disabled/readOnly
+- required
+- hint/error
+
+### Accessibility
+
+- Base UI manages listbox keyboard navigation, option states, and form submission.
+- Visible label names the trigger; hint and error describe it.
+
+### Limits
+
+- Options are not searchable; use Combobox for filtering.
+- Option values must be unique strings.
+
+Examples: `hds example expanded-forms`
+
+## Combobox
+
+Searchable single-choice field restricted to supplied options.
+
+Kind: component · Import: `@hyeonse/design-system/fields`
+
+```typescript
+export declare function Combobox({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder, emptyText, openLabel, inputValue, defaultInputValue, onInputValueChange, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: ComboboxProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `label`: `string`
+- `hint?`: `string`
+- `error?`: `string`
+- `size?`: `HdsSize`
+- `options`: `readonly FieldOption[]`
+- `name?`: `string`
+- `form?`: `string`
+- `id?`: `string`
+- `required?`: `boolean`
+- `disabled?`: `boolean`
+- `readOnly?`: `boolean`
+- `value?`: `string | null`
+- `defaultValue?`: `string | null`
+- `onValueChange?`: `(value: string | null) => void`
+- `placeholder?`: `string`
+- `className?`: `string`
+- `aria-describedby?`: `string`
+- `aria-invalid?`: `boolean | 'grammar' | 'spelling'`
+- `ref?`: `Ref<HTMLInputElement>`
+- `emptyText?`: `string`
+- `openLabel?`: `string`
+- `inputValue?`: `string`
+- `defaultInputValue?`: `string`
+- `onInputValueChange?`: `(value: string) => void`
+
+### Usage
+
+- Import from @hyeonse/design-system/fields; load tokens.css before components.css.
+- The caller owns validation, error text, and controlled state.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- query/empty/selected
+- enabled/disabled/readOnly
+- required
+- hint/error
+
+### Accessibility
+
+- Base UI manages combobox navigation, announcements, and form submission.
+- Search input has a visible label; the open button has a configurable accessible name.
+
+### Limits
+
+- Typed text is a query, not a free-form submitted value.
+- Option values must be unique strings.
+
+Examples: `hds example expanded-forms`
+
+## MultiSelect
+
+Searchable multiple-choice field with removable selected chips.
+
+Kind: component · Import: `@hyeonse/design-system/fields`
+
+```typescript
+export declare function MultiSelect({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder, emptyText, openLabel, selectedLabel, removeLabel, chipDescription, inputDescription, inputValue, defaultInputValue, onInputValueChange, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: MultiSelectProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `form?`: `string`
+- `label`: `string`
+- `size?`: `HdsSize`
+- `disabled?`: `boolean`
+- `name?`: `string`
+- `placeholder?`: `string`
+- `readOnly?`: `boolean`
+- `required?`: `boolean`
+- `className?`: `string`
+- `id?`: `string`
+- `aria-describedby?`: `string`
+- `aria-invalid?`: `boolean | 'grammar' | 'spelling'`
+- `hint?`: `string`
+- `error?`: `string`
+- `options`: `readonly FieldOption[]`
+- `ref?`: `Ref<HTMLInputElement>`
+- `value?`: `readonly string[]`
+- `defaultValue?`: `readonly string[]`
+- `onValueChange?`: `(value: string[]) => void`
+- `emptyText?`: `string`
+- `openLabel?`: `string`
+- `selectedLabel?`: `string`
+- `removeLabel?`: `(label: string) => string`
+- `chipDescription?`: `string`
+- `inputDescription?`: `(count: number) => string`
+- `inputValue?`: `string`
+- `defaultInputValue?`: `string`
+- `onInputValueChange?`: `(value: string) => void`
+
+### Usage
+
+- Import from @hyeonse/design-system/fields; load tokens.css before components.css.
+- The caller owns validation, error text, and controlled state.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- query/empty/multiple selections
+- enabled/disabled/readOnly
+- required
+- hint/error
+
+### Accessibility
+
+- Base UI manages selection, chip keyboard behavior, and form values.
+- Selected set, removal, and keyboard hints have configurable accessible strings.
+
+### Limits
+
+- Typed text is a query, not a free-form submitted value.
+- Option values must be unique strings.
+
+Examples: `hds example expanded-forms`
+
+## Switch
+
+Labeled binary switch with native form participation.
+
+Kind: component · Import: `@hyeonse/design-system/fields`
+
+```typescript
+export declare function Switch({ label, hint, error, size, id, name, form, value, uncheckedValue, required, disabled, readOnly, checked, defaultChecked, onCheckedChange, ref, className, 'aria-describedby': describedBy, 'aria-invalid': invalid }: SwitchProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `label`: `string`
+- `hint?`: `string`
+- `error?`: `string`
+- `size?`: `HdsSize`
+- `id?`: `string`
+- `name?`: `string`
+- `form?`: `string`
+- `value?`: `string`
+- `uncheckedValue?`: `string`
+- `required?`: `boolean`
+- `disabled?`: `boolean`
+- `readOnly?`: `boolean`
+- `checked?`: `boolean`
+- `defaultChecked?`: `boolean`
+- `onCheckedChange?`: `(checked: boolean) => void`
+- `ref?`: `Ref<HTMLInputElement>`
+- `className?`: `string`
+- `aria-describedby?`: `string`
+- `aria-invalid?`: `boolean | 'grammar' | 'spelling'`
+
+### Usage
+
+- Import from @hyeonse/design-system/fields; load tokens.css before components.css.
+- The caller owns validation, error text, and controlled state.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- on/off
+- enabled/disabled/readOnly
+- required
+- hint/error
+
+### Accessibility
+
+- Base UI provides switch semantics and keyboard interaction.
+- Visible text and optional descriptions communicate state without color alone.
+
+### Limits
+
+- An unchecked switch submits no value unless uncheckedValue is supplied.
+
+Examples: `hds example expanded-forms`
+
+## RadioGroup
+
+Labeled set of mutually exclusive choices.
+
+Kind: component · Import: `@hyeonse/design-system/fields`
+
+```typescript
+export declare function RadioGroup({ label, hint, error, size, options, name, form, required, disabled, readOnly, value, defaultValue, onValueChange, ref, className, 'aria-describedby': describedBy, 'aria-invalid': invalid }: RadioGroupProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `label`: `string`
+- `hint?`: `string`
+- `error?`: `string`
+- `size?`: `HdsSize`
+- `options`: `readonly FieldOption[]`
+- `name?`: `string`
+- `form?`: `string`
+- `required?`: `boolean`
+- `disabled?`: `boolean`
+- `readOnly?`: `boolean`
+- `value?`: `string`
+- `defaultValue?`: `string`
+- `onValueChange?`: `(value: string) => void`
+- `ref?`: `Ref<HTMLInputElement>`
+- `className?`: `string`
+- `aria-describedby?`: `string`
+- `aria-invalid?`: `boolean | 'grammar' | 'spelling'`
+
+### Usage
+
+- Import from @hyeonse/design-system/fields; load tokens.css before components.css.
+- The caller owns validation, error text, and controlled state.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- empty/selected
+- enabled/disabled/readOnly
+- required
+- hint/error
+
+### Accessibility
+
+- Base UI provides radio keyboard navigation and form participation.
+- The group is named by visible label and described by hint or error.
+
+### Limits
+
+- Option values must be unique strings.
+
+Examples: `hds example expanded-forms`
+
+## Slider
+
+Labeled native single-value range input.
+
+Kind: component · Import: `@hyeonse/design-system/fields`
+
+```typescript
+export declare function Slider({ label, hint, error, size, inputSize, id, disabled, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: SliderProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `label`: `string`
+- `hint?`: `string`
+- `error?`: `string`
+- `size?`: `HdsSize`
+- `inputSize?`: `number`
+
+### Usage
+
+- Import from @hyeonse/design-system/fields; load tokens.css before components.css.
+- The caller owns validation, error text, and controlled state.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- min/max/step
+- enabled/disabled
+- controlled/uncontrolled
+- hint/error
+
+### Accessibility
+
+- Native range keyboard behavior and form value.
+- Label, hint, and error are linked; provide aria-valuetext for a nonnumeric meaning.
+
+### Limits
+
+- Single thumb only; no readonly mode or dual-ended range.
+
+Examples: `hds example expanded-forms`
+
+## NumberField
+
+Labeled numeric entry with increment and decrement controls.
+
+Kind: component · Import: `@hyeonse/design-system/fields`
+
+```typescript
+export declare function NumberField({ label, hint, error, size, id, name, form, required, disabled, readOnly, value, defaultValue, onValueChange, min, max, step, locale, placeholder, incrementLabel, decrementLabel, ref, className, 'aria-describedby': describedBy, 'aria-invalid': invalid }: NumberFieldProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `label`: `string`
+- `hint?`: `string`
+- `error?`: `string`
+- `size?`: `HdsSize`
+- `id?`: `string`
+- `name?`: `string`
+- `form?`: `string`
+- `required?`: `boolean`
+- `disabled?`: `boolean`
+- `readOnly?`: `boolean`
+- `value?`: `number | null`
+- `defaultValue?`: `number`
+- `onValueChange?`: `(value: number | null) => void`
+- `min?`: `number`
+- `max?`: `number`
+- `step?`: `number | 'any'`
+- `locale?`: `Intl.LocalesArgument`
+- `placeholder?`: `string`
+- `incrementLabel?`: `string`
+- `decrementLabel?`: `string`
+- `ref?`: `Ref<HTMLInputElement>`
+- `className?`: `string`
+- `aria-describedby?`: `string`
+- `aria-invalid?`: `boolean | 'grammar' | 'spelling'`
+
+### Usage
+
+- Import from @hyeonse/design-system/fields; load tokens.css before components.css.
+- The caller owns validation, error text, and controlled state.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- empty/value
+- min/max/step
+- enabled/disabled/readOnly
+- hint/error
+
+### Accessibility
+
+- Base UI provides numeric keyboard controls, bounds, and form participation.
+- Step buttons have configurable accessible labels.
+
+### Limits
+
+- Returns number or null, not a formatted text string.
+
+Examples: `hds example expanded-forms`
+
+## DateField
+
+Labeled native date input.
+
+Kind: component · Import: `@hyeonse/design-system/fields`
+
+```typescript
+export declare function DateField({ label, hint, error, size, inputSize, id, disabled, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: DateFieldProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `label`: `string`
+- `hint?`: `string`
+- `error?`: `string`
+- `size?`: `HdsSize`
+- `inputSize?`: `number`
+
+### Usage
+
+- Import from @hyeonse/design-system/fields; load tokens.css before components.css.
+- The caller owns validation, error text, and controlled state.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- empty/date
+- min/max
+- enabled/disabled/readOnly
+- hint/error
+
+### Accessibility
+
+- Native date control and form submission.
+- Label, hint, and error are linked with unique IDs.
+
+### Limits
+
+- Picker appearance and date presentation follow the browser and operating system.
+
+Examples: `hds example expanded-forms`
+
+## FileInput
+
+Labeled native file picker.
+
+Kind: component · Import: `@hyeonse/design-system/fields`
+
+```typescript
+export declare function FileInput({ label, hint, error, size, inputSize, id, disabled, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: FileInputProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `label`: `string`
+- `hint?`: `string`
+- `error?`: `string`
+- `size?`: `HdsSize`
+- `inputSize?`: `number`
+
+### Usage
+
+- Import from @hyeonse/design-system/fields; load tokens.css before components.css.
+- The caller owns validation, error text, and controlled state.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- empty/files
+- accept/multiple
+- enabled/disabled
+- hint/error
+
+### Accessibility
+
+- Native file picker and form submission.
+- Label, hint, and error are linked with unique IDs.
+
+### Limits
+
+- File input values are browser-managed and cannot be controlled with value/defaultValue; use form reset to clear.
+- No readonly mode.
+
+Examples: `hds example expanded-forms`
+
+## PasswordField
+
+Labeled password input with a show or hide button.
+
+Kind: component · Import: `@hyeonse/design-system/fields`
+
+```typescript
+export declare function PasswordField({ label, hint, error, size, inputSize, id, disabled, className, ref, showLabel, hideLabel, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: PasswordFieldProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `label`: `string`
+- `hint?`: `string`
+- `error?`: `string`
+- `size?`: `HdsSize`
+- `inputSize?`: `number`
+- `showLabel?`: `string`
+- `hideLabel?`: `string`
+
+### Usage
+
+- Import from @hyeonse/design-system/fields; load tokens.css before components.css.
+- The caller owns validation, error text, and controlled state.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- hidden/visible
+- enabled/disabled/readOnly
+- controlled/uncontrolled
+- hint/error
+
+### Accessibility
+
+- Reveal button has configurable show and hide labels and pressed state.
+- Password input retains native name, autocomplete, ref, and form behavior.
+
+### Limits
+
+- Visibility state is local to this component.
+
+Examples: `hds example expanded-forms`
+
+## DropdownMenu
+
+Button-triggered action, checkbox, separator, and nested menus.
+
+Kind: component · Import: `@hyeonse/design-system/overlays`
+
+```typescript
+export declare function DropdownMenu({ size, trigger, items, open, defaultOpen, onOpenChange }: DropdownMenuProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `trigger`: `ReactElement`
+- `items`: `readonly MenuEntry[]`
+- `open?`: `boolean`
+- `defaultOpen?`: `boolean`
+- `onOpenChange?`: `(open: boolean) => void`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import from @hyeonse/design-system/overlays and load tokens.css then components.css.
+- Pass a button element as trigger and stable item IDs. Checkbox state is owned by the caller.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- controlled or uncontrolled open
+- action/checkbox/separator/submenu items
+- disabled and danger actions
+
+### Accessibility
+
+- Base UI supplies menu keyboard navigation, typeahead, Escape dismissal, outside dismissal, and focus return.
+- Trigger composition preserves forwarded handlers and refs.
+
+### Limits
+
+- The supplied trigger component must forward its ref and DOM props.
+- Danger is visual only; the caller owns confirmation and effects.
+
+Examples: `hds example overlay-patterns`
+
+## ContextMenu
+
+Right-click or long-press menu using the same item model as DropdownMenu.
+
+Kind: component · Import: `@hyeonse/design-system/overlays`
+
+```typescript
+export declare function ContextMenu({ size, trigger, items, open, defaultOpen, onOpenChange }: ContextMenuProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `trigger`: `ReactElement`
+- `items`: `readonly MenuEntry[]`
+- `open?`: `boolean`
+- `defaultOpen?`: `boolean`
+- `onOpenChange?`: `(open: boolean) => void`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Pass an interactive or labeled region as trigger and the menu entries as items.
+- Provide a visible way to perform important actions outside the context menu.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- controlled or uncontrolled open
+- action/checkbox/separator/submenu items
+
+### Accessibility
+
+- Base UI supplies right-click, long-press, keyboard operation, Escape dismissal, and focus management.
+
+### Limits
+
+- The supplied trigger component must forward its ref and DOM props.
+- Context menus should supplement visible controls.
+
+Examples: `hds example overlay-patterns`
+
+## Dialog
+
+Modal dialog with a title, optional description, body, footer, and close control.
+
+Kind: component · Import: `@hyeonse/design-system/overlays`
+
+```typescript
+export declare function Dialog({ size, trigger, title, description, children, footer, closeLabel, open, defaultOpen, onOpenChange }: DialogProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `trigger`: `ReactElement`
+- `title`: `string`
+- `description?`: `string`
+- `children?`: `ReactNode`
+- `footer?`: `ReactNode`
+- `closeLabel?`: `string`
+- `open?`: `boolean`
+- `defaultOpen?`: `boolean`
+- `onOpenChange?`: `(open: boolean) => void`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Pass a button trigger and a required title.
+- Render task content in children and actions in footer.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- controlled or uncontrolled open
+- optional description and footer
+
+### Accessibility
+
+- Base UI supplies modal focus containment, Escape and outside dismissal, and focus return.
+- Close button has a configurable Korean accessible label.
+
+### Limits
+
+- Caller controls business actions in children and footer.
+- The supplied trigger component must forward its ref and DOM props.
+
+Examples: `hds example overlay-patterns`
+
+## AlertDialog
+
+Confirmation dialog that calls onConfirm only from its confirm button.
+
+Kind: component · Import: `@hyeonse/design-system/overlays`
+
+```typescript
+export declare function AlertDialog({ size, trigger, title, description, children, confirmLabel, cancelLabel, onConfirm, onError, pending, confirmDisabled, open, defaultOpen, onOpenChange }: AlertDialogProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `trigger`: `ReactElement`
+- `title`: `string`
+- `description?`: `string`
+- `children?`: `ReactNode`
+- `confirmLabel`: `string`
+- `cancelLabel`: `string`
+- `onConfirm`: `() => void | Promise<void>`
+- `onError?`: `(error: unknown) => void`
+- `pending?`: `boolean`
+- `confirmDisabled?`: `boolean`
+- `open?`: `boolean`
+- `defaultOpen?`: `boolean`
+- `onOpenChange?`: `(open: boolean) => void`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Pass required title, confirmLabel, cancelLabel, and onConfirm.
+- Use pending or confirmDisabled for externally controlled work; a rejected promise keeps the dialog open and is sent to onError.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- controlled or uncontrolled open
+- pending
+- confirmDisabled
+- confirming
+
+### Accessibility
+
+- Base UI supplies alert dialog focus and announcement semantics.
+- Cancel and confirm are separate controls with at least 44px targets on coarse-pointer devices.
+
+### Limits
+
+- An externally controlled open prop must be updated by the caller after onOpenChange.
+- The caller should present an error message when onConfirm rejects.
+
+Examples: `hds example overlay-patterns`
+
+## Sheet
+
+Modal side panel with bounded sizes and scrollable content.
+
+Kind: component · Import: `@hyeonse/design-system/overlays`
+
+```typescript
+export declare function Sheet({ trigger, title, description, children, footer, closeLabel, side, size, open, defaultOpen, onOpenChange }: SheetProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `trigger`: `ReactElement`
+- `title`: `string`
+- `description?`: `string`
+- `children?`: `ReactNode`
+- `footer?`: `ReactNode`
+- `closeLabel?`: `string`
+- `open?`: `boolean`
+- `defaultOpen?`: `boolean`
+- `onOpenChange?`: `(open: boolean) => void`
+- `size?`: `HdsSize`
+- `side?`: `'left' | 'right'`
+
+### Usage
+
+- Pass a button trigger and required title.
+- Use side left/right and size xs/sm/md/lg/xl.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- controlled or uncontrolled open
+- left/right side
+- xs/sm/md/lg/xl size
+
+### Accessibility
+
+- Uses Base UI dialog focus containment, dismissal, and return focus.
+- Close button remains visible above scrollable content.
+
+### Limits
+
+- Caller controls content and footer actions.
+
+Examples: `hds example overlay-patterns`
+
+## Popover
+
+Anchored nonmodal content panel with title and close control.
+
+Kind: component · Import: `@hyeonse/design-system/overlays`
+
+```typescript
+export declare function Popover({ size, trigger, title, description, children, closeLabel, open, defaultOpen, onOpenChange }: PopoverProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `trigger`: `ReactElement`
+- `title`: `string`
+- `description?`: `string`
+- `children?`: `ReactNode`
+- `closeLabel?`: `string`
+- `open?`: `boolean`
+- `defaultOpen?`: `boolean`
+- `onOpenChange?`: `(open: boolean) => void`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Pass a button trigger, required title, and optional body content.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- controlled or uncontrolled open
+- optional description and body
+
+### Accessibility
+
+- Base UI manages anchor placement, Escape and outside dismissal, and focus return.
+- Close button has a configurable accessible label.
+
+### Limits
+
+- The supplied trigger component must forward its ref and DOM props.
+
+Examples: `hds example overlay-patterns`
+
+## Tooltip
+
+Brief visual hint on hover or focus.
+
+Kind: component · Import: `@hyeonse/design-system/overlays`
+
+```typescript
+export declare function Tooltip({ size, trigger, content, delay }: TooltipProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `trigger`: `ReactElement`
+- `content`: `string`
+- `delay?`: `number`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Pass an accessible, focusable trigger and a short plain-text content string.
+- Keep the trigger accessible without relying on tooltip text alone.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- hover
+- focus
+- Escape dismissal
+
+### Accessibility
+
+- Base UI handles hover/focus timing and Escape.
+- Tooltip does not intercept pointer events.
+
+### Limits
+
+- No interactive content or touch-only instructions.
+- The supplied trigger component must forward its ref and DOM props.
+
+Examples: `hds example overlay-patterns`
+
+## ToastProvider
+
+Scoped, limited stack of transient announcements.
+
+Kind: provider · Import: `@hyeonse/design-system/overlays`
+
+```typescript
+export declare function ToastProvider({ size, children, viewportLabel, closeLabel, timeout, limit }: ToastProviderProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `children`: `ReactNode`
+- `viewportLabel?`: `string`
+- `closeLabel?`: `string`
+- `timeout?`: `number`
+- `limit?`: `number`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Wrap useToast consumers once per independent region.
+- Default viewport label is 알림 and close label is 알림 닫기; timeout defaults to 5000ms and visible limit to 3.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- neutral/success/warning/danger tone
+- auto expiry
+- manual close
+- limited queue
+
+### Accessibility
+
+- Base UI provides live announcements, F6 viewport focus, and pause behavior.
+- Each toast has a close button with at least a 44px target on coarse-pointer devices.
+
+### Limits
+
+- The provider must mount in a client React tree.
+- Only text title and description are exposed by this wrapper.
+
+Examples: `hds example overlay-patterns`
+
+## useToast
+
+Add and close toasts within the nearest ToastProvider.
+
+Kind: hook · Import: `@hyeonse/design-system/overlays`
+
+```typescript
+export declare function useToast(): {
+    add: (message: ToastMessage) => string;
+    close: (id: string) => void;
+};
+```
+
+### Usage
+
+- Call inside ToastProvider.
+- add returns an ID to pass to close.
+
+### States
+
+- add
+- close
+
+### Accessibility
+
+- Toast messages are announced by Base UI with priority low.
+
+### Limits
+
+- Throws outside a Base UI Toast provider.
+- Do not use as the sole channel for critical persistent information.
+
+Examples: `hds example overlay-patterns`
+
+## Tabs
+
+Controlled or uncontrolled tab set.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Tabs({ size, className, ...props }: TabsProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Tabs from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## TabsList
+
+Keyboard navigable tab list.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function TabsList({ className, ...props }: TabsListProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import TabsList from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## TabsTab
+
+Tab trigger linked to a panel.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function TabsTab({ className, ...props }: TabsTabProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import TabsTab from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## TabsPanel
+
+Content panel for a tab.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function TabsPanel({ className, ...props }: TabsPanelProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import TabsPanel from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## Accordion
+
+Single or multiple expandable sections.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Accordion({ size, className, ...props }: AccordionProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Accordion from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## AccordionItem
+
+One expandable section.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function AccordionItem({ className, ...props }: AccordionItemProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import AccordionItem from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## AccordionHeader
+
+Semantic heading for an accordion item.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function AccordionHeader({ className, ...props }: AccordionHeaderProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import AccordionHeader from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## AccordionTrigger
+
+Button controlling an accordion panel.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function AccordionTrigger({ className, ...props }: AccordionTriggerProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import AccordionTrigger from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## AccordionPanel
+
+Expandable accordion content.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function AccordionPanel({ className, ...props }: AccordionPanelProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import AccordionPanel from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## Collapsible
+
+Independent expandable region.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Collapsible({ size, className, ...props }: CollapsibleProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Collapsible from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## CollapsibleTrigger
+
+Button controlling a collapsible panel.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function CollapsibleTrigger({ className, ...props }: CollapsibleTriggerProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import CollapsibleTrigger from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## CollapsiblePanel
+
+Collapsible content.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function CollapsiblePanel({ className, ...props }: CollapsiblePanelProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import CollapsiblePanel from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## Breadcrumb
+
+Ordered navigation path.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Breadcrumb({ size, items, separator, className, 'aria-label': ariaLabel, ref, ...props }: BreadcrumbProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `items`: `readonly BreadcrumbItem[]`
+- `separator?`: `ReactNode`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Breadcrumb from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## Pagination
+
+Finite page navigation with previous and next controls.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Pagination({ size, page, pageCount, onPageChange, locale, siblingCount, className, 'aria-label': ariaLabel, ref, ...props }: PaginationProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `page`: `number`
+- `pageCount`: `number`
+- `onPageChange`: `(page: number) => void`
+- `locale?`: `'ko' | 'en'`
+- `siblingCount?`: `number`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Pagination from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## Stepper
+
+Read only ordered process steps.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Stepper({ size, steps, currentStep, className, ref, ...props }: StepperProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `steps`: `readonly StepperItem[]`
+- `currentStep`: `number`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Stepper from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## SegmentedControl
+
+Single or multiple selection toggle group.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function SegmentedControl({ size, className, multiple, ...props }: SegmentedControlProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import SegmentedControl from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## Toggle
+
+Pressed state button.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Toggle({ size, className, ...props }: ToggleProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Toggle from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## Card
+
+Content surface with optional heading, description and footer.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Card({ size, title, description, footer, children, className, ref, ...props }: CardProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `title?`: `ReactNode`
+- `description?`: `ReactNode`
+- `footer?`: `ReactNode`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Card from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## Table
+
+Semantic table with keyboard accessible overflow container.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Table({ size, containerClassName, scrollLabel, className, ref, ...props }: TableProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `containerClassName?`: `string`
+- `scrollLabel?`: `string`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Table from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## TableHeader
+
+Table header section.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function TableHeader({ className, ...props }: TableHeaderProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import TableHeader from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## TableBody
+
+Table body section.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function TableBody({ className, ...props }: TableBodyProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import TableBody from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## TableRow
+
+Table row.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function TableRow({ className, ...props }: TableRowProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import TableRow from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## TableHead
+
+Column or row header cell.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function TableHead({ className, scope, ...props }: TableHeadProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import TableHead from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## TableCell
+
+Data cell.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function TableCell({ className, ...props }: TableCellProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import TableCell from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## TableCaption
+
+Table caption.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function TableCaption({ className, ...props }: TableCaptionProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import TableCaption from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## Alert
+
+Status or urgent message with semantic role.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Alert({ size, tone, title, children, className, role, ref, ...props }: AlertProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `tone?`: `'info' | 'success' | 'warning' | 'danger'`
+- `title?`: `ReactNode`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Alert from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## Avatar
+
+Image with visible fallback on failure.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Avatar({ src, alt, fallback, size, className, ref, ...props }: AvatarProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `src?`: `string`
+- `alt`: `string`
+- `fallback`: `ReactNode`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Avatar from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## Separator
+
+Decorative or semantic divider.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Separator({ size, decorative, className, ref, ...props }: SeparatorProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `decorative?`: `boolean`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Separator from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## Skeleton
+
+Decorative loading placeholder.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Skeleton({ size, width, height, style, className, ref, ...props }: SkeletonProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `width?`: `string | number`
+- `height?`: `string | number`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Skeleton from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## Spinner
+
+Labeled loading status.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Spinner({ size, label, className, ref, ...props }: SpinnerProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `label?`: `string`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Spinner from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## Progress
+
+Determinate or indeterminate progress indicator.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Progress({ size, value, max, label, className, ref, ...props }: ProgressProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `value?`: `number`
+- `max?`: `number`
+- `label`: `string`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Progress from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## EmptyState
+
+Content for an empty result.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function EmptyState({ size, title, description, action, className, ref, ...props }: EmptyStateProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `title`: `ReactNode`
+- `description?`: `ReactNode`
+- `action?`: `ReactNode`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import EmptyState from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## AspectRatio
+
+Aspect ratio box.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function AspectRatio({ size, ratio, style, className, ref, ...props }: AspectRatioProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `ratio?`: `number`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import AspectRatio from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## ScrollArea
+
+Labeled keyboard scroll region.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function ScrollArea({ size, maxHeight, label, style, className, ref, ...props }: ScrollAreaProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `maxHeight?`: `string | number`
+- `label`: `string`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import ScrollArea from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## Label
+
+Native form label.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function Label({ size, required, children, className, ref, ...props }: LabelProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `required?`: `boolean`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import Label from @hyeonse/design-system/display and load tokens.css then components.css.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+Examples: `hds example display-patterns`
+
+## VisuallyHidden
+
+Screen reader visible text.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function VisuallyHidden({ className, ref, ...props }: VisuallyHiddenProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `className?`: `string`
+
+### Usage
+
+- Import VisuallyHidden from @hyeonse/design-system/display and load tokens.css then components.css.
+
+Examples: `hds example display-patterns`
+
+## SizeProvider
+
+Provide one size to nested components, including React portals.
+
+Kind: provider · Import: `@hyeonse/design-system/layout`
+
+```typescript
+export declare function SizeProvider({ size, children }: SizeProviderProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `size`: `Size`
+- `children?`: `ReactNode`
+
+### Usage
+
+- Pass one required size: xs, sm, md, lg, or xl; adds no DOM element.
+- Children inherit this size unless they supply an explicit size.
+
+### States
+
+- xs/sm/md/lg/xl
+
+### Accessibility
+
+- Touch controls retain at least 44px targets.
+
+### Limits
+
+- Layout adds no application landmarks or route behavior.
+
+Examples: `hds example layout-sizing`
+
+## Stack
+
+Vertical layout with inherited size and optional gap override.
+
+Kind: component · Import: `@hyeonse/design-system/layout`
+
+```typescript
+export declare function Stack({ size, gap, align, className, style, children, ...props }: StackProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `size?`: `Size`
+- `gap?`: `Size`
+- `align?`: `'start' | 'center' | 'end' | 'stretch'`
+
+### Usage
+
+- Use size for child components and gap for spacing only.
+- Omitted size inherits the nearest provider or layout; default md. Explicit child size wins.
+
+### States
+
+- xs/sm/md/lg/xl
+
+### Accessibility
+
+- Touch controls retain at least 44px targets.
+
+### Limits
+
+- Layout adds no application landmarks or route behavior.
+
+Examples: `hds example layout-sizing`
+
+## Inline
+
+Wrapping horizontal layout with alignment and justification.
+
+Kind: component · Import: `@hyeonse/design-system/layout`
+
+```typescript
+export declare function Inline({ size, gap, align, justify, wrap, className, children, ...props }: InlineProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `size?`: `Size`
+- `gap?`: `Size`
+- `align?`: `'start' | 'center' | 'end' | 'stretch'`
+- `justify?`: `'start' | 'center' | 'end' | 'between'`
+- `wrap?`: `boolean`
+
+### Usage
+
+- Use wrap=false only when content is known to fit; wrapping is the default.
+- Omitted size inherits the nearest provider or layout; default md. Explicit child size wins.
+
+### States
+
+- xs/sm/md/lg/xl
+
+### Accessibility
+
+- Touch controls retain at least 44px targets.
+
+### Limits
+
+- Layout adds no application landmarks or route behavior.
+
+Examples: `hds example layout-sizing`
+
+## Grid
+
+Responsive grid with a preferred column count.
+
+Kind: component · Import: `@hyeonse/design-system/layout`
+
+```typescript
+export declare function Grid({ size, gap, columns, minItemWidth, style, className, children, ...props }: GridProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `size?`: `Size`
+- `gap?`: `Size`
+- `columns?`: `1 | 2 | 3 | 4`
+- `minItemWidth?`: `string`
+
+### Usage
+
+- columns accepts 1–4; columns collapse as available width drops below minItemWidth.
+- Omitted size inherits the nearest provider or layout; default md. Explicit child size wins.
+
+### States
+
+- xs/sm/md/lg/xl
+
+### Accessibility
+
+- Touch controls retain at least 44px targets.
+
+### Limits
+
+- Layout adds no application landmarks or route behavior.
+
+Examples: `hds example layout-sizing`
+
+## Container
+
+Centered fluid content container with a size-based maximum width.
+
+Kind: component · Import: `@hyeonse/design-system/layout`
+
+```typescript
+export declare function Container({ size, fluid, className, children, ...props }: ContainerProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `size?`: `Size`
+- `fluid?`: `boolean`
+
+### Usage
+
+- Use fluid to remove the maximum width while retaining scaled horizontal padding.
+- Omitted size inherits the nearest provider or layout; default md. Explicit child size wins.
+
+### States
+
+- xs/sm/md/lg/xl
+
+### Accessibility
+
+- Touch controls retain at least 44px targets.
+
+### Limits
+
+- Layout adds no application landmarks or route behavior.
+
+Examples: `hds example layout-sizing`
 
 # Type context
 
@@ -582,32 +2544,549 @@ export {};
 ## @hyeonse/design-system/primitives
 
 ```typescript
+import type { HdsSize } from './sizing.js';
 import type { ComponentPropsWithRef } from 'react';
 export type ButtonProps = ComponentPropsWithRef<'button'> & {
     variant?: 'primary' | 'secondary' | 'ghost';
-    size?: 'sm' | 'md';
+    size?: HdsSize;
     loading?: boolean;
     loadingLabel?: string;
 };
-export declare function Button({ variant, size, loading, loadingLabel, type, disabled, className, children, ref, 'aria-busy': ariaBusy, 'aria-label': ariaLabel, ...props }: ButtonProps): import("react").JSX.Element;
+export declare function Button({ variant, size, loading, loadingLabel, type, disabled, className, children, ref, 'aria-busy': ariaBusy, 'aria-label': ariaLabel, 'aria-labelledby': ariaLabelledBy, ...props }: ButtonProps): import("react").JSX.Element;
 type TextInputType = 'text' | 'email' | 'password' | 'search' | 'tel' | 'url';
-export type TextFieldProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children'> & {
+export type TextFieldProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size'> & {
+    size?: HdsSize;
+    inputSize?: number;
     label: string;
     type?: TextInputType;
     hint?: string;
     error?: string;
 };
-export declare function TextField({ label, hint, error, type, id, className, disabled, ref, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, ...props }: TextFieldProps): import("react").JSX.Element;
-export type CheckboxProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children'> & {
+export declare function TextField({ label, hint, error, size, inputSize, type, id, className, disabled, ref, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, ...props }: TextFieldProps): import("react").JSX.Element;
+export type CheckboxProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size'> & {
+    size?: HdsSize;
+    inputSize?: number;
     label: string;
     hint?: string;
     error?: string;
 };
-export declare function Checkbox({ label, hint, error, id, className, disabled, readOnly, ref, onClick, onChange, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, 'aria-readonly': ariaReadOnly, ...props }: CheckboxProps): import("react").JSX.Element;
+export declare function Checkbox({ label, hint, error, size, inputSize, id, className, disabled, readOnly, ref, onClick, onChange, 'aria-describedby': ariaDescribedBy, 'aria-invalid': ariaInvalid, 'aria-readonly': ariaReadOnly, ...props }: CheckboxProps): import("react").JSX.Element;
 export type BadgeProps = ComponentPropsWithRef<'span'> & {
+    size?: HdsSize;
     tone?: 'neutral' | 'accent' | 'success' | 'warning' | 'danger';
 };
-export declare function Badge({ tone, className, children, ref, ...props }: BadgeProps): import("react").JSX.Element;
+export declare function Badge({ size, tone, className, children, ref, ...props }: BadgeProps): import("react").JSX.Element;
+export {};
+```
+
+## @hyeonse/design-system/fields
+
+```typescript
+import type { ComponentPropsWithRef, Ref } from 'react';
+import type { HdsSize } from './sizing.js';
+type FieldText = {
+    label: string;
+    hint?: string;
+    error?: string;
+    size?: HdsSize;
+};
+type TextualType = 'text' | 'email' | 'search' | 'tel' | 'url';
+export type InputProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size'> & {
+    type?: TextualType;
+    size?: HdsSize;
+    inputSize?: number;
+};
+export declare function Input({ type, size, inputSize, className, ref, ...props }: InputProps): import("react").JSX.Element;
+export type TextareaProps = Omit<ComponentPropsWithRef<'textarea'>, 'children'> & FieldText;
+export declare function Textarea({ label, hint, error, size, id, className, disabled, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: TextareaProps): import("react").JSX.Element;
+export type FieldOption = {
+    value: string;
+    label: string;
+    disabled?: boolean;
+};
+type ChoiceProps = FieldText & {
+    options: readonly FieldOption[];
+    name?: string;
+    form?: string;
+    id?: string;
+    required?: boolean;
+    disabled?: boolean;
+    readOnly?: boolean;
+    value?: string | null;
+    defaultValue?: string | null;
+    onValueChange?: (value: string | null) => void;
+    placeholder?: string;
+    className?: string;
+    'aria-describedby'?: string;
+    'aria-invalid'?: boolean | 'grammar' | 'spelling';
+};
+export type SelectProps = ChoiceProps & {
+    ref?: Ref<HTMLButtonElement>;
+};
+export declare function Select({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: SelectProps): import("react").JSX.Element;
+export type ComboboxProps = ChoiceProps & {
+    ref?: Ref<HTMLInputElement>;
+    emptyText?: string;
+    openLabel?: string;
+    inputValue?: string;
+    defaultInputValue?: string;
+    onInputValueChange?: (value: string) => void;
+};
+export declare function Combobox({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder, emptyText, openLabel, inputValue, defaultInputValue, onInputValueChange, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: ComboboxProps): import("react").JSX.Element;
+export type MultiSelectProps = Omit<ChoiceProps, 'value' | 'defaultValue' | 'onValueChange'> & {
+    ref?: Ref<HTMLInputElement>;
+    value?: readonly string[];
+    defaultValue?: readonly string[];
+    onValueChange?: (value: string[]) => void;
+    emptyText?: string;
+    openLabel?: string;
+    selectedLabel?: string;
+    removeLabel?: (label: string) => string;
+    chipDescription?: string;
+    inputDescription?: (count: number) => string;
+    inputValue?: string;
+    defaultInputValue?: string;
+    onInputValueChange?: (value: string) => void;
+};
+export declare function MultiSelect({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder, emptyText, openLabel, selectedLabel, removeLabel, chipDescription, inputDescription, inputValue, defaultInputValue, onInputValueChange, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: MultiSelectProps): import("react").JSX.Element;
+export type SwitchProps = FieldText & {
+    id?: string;
+    name?: string;
+    form?: string;
+    value?: string;
+    uncheckedValue?: string;
+    required?: boolean;
+    disabled?: boolean;
+    readOnly?: boolean;
+    checked?: boolean;
+    defaultChecked?: boolean;
+    onCheckedChange?: (checked: boolean) => void;
+    ref?: Ref<HTMLInputElement>;
+    className?: string;
+    'aria-describedby'?: string;
+    'aria-invalid'?: boolean | 'grammar' | 'spelling';
+};
+export declare function Switch({ label, hint, error, size, id, name, form, value, uncheckedValue, required, disabled, readOnly, checked, defaultChecked, onCheckedChange, ref, className, 'aria-describedby': describedBy, 'aria-invalid': invalid }: SwitchProps): import("react").JSX.Element;
+export type RadioGroupProps = FieldText & {
+    options: readonly FieldOption[];
+    name?: string;
+    form?: string;
+    required?: boolean;
+    disabled?: boolean;
+    readOnly?: boolean;
+    value?: string;
+    defaultValue?: string;
+    onValueChange?: (value: string) => void;
+    ref?: Ref<HTMLInputElement>;
+    className?: string;
+    'aria-describedby'?: string;
+    'aria-invalid'?: boolean | 'grammar' | 'spelling';
+};
+export declare function RadioGroup({ label, hint, error, size, options, name, form, required, disabled, readOnly, value, defaultValue, onValueChange, ref, className, 'aria-describedby': describedBy, 'aria-invalid': invalid }: RadioGroupProps): import("react").JSX.Element;
+export type SliderProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size' | 'readOnly'> & FieldText & {
+    inputSize?: number;
+};
+export declare function Slider({ label, hint, error, size, inputSize, id, disabled, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: SliderProps): import("react").JSX.Element;
+export type NumberFieldProps = FieldText & {
+    id?: string;
+    name?: string;
+    form?: string;
+    required?: boolean;
+    disabled?: boolean;
+    readOnly?: boolean;
+    value?: number | null;
+    defaultValue?: number;
+    onValueChange?: (value: number | null) => void;
+    min?: number;
+    max?: number;
+    step?: number | 'any';
+    locale?: Intl.LocalesArgument;
+    placeholder?: string;
+    incrementLabel?: string;
+    decrementLabel?: string;
+    ref?: Ref<HTMLInputElement>;
+    className?: string;
+    'aria-describedby'?: string;
+    'aria-invalid'?: boolean | 'grammar' | 'spelling';
+};
+export declare function NumberField({ label, hint, error, size, id, name, form, required, disabled, readOnly, value, defaultValue, onValueChange, min, max, step, locale, placeholder, incrementLabel, decrementLabel, ref, className, 'aria-describedby': describedBy, 'aria-invalid': invalid }: NumberFieldProps): import("react").JSX.Element;
+export type DateFieldProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size'> & FieldText & {
+    inputSize?: number;
+};
+export declare function DateField({ label, hint, error, size, inputSize, id, disabled, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: DateFieldProps): import("react").JSX.Element;
+export type FileInputProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size' | 'value' | 'defaultValue' | 'readOnly'> & FieldText & {
+    inputSize?: number;
+};
+export declare function FileInput({ label, hint, error, size, inputSize, id, disabled, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: FileInputProps): import("react").JSX.Element;
+export type PasswordFieldProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size'> & FieldText & {
+    inputSize?: number;
+    showLabel?: string;
+    hideLabel?: string;
+};
+export declare function PasswordField({ label, hint, error, size, inputSize, id, disabled, className, ref, showLabel, hideLabel, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: PasswordFieldProps): import("react").JSX.Element;
+export {};
+```
+
+## @hyeonse/design-system/overlays
+
+```typescript
+import type { ReactElement, ReactNode } from 'react';
+import type { HdsSize } from './sizing.js';
+export type MenuEntry = {
+    kind: 'action';
+    id: string;
+    label: string;
+    onSelect: () => void;
+    disabled?: boolean;
+    danger?: boolean;
+} | {
+    kind: 'checkbox';
+    id: string;
+    label: string;
+    checked: boolean;
+    onCheckedChange: (checked: boolean) => void;
+    disabled?: boolean;
+} | {
+    kind: 'separator';
+    id: string;
+} | {
+    kind: 'submenu';
+    id: string;
+    label: string;
+    items: readonly MenuEntry[];
+    disabled?: boolean;
+};
+export type DropdownMenuProps = {
+    trigger: ReactElement;
+    items: readonly MenuEntry[];
+    open?: boolean;
+    defaultOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
+    size?: HdsSize;
+};
+export declare function DropdownMenu({ size, trigger, items, open, defaultOpen, onOpenChange }: DropdownMenuProps): import("react").JSX.Element;
+export type ContextMenuProps = {
+    trigger: ReactElement;
+    items: readonly MenuEntry[];
+    open?: boolean;
+    defaultOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
+    size?: HdsSize;
+};
+export declare function ContextMenu({ size, trigger, items, open, defaultOpen, onOpenChange }: ContextMenuProps): import("react").JSX.Element;
+export type DialogProps = {
+    trigger: ReactElement;
+    title: string;
+    description?: string;
+    children?: ReactNode;
+    footer?: ReactNode;
+    closeLabel?: string;
+    open?: boolean;
+    defaultOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
+    size?: HdsSize;
+};
+export declare function Dialog({ size, trigger, title, description, children, footer, closeLabel, open, defaultOpen, onOpenChange }: DialogProps): import("react").JSX.Element;
+export type AlertDialogProps = {
+    trigger: ReactElement;
+    title: string;
+    description?: string;
+    children?: ReactNode;
+    confirmLabel: string;
+    cancelLabel: string;
+    onConfirm: () => void | Promise<void>;
+    onError?: (error: unknown) => void;
+    pending?: boolean;
+    confirmDisabled?: boolean;
+    open?: boolean;
+    defaultOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
+    size?: HdsSize;
+};
+export declare function AlertDialog({ size, trigger, title, description, children, confirmLabel, cancelLabel, onConfirm, onError, pending, confirmDisabled, open, defaultOpen, onOpenChange }: AlertDialogProps): import("react").JSX.Element;
+export type SheetProps = DialogProps & {
+    side?: 'left' | 'right';
+    size?: HdsSize;
+};
+export declare function Sheet({ trigger, title, description, children, footer, closeLabel, side, size, open, defaultOpen, onOpenChange }: SheetProps): import("react").JSX.Element;
+export type PopoverProps = {
+    trigger: ReactElement;
+    title: string;
+    description?: string;
+    children?: ReactNode;
+    closeLabel?: string;
+    open?: boolean;
+    defaultOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
+    size?: HdsSize;
+};
+export declare function Popover({ size, trigger, title, description, children, closeLabel, open, defaultOpen, onOpenChange }: PopoverProps): import("react").JSX.Element;
+export type TooltipProps = {
+    trigger: ReactElement;
+    content: string;
+    delay?: number;
+    size?: HdsSize;
+};
+export declare function Tooltip({ size, trigger, content, delay }: TooltipProps): import("react").JSX.Element;
+export type ToastMessage = {
+    title: string;
+    description?: string;
+    tone?: 'neutral' | 'success' | 'warning' | 'danger';
+    timeout?: number;
+};
+export type ToastProviderProps = {
+    children: ReactNode;
+    viewportLabel?: string;
+    closeLabel?: string;
+    timeout?: number;
+    limit?: number;
+    size?: HdsSize;
+};
+export declare function ToastProvider({ size, children, viewportLabel, closeLabel, timeout, limit }: ToastProviderProps): import("react").JSX.Element;
+export declare function useToast(): {
+    add: (message: ToastMessage) => string;
+    close: (id: string) => void;
+};
+```
+
+## @hyeonse/design-system/display
+
+```typescript
+import type { ComponentPropsWithRef, ReactNode } from 'react';
+import type { HdsSize } from './sizing.js';
+import { Tabs as BaseTabs, Accordion as BaseAccordion, Collapsible as BaseCollapsible, ToggleGroup as BaseToggleGroup, Toggle as BaseToggle } from '@base-ui/react';
+export type TabsProps = Omit<ComponentPropsWithRef<typeof BaseTabs.Root>, 'className'> & {
+    className?: string;
+    size?: HdsSize;
+};
+export declare function Tabs({ size, className, ...props }: TabsProps): import("react").JSX.Element;
+export type TabsListProps = Omit<ComponentPropsWithRef<typeof BaseTabs.List>, 'className'> & {
+    className?: string;
+};
+export declare function TabsList({ className, ...props }: TabsListProps): import("react").JSX.Element;
+export type TabsTabProps = Omit<ComponentPropsWithRef<typeof BaseTabs.Tab>, 'className'> & {
+    className?: string;
+};
+export declare function TabsTab({ className, ...props }: TabsTabProps): import("react").JSX.Element;
+export type TabsPanelProps = Omit<ComponentPropsWithRef<typeof BaseTabs.Panel>, 'className'> & {
+    className?: string;
+};
+export declare function TabsPanel({ className, ...props }: TabsPanelProps): import("react").JSX.Element;
+export type AccordionProps = Omit<ComponentPropsWithRef<typeof BaseAccordion.Root>, 'className'> & {
+    className?: string;
+    size?: HdsSize;
+};
+export declare function Accordion({ size, className, ...props }: AccordionProps): import("react").JSX.Element;
+export type AccordionItemProps = Omit<ComponentPropsWithRef<typeof BaseAccordion.Item>, 'className'> & {
+    className?: string;
+};
+export declare function AccordionItem({ className, ...props }: AccordionItemProps): import("react").JSX.Element;
+export type AccordionHeaderProps = Omit<ComponentPropsWithRef<typeof BaseAccordion.Header>, 'className'> & {
+    className?: string;
+};
+export declare function AccordionHeader({ className, ...props }: AccordionHeaderProps): import("react").JSX.Element;
+export type AccordionTriggerProps = Omit<ComponentPropsWithRef<typeof BaseAccordion.Trigger>, 'className'> & {
+    className?: string;
+};
+export declare function AccordionTrigger({ className, ...props }: AccordionTriggerProps): import("react").JSX.Element;
+export type AccordionPanelProps = Omit<ComponentPropsWithRef<typeof BaseAccordion.Panel>, 'className'> & {
+    className?: string;
+};
+export declare function AccordionPanel({ className, ...props }: AccordionPanelProps): import("react").JSX.Element;
+export type CollapsibleProps = Omit<ComponentPropsWithRef<typeof BaseCollapsible.Root>, 'className'> & {
+    className?: string;
+    size?: HdsSize;
+};
+export declare function Collapsible({ size, className, ...props }: CollapsibleProps): import("react").JSX.Element;
+export type CollapsibleTriggerProps = Omit<ComponentPropsWithRef<typeof BaseCollapsible.Trigger>, 'className'> & {
+    className?: string;
+};
+export declare function CollapsibleTrigger({ className, ...props }: CollapsibleTriggerProps): import("react").JSX.Element;
+export type CollapsiblePanelProps = Omit<ComponentPropsWithRef<typeof BaseCollapsible.Panel>, 'className'> & {
+    className?: string;
+};
+export declare function CollapsiblePanel({ className, ...props }: CollapsiblePanelProps): import("react").JSX.Element;
+export type BreadcrumbItem = {
+    label: ReactNode;
+    href?: string;
+};
+export type BreadcrumbProps = Omit<ComponentPropsWithRef<'nav'>, 'children'> & {
+    items: readonly BreadcrumbItem[];
+    separator?: ReactNode;
+    size?: HdsSize;
+};
+export declare function Breadcrumb({ size, items, separator, className, 'aria-label': ariaLabel, ref, ...props }: BreadcrumbProps): import("react").JSX.Element;
+export type PaginationProps = Omit<ComponentPropsWithRef<'nav'>, 'children'> & {
+    page: number;
+    pageCount: number;
+    onPageChange: (page: number) => void;
+    locale?: 'ko' | 'en';
+    siblingCount?: number;
+    size?: HdsSize;
+};
+export declare function Pagination({ size, page, pageCount, onPageChange, locale, siblingCount, className, 'aria-label': ariaLabel, ref, ...props }: PaginationProps): import("react").JSX.Element;
+export type StepperItem = {
+    label: ReactNode;
+    description?: ReactNode;
+};
+export type StepperProps = Omit<ComponentPropsWithRef<'ol'>, 'children'> & {
+    steps: readonly StepperItem[];
+    currentStep: number;
+    size?: HdsSize;
+};
+export declare function Stepper({ size, steps, currentStep, className, ref, ...props }: StepperProps): import("react").JSX.Element;
+export type SegmentedControlProps = Omit<ComponentPropsWithRef<typeof BaseToggleGroup>, 'className'> & {
+    className?: string;
+    size?: HdsSize;
+};
+export declare function SegmentedControl({ size, className, multiple, ...props }: SegmentedControlProps): import("react").JSX.Element;
+export type ToggleProps = Omit<ComponentPropsWithRef<typeof BaseToggle>, 'className'> & {
+    className?: string;
+    size?: HdsSize;
+};
+export declare function Toggle({ size, className, ...props }: ToggleProps): import("react").JSX.Element;
+export type CardProps = Omit<ComponentPropsWithRef<'article'>, 'title'> & {
+    title?: ReactNode;
+    description?: ReactNode;
+    footer?: ReactNode;
+    size?: HdsSize;
+};
+export declare function Card({ size, title, description, footer, children, className, ref, ...props }: CardProps): import("react").JSX.Element;
+export type TableProps = ComponentPropsWithRef<'table'> & {
+    containerClassName?: string;
+    scrollLabel?: string;
+    size?: HdsSize;
+};
+export declare function Table({ size, containerClassName, scrollLabel, className, ref, ...props }: TableProps): import("react").JSX.Element;
+export type TableHeaderProps = ComponentPropsWithRef<'thead'> & {
+    className?: string;
+};
+export declare function TableHeader({ className, ...props }: TableHeaderProps): import("react").JSX.Element;
+export type TableBodyProps = ComponentPropsWithRef<'tbody'> & {
+    className?: string;
+};
+export declare function TableBody({ className, ...props }: TableBodyProps): import("react").JSX.Element;
+export type TableRowProps = ComponentPropsWithRef<'tr'> & {
+    className?: string;
+};
+export declare function TableRow({ className, ...props }: TableRowProps): import("react").JSX.Element;
+export type TableHeadProps = ComponentPropsWithRef<'th'> & {
+    className?: string;
+};
+export declare function TableHead({ className, scope, ...props }: TableHeadProps): import("react").JSX.Element;
+export type TableCellProps = ComponentPropsWithRef<'td'> & {
+    className?: string;
+};
+export declare function TableCell({ className, ...props }: TableCellProps): import("react").JSX.Element;
+export type TableCaptionProps = ComponentPropsWithRef<'caption'> & {
+    className?: string;
+};
+export declare function TableCaption({ className, ...props }: TableCaptionProps): import("react").JSX.Element;
+export type AlertProps = Omit<ComponentPropsWithRef<'div'>, 'title'> & {
+    tone?: 'info' | 'success' | 'warning' | 'danger';
+    title?: ReactNode;
+    size?: HdsSize;
+};
+export declare function Alert({ size, tone, title, children, className, role, ref, ...props }: AlertProps): import("react").JSX.Element;
+export type AvatarProps = Omit<ComponentPropsWithRef<'span'>, 'children'> & {
+    src?: string;
+    alt: string;
+    fallback: ReactNode;
+    size?: HdsSize;
+};
+export declare function Avatar({ src, alt, fallback, size, className, ref, ...props }: AvatarProps): import("react").JSX.Element;
+export type SeparatorProps = ComponentPropsWithRef<'hr'> & {
+    decorative?: boolean;
+    size?: HdsSize;
+};
+export declare function Separator({ size, decorative, className, ref, ...props }: SeparatorProps): import("react").JSX.Element;
+export type SkeletonProps = ComponentPropsWithRef<'span'> & {
+    width?: string | number;
+    height?: string | number;
+    size?: HdsSize;
+};
+export declare function Skeleton({ size, width, height, style, className, ref, ...props }: SkeletonProps): import("react").JSX.Element;
+export type SpinnerProps = ComponentPropsWithRef<'span'> & {
+    label?: string;
+    size?: HdsSize;
+};
+export declare function Spinner({ size, label, className, ref, ...props }: SpinnerProps): import("react").JSX.Element;
+export type ProgressProps = Omit<ComponentPropsWithRef<'div'>, 'children'> & {
+    value?: number;
+    max?: number;
+    label: string;
+    size?: HdsSize;
+};
+export declare function Progress({ size, value, max, label, className, ref, ...props }: ProgressProps): import("react").JSX.Element;
+export type EmptyStateProps = Omit<ComponentPropsWithRef<'div'>, 'title'> & {
+    title: ReactNode;
+    description?: ReactNode;
+    action?: ReactNode;
+    size?: HdsSize;
+};
+export declare function EmptyState({ size, title, description, action, className, ref, ...props }: EmptyStateProps): import("react").JSX.Element;
+export type AspectRatioProps = ComponentPropsWithRef<'div'> & {
+    ratio?: number;
+    size?: HdsSize;
+};
+export declare function AspectRatio({ size, ratio, style, className, ref, ...props }: AspectRatioProps): import("react").JSX.Element;
+export type ScrollAreaProps = ComponentPropsWithRef<'div'> & {
+    maxHeight?: string | number;
+    label: string;
+    size?: HdsSize;
+};
+export declare function ScrollArea({ size, maxHeight, label, style, className, ref, ...props }: ScrollAreaProps): import("react").JSX.Element;
+export type LabelProps = ComponentPropsWithRef<'label'> & {
+    required?: boolean;
+    size?: HdsSize;
+};
+export declare function Label({ size, required, children, className, ref, ...props }: LabelProps): import("react").JSX.Element;
+export type VisuallyHiddenProps = ComponentPropsWithRef<'span'> & {
+    className?: string;
+};
+export declare function VisuallyHidden({ className, ref, ...props }: VisuallyHiddenProps): import("react").JSX.Element;
+```
+
+## @hyeonse/design-system/layout
+
+```typescript
+import type { ComponentPropsWithRef, ReactNode } from 'react';
+import type { HdsSize } from './sizing.js';
+/** Five consistent size steps. Omitted sizes inherit the nearest layout/provider. */
+export type Size = HdsSize;
+export type SizeProviderProps = {
+    size: Size;
+    children?: ReactNode;
+};
+/** Shares size through React portals without adding an element to the page. */
+export declare function SizeProvider({ size, children }: SizeProviderProps): import("react").JSX.Element;
+type LayoutProps = ComponentPropsWithRef<'div'> & {
+    size?: Size;
+};
+export type StackProps = LayoutProps & {
+    gap?: Size;
+    align?: 'start' | 'center' | 'end' | 'stretch';
+};
+export declare function Stack({ size, gap, align, className, style, children, ...props }: StackProps): import("react").JSX.Element;
+export type InlineProps = LayoutProps & {
+    gap?: Size;
+    align?: 'start' | 'center' | 'end' | 'stretch';
+    justify?: 'start' | 'center' | 'end' | 'between';
+    wrap?: boolean;
+};
+export declare function Inline({ size, gap, align, justify, wrap, className, children, ...props }: InlineProps): import("react").JSX.Element;
+export type GridProps = LayoutProps & {
+    gap?: Size;
+    columns?: 1 | 2 | 3 | 4;
+    minItemWidth?: string;
+};
+/** Columns collapse with available width; minItemWidth controls the preferred item width. */
+export declare function Grid({ size, gap, columns, minItemWidth, style, className, children, ...props }: GridProps): import("react").JSX.Element;
+export type ContainerProps = LayoutProps & {
+    fluid?: boolean;
+};
+/** A centered, fluid container capped by its size with scaled horizontal padding. */
+export declare function Container({ size, fluid, className, children, ...props }: ContainerProps): import("react").JSX.Element;
 export {};
 ```
 
@@ -1026,7 +3505,44 @@ Fast interaction transition duration
 
 Default: `140ms`
 
+## --overlay-scrim
+
+Background scrim behind modal overlays
+
+Default: `rgba(0, 0, 0, .48)`
+
+## --shadow-popover
+
+Elevation shadow for menus, select popups, and popovers
+
+Default: `0 8px 28px rgba(0, 0, 0, .16)`
+
+## --shadow-dialog
+
+Elevation shadow for modal dialogs and sheets
+
+Default: `0 24px 72px rgba(0, 0, 0, .24)`
+
 # Examples
+
+## layout-sizing
+
+Five size steps, inherited component sizing and responsive layout primitives.
+
+### examples/layout-sizing.tsx
+
+```tsx
+import { Container, Grid, Inline, Stack, SizeProvider } from '@hyeonse/design-system/layout';
+import { Button, TextField } from '@hyeonse/design-system/primitives';
+import { Card } from '@hyeonse/design-system/display';
+
+export function LayoutSizingExample() {
+  return <SizeProvider size="sm"><Container size="lg"><Stack gap="xl">
+    <Grid columns={2} size="sm"><Card title="기본 정보"><TextField label="프로젝트 이름" inputSize={24} /></Card><Card title="공유 설정">공개 범위를 정해요.</Card></Grid>
+    <Inline size="sm" justify="end"><Button variant="secondary">취소</Button><Button size="md">저장</Button></Inline>
+  </Stack></Container></SizeProvider>;
+}
+```
 
 ## display-settings
 
@@ -1174,5 +3690,128 @@ export function FormControls({ onSubmit, saving = false, emailError }: {
     <Button type="submit" loading={saving} loadingLabel="저장 중">저장</Button>
     <Badge tone={emailError ? 'danger' : 'neutral'}>{emailError ? '이메일 확인 필요' : '입력 중'}</Badge>
   </form>;
+}
+```
+
+## expanded-forms
+
+Text, selection, search, number, date, and file controls with public imports.
+
+### examples/expanded-forms.tsx
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { Input, Textarea, Select, Combobox, MultiSelect, Switch, RadioGroup, Slider, NumberField, DateField, FileInput, PasswordField } from '@hyeonse/design-system/fields';
+import '@hyeonse/design-system/tokens.css';
+import '@hyeonse/design-system/components.css';
+
+const languages = [
+  { value: 'ko', label: '한국어' },
+  { value: 'en', label: 'English' },
+  { value: 'ja', label: '日本語' },
+];
+
+export function ExpandedForms({ onSubmit }: { onSubmit: (data: FormData) => void }) {
+  const [country, setCountry] = useState<string | null>(null);
+  const [skills, setSkills] = useState<string[]>(['ko']);
+  const [search, setSearch] = useState<string | null>(null);
+
+  return <form onSubmit={event => {
+    event.preventDefault();
+    onSubmit(new FormData(event.currentTarget));
+  }}>
+    <label htmlFor="expanded-alias">표시 이름</label>
+    <Input id="expanded-alias" name="alias" required autoComplete="nickname" />
+    <Textarea label="소개" name="bio" rows={3} hint="간단한 설명을 입력하세요." />
+    <Select label="거주 국가" name="country" options={languages} placeholder="국가 선택" value={country} onValueChange={setCountry} required />
+    <Combobox label="기본 언어" name="primaryLanguage" options={languages} value={search} onValueChange={setSearch} />
+    <MultiSelect label="사용 언어" name="languages" options={languages} value={skills} onValueChange={setSkills} />
+    <Switch label="알림 허용" name="notifications" defaultChecked hint="언제든 바꿀 수 있습니다." />
+    <RadioGroup label="접근 수준" name="access" options={[{ value: 'viewer', label: '읽기' }, { value: 'editor', label: '편집' }]} defaultValue="viewer" />
+    <Slider label="알림 빈도" name="frequency" min={0} max={10} defaultValue={5} />
+    <NumberField label="초대 인원" name="seats" min={1} max={20} defaultValue={2} />
+    <DateField label="시작 날짜" name="startDate" />
+    <FileInput label="첨부 파일" name="attachment" accept=".pdf,.png" />
+    <PasswordField label="접속 비밀번호" name="password" minLength={8} autoComplete="new-password" />
+    <button type="submit">입력 확인</button>
+  </form>;
+}
+```
+
+## overlay-patterns
+
+Menus, dialogs, sheets, popovers, tooltips, and scoped toast notifications.
+
+### examples/overlay-patterns.tsx
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { Button } from '@hyeonse/design-system/primitives';
+import { AlertDialog, ContextMenu, Dialog, DropdownMenu, Popover, Sheet, ToastProvider, Tooltip, useToast } from '@hyeonse/design-system/overlays';
+import type { MenuEntry } from '@hyeonse/design-system/overlays';
+import '@hyeonse/design-system/tokens.css';
+import '@hyeonse/design-system/components.css';
+
+function OverlayControls() {
+  const [pinned, setPinned] = useState(false);
+  const [status, setStatus] = useState('');
+  const toast = useToast();
+  const items: MenuEntry[] = [
+    { kind: 'action', id: 'copy', label: '복사', onSelect: () => setStatus('복사했어요.') },
+    { kind: 'checkbox', id: 'pin', label: '상단에 고정', checked: pinned, onCheckedChange: setPinned },
+    { kind: 'submenu', id: 'move', label: '이동', items: [
+      { kind: 'action', id: 'archive', label: '보관함', onSelect: () => setStatus('보관함으로 이동했어요.') },
+    ] },
+    { kind: 'separator', id: 'divider' },
+    { kind: 'action', id: 'remove', label: '삭제', danger: true, onSelect: () => setStatus('삭제를 선택했어요.') },
+  ];
+
+  return <div>
+    <DropdownMenu trigger={<Button type="button" variant="secondary">작업 메뉴</Button>} items={items} />
+    <ContextMenu trigger={<button type="button">우클릭 메뉴 영역</button>} items={items} />
+    <Dialog trigger={<Button type="button" variant="secondary">대화상자 열기</Button>} title="프로젝트 설정" description="변경할 항목을 확인하세요." footer={<Button type="button" onClick={() => setStatus('저장했어요.')}>저장</Button>}>
+      설정 내용
+    </Dialog>
+    <AlertDialog trigger={<Button type="button" variant="secondary">삭제 확인</Button>}
+      title="프로젝트를 삭제할까요?" description="삭제 후에는 되돌릴 수 없습니다."
+      confirmLabel="삭제" cancelLabel="취소" onConfirm={() => setStatus('삭제했어요.')} />
+    <Sheet trigger={<Button type="button" variant="secondary">상세 패널</Button>} title="프로젝트 상세" side="right" size="md">
+      상세 내용을 여기에 표시합니다.
+    </Sheet>
+    <Popover trigger={<Button type="button" variant="secondary">도움말 보기</Button>} title="도움말" description="최근 작업 내용을 확인하세요.">
+      필요한 정보를 여기에 표시합니다.
+    </Popover>
+    <Tooltip trigger={<Button type="button" variant="ghost" aria-label="단축키 도움말">단축키</Button>} content="단축키 도움말" />
+    <Button type="button" onClick={() => toast.add({ title: '저장 완료', description: '변경 사항을 저장했어요.', tone: 'success' })}>알림 보기</Button>
+    <p role="status">{status}</p>
+  </div>;
+}
+
+export function OverlayPatterns() {
+  return <ToastProvider><OverlayControls /></ToastProvider>;
+}
+```
+
+## display-patterns
+
+Navigation, semantic tables, cards, progress, and feedback patterns.
+
+### examples/display-patterns.tsx
+
+```tsx
+import { Tabs, TabsList, TabsTab, TabsPanel, Accordion, AccordionItem, AccordionHeader, AccordionTrigger, AccordionPanel, Breadcrumb, Card, Alert, Progress } from '@hyeonse/design-system/display';
+
+export function DisplayPatterns() {
+  return <>
+    <Breadcrumb items={[{ label: '홈', href: '/' }, { label: '설정' }]} />
+    <Tabs defaultValue="overview"><TabsList activateOnFocus><TabsTab value="overview">개요</TabsTab><TabsTab value="details">상세</TabsTab></TabsList><TabsPanel value="overview">개요 내용</TabsPanel><TabsPanel value="details">상세 내용</TabsPanel></Tabs>
+    <Accordion defaultValue={['shipping']}><AccordionItem value="shipping"><AccordionHeader><AccordionTrigger>배송 안내</AccordionTrigger></AccordionHeader><AccordionPanel>평균 2일이 걸립니다.</AccordionPanel></AccordionItem></Accordion>
+    <Card title="주문 상태" description="오늘의 주문" footer="최종 갱신: 오늘"><Progress value={45} label="주문 진행률" /></Card>
+    <Alert tone="success" title="저장 완료">변경사항을 저장했습니다.</Alert>
+  </>;
 }
 ```

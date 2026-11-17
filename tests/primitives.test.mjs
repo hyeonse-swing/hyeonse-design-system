@@ -26,6 +26,55 @@ async function withClient(render, run) {
   }
 }
 
+function collisionExample() {
+  return element(React.Fragment, null,
+    element('p', { id: 'field-note' }, 'Field guidance'),
+    element(TextField, { id: 'email', label: 'Email', hint: 'Email hint', error: 'Email error', 'aria-describedby': 'field-note' }),
+    element(TextField, { id: 'email-hint', label: 'Hint address' }),
+    element(TextField, { id: 'email-error', label: 'Error address' }),
+    element('p', { id: 'check-note' }, 'Choice guidance'),
+    element(Checkbox, { id: 'terms', label: 'Terms', hint: 'Terms hint', error: 'Terms error', 'aria-describedby': 'check-note' }),
+    element(Checkbox, { id: 'terms-hint', label: 'Hint choice' }),
+    element(Checkbox, { id: 'terms-error', label: 'Error choice' }),
+  );
+}
+
+function assertCollisionFreeHelpers(document) {
+  const ids = [...document.querySelectorAll('[id]')].map(node => node.id);
+  assert.equal(new Set(ids).size, ids.length, 'helper IDs must not collide with caller input IDs');
+
+  for (const [id, label] of [
+    ['email', 'Email'], ['email-hint', 'Hint address'], ['email-error', 'Error address'],
+    ['terms', 'Terms'], ['terms-hint', 'Hint choice'], ['terms-error', 'Error choice'],
+  ]) {
+    const input = document.getElementById(id);
+    assert.equal(input?.tagName, 'INPUT');
+    assert.equal(input.labels.length, 1, `${id} retains its label`);
+    assert.equal(input.labels[0].control, input);
+    assert.equal(input.labels[0].textContent, label);
+  }
+
+  for (const [id, externalId, helperTexts] of [
+    ['email', 'field-note', ['Email hint', 'Email error']],
+    ['terms', 'check-note', ['Terms hint', 'Terms error']],
+  ]) {
+    const references = document.getElementById(id).getAttribute('aria-describedby').split(' ');
+    assert.equal(references[0], externalId);
+    assert.deepEqual(references.slice(1).map(ref => document.getElementById(ref)?.textContent), helperTexts);
+    assert(references.slice(1).every(ref => document.getElementById(ref)?.tagName === 'P'));
+  }
+}
+
+test('TextField and Checkbox SSR helper IDs do not collide with caller input IDs', () => {
+  const dom = new JSDOM(renderToStaticMarkup(collisionExample()));
+  assertCollisionFreeHelpers(dom.window.document);
+  dom.window.close();
+});
+
+test('TextField and Checkbox client helper IDs keep labels and descriptions linked', async () => {
+  await withClient(collisionExample, async ({ document }) => assertCollisionFreeHelpers(document));
+});
+
 test('SSR labels and descriptions are unique, linked, and retain input attributes', () => {
   const html = renderToStaticMarkup(element(React.Fragment, null,
     element(TextField, { label: 'Email', name: 'email', required: true, autoComplete: 'email', hint: 'Work address', error: 'Check address', 'aria-describedby': 'outside' }),
@@ -65,7 +114,8 @@ test('Button uses a safe default type and loading blocks click and submit', asyn
   let submitCount = 0;
   let loading = false;
   const render = () => element('form', { onSubmit(event) { event.preventDefault(); submitCount++; } },
-    element(Button, { ref: actionRef, onClick() { actionCount++; }, loading, loadingLabel: 'Saving', 'aria-label': 'Save now' }, 'Save'),
+    element('span', { id: 'action-name' }, 'Save now'),
+    element(Button, { ref: actionRef, onClick() { actionCount++; }, loading, loadingLabel: 'Saving', 'aria-label': 'Save now', 'aria-labelledby': 'action-name' }, 'Save'),
     element(Button, { ref: submitRef, type: 'submit', loading, loadingLabel: 'Sending' }, 'Send'),
   );
 
@@ -75,6 +125,7 @@ test('Button uses a safe default type and loading blocks click and submit', asyn
     assert.equal(submitRef.current, submit);
     assert.equal(action.type, 'button');
     assert.equal(submit.type, 'submit');
+    assert.equal(action.getAttribute('aria-labelledby'), 'action-name');
     await act(async () => action.click());
     assert.equal(actionCount, 1);
     assert.equal(submitCount, 0);
@@ -87,11 +138,32 @@ test('Button uses a safe default type and loading blocks click and submit', asyn
     assert.equal(submit.disabled, true);
     assert.equal(action.getAttribute('aria-busy'), 'true');
     assert.equal(action.getAttribute('aria-label'), 'Saving');
+    assert.equal(action.getAttribute('aria-labelledby'), null);
     assert.equal(action.textContent, 'Saving');
     await act(async () => { action.click(); submit.click(); });
     assert.equal(actionCount, 1);
     assert.equal(submitCount, 1);
+
+    loading = false;
+    await act(async () => root.render(render()));
+    assert.equal(action.disabled, false);
+    assert.equal(action.getAttribute('aria-label'), 'Save now');
+    assert.equal(action.getAttribute('aria-labelledby'), 'action-name');
+    assert.equal(action.textContent, 'Save');
   });
+});
+
+test('Button SSR loading label takes precedence over caller aria-labelledby', () => {
+  const html = renderToStaticMarkup(element(React.Fragment, null,
+    element('span', { id: 'original-button-name' }, 'Save now'),
+    element(Button, { loading: true, loadingLabel: 'Saving', 'aria-labelledby': 'original-button-name' }, 'Save'),
+  ));
+  const dom = new JSDOM(html);
+  const button = dom.window.document.querySelector('button');
+  assert.equal(button.getAttribute('aria-labelledby'), null);
+  assert.equal(button.getAttribute('aria-label'), 'Saving');
+  assert.equal(button.textContent, 'Saving');
+  dom.window.close();
 });
 
 test('TextField keeps the native input ref and value behavior', async () => {
