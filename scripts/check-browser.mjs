@@ -196,7 +196,9 @@ async function runCase(browser, engine, name, options, run) {
 
 async function exerciseShowcase(page, base, engine) {
   await page.goto(base);
-  await page.getByRole('textbox', { name: '프로젝트 이름', exact: true }).waitFor();
+  const formExample = page.locator('#component-textfield');
+  const input = formExample.getByRole('textbox', { name: '프로젝트 이름', exact: true });
+  await input.waitFor();
   await page.waitForFunction(() => !document.querySelector('.demo-fields').disabled);
   // macOS WebKit uses Option-Tab for links unless full keyboard navigation is enabled.
   await page.keyboard.press(engine === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab');
@@ -214,18 +216,28 @@ async function exerciseShowcase(page, base, engine) {
   await page.getByRole('checkbox', { name: '비활성 상태', exact: true }).check();
   assert.equal(await button.isDisabled(), true);
   await page.getByRole('checkbox', { name: '비활성 상태', exact: true }).uncheck();
-  const input = page.getByRole('textbox', { name: '프로젝트 이름', exact: true });
-  await page.getByRole('button', { name: '프로젝트 확인' }).click();
+  await formExample.getByRole('button', { name: '프로젝트 확인' }).click();
   assert.equal(await input.getAttribute('aria-invalid'), 'true');
   assert.equal(await input.evaluate(element => element === document.activeElement), true);
   await input.fill('Browser check');
-  const shared = page.getByRole('checkbox', { name: '팀과 공유하기', exact: true });
+  const shared = formExample.getByRole('checkbox', { name: '팀과 공유하기', exact: true });
   await shared.focus();
   await page.keyboard.press('Space');
   assert.equal(await shared.isChecked(), true);
-  await page.getByRole('button', { name: '프로젝트 확인' }).click();
+  await formExample.getByRole('button', { name: '프로젝트 확인' }).click();
   assert.match(await page.locator('#component-textfield .demo-status').innerText(), /팀 공유/);
   assert.notEqual(await input.getAttribute('aria-invalid'), 'true');
+  const workbench = page.getByRole('group', { name: '디자인 시스템 컴포넌트 작업대', exact: true });
+  const specimenInput = workbench.getByRole('textbox', { name: '프로젝트 이름', exact: true });
+  const specimenConfirm = workbench.getByRole('button', { name: '상태 확인', exact: true });
+  await specimenInput.fill('Browser specimen');
+  await specimenConfirm.click();
+  assert.match(await workbench.getByRole('status').innerText(), /Browser specimen/);
+  assert.equal(await input.inputValue(), 'Browser check', 'Workbench does not change the form example');
+  await specimenInput.fill('');
+  assert.equal(await specimenConfirm.isDisabled(), true, 'Workbench rejects an empty name');
+  await specimenInput.fill('Browser specimen');
+  assert.equal(await specimenConfirm.isDisabled(), false);
   await page.getByRole('searchbox', { name: '토큰 검색' }).fill('forest');
   assert((await page.locator('.token-row').count()) > 0);
   await page.getByRole('searchbox', { name: '토큰 검색' }).fill('no-such-token-893');
