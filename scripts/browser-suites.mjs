@@ -17,8 +17,8 @@ export async function exerciseFields(page, base) {
   await scope.getByLabel('추가 설명', { exact: true }).fill('Several\nlines');
   const select = scope.getByRole('combobox', { name: '소속 팀', exact: true });
   await select.click();
-  assert.equal(await page.getByRole('option', { name: '종료된 팀', exact: true }).getAttribute('aria-disabled'), 'true');
-  await page.getByRole('option', { name: '디자인', exact: true }).click();
+  assert.equal(await page.getByRole('listbox').getByRole('option', { name: '종료된 팀', exact: true }).getAttribute('aria-disabled'), 'true');
+  await page.getByRole('listbox').getByRole('option', { name: '디자인', exact: true }).click();
   assert.match(await select.innerText(), /디자인/);
   await select.focus();
   await page.keyboard.press('ArrowDown');
@@ -28,13 +28,13 @@ export async function exerciseFields(page, base) {
 
   const search = scope.getByRole('combobox', { name: '담당 팀 검색', exact: true });
   await search.fill('운영');
-  await page.getByRole('option', { name: '운영', exact: true }).waitFor();
+  await page.getByRole('listbox').getByRole('option', { name: '운영', exact: true }).waitFor();
   await search.press('ArrowDown');
   await search.press('Enter');
   assert.equal(await search.inputValue(), '운영');
   const multi = scope.getByRole('combobox', { name: '협업 팀', exact: true });
   await multi.fill('운영');
-  await page.getByRole('option', { name: '운영', exact: true }).click();
+  await page.getByRole('listbox').getByRole('option', { name: '운영', exact: true }).click();
   assert.deepEqual(await scope.locator('form').evaluate(form => new FormData(form).getAll('members')), ['frontend', 'operations']);
   // A closed Base UI combobox uses Escape to clear selection. Firefox already
   // closes this popup after the option click, so only dismiss an open popup.
@@ -121,10 +121,10 @@ export async function exerciseOverlays(page, base) {
   const nestedPopover = page.getByRole('dialog', { name: '공개 범위 안내', exact: true });
   await nestedPopover.getByRole('button', { name: '닫기', exact: true }).click();
   await nestedPopover.waitFor({ state: 'hidden' });
-  await page.waitForFunction(() => document.querySelector('.hds-dialog__popup')?.contains(document.activeElement));
+  await page.waitForFunction(() => document.querySelector('.hds-dialog__popup[data-open]')?.contains(document.activeElement));
   for (let index = 0; index < 5; index++) {
     await page.keyboard.press('Tab');
-    await page.waitForFunction(() => document.querySelector('.hds-dialog__popup')?.contains(document.activeElement));
+    await page.waitForFunction(() => document.querySelector('.hds-dialog__popup[data-open]')?.contains(document.activeElement));
     assert.equal(await dialog.evaluate(element => element.contains(document.activeElement)), true, `Modal retains keyboard focus: ${await page.evaluate(() => document.activeElement?.outerHTML)}`);
   }
   await page.keyboard.press('Escape');
@@ -291,7 +291,7 @@ export async function exerciseFocusGuards(page, base) {
     if (triggers[name]) await scope.getByRole('button', { name: triggers[name], exact: true }).click();
     if (name === 'nested-select') await page.getByRole('combobox', { name: '프로젝트 공개 범위', exact: true }).click();
     if (name === 'nested-combobox') await page.getByRole('combobox', { name: '담당자', exact: true }).fill('임현');
-    const surface = fields || name.startsWith('nested-') ? '.hds-field__popup' : name === 'menu' ? '.hds-menu__popup' : name === 'popover' ? '.hds-popover__popup' : name === 'toast' ? '.hds-toast' : '.hds-dialog__popup';
+    const surface = fields || name.startsWith('nested-') ? '.hds-field__popup' : name === 'menu' ? '.hds-menu__popup' : name === 'popover' ? '.hds-popover__popup' : name === 'toast' ? '.hds-toast' : '.hds-dialog__popup[data-open]';
     await page.locator(surface).waitFor();
   }
   for (const scenario of scenarios) {
@@ -312,7 +312,7 @@ export async function exerciseFocusGuards(page, base) {
       for (const key of ['Tab', 'Shift+Tab']) {
         for (let index = 0; index < 10; index++) {
           await page.keyboard.press(key);
-          await page.waitForFunction(() => document.querySelector('.hds-dialog__popup')?.contains(document.activeElement));
+          await page.waitForFunction(() => document.querySelector('.hds-dialog__popup[data-open]')?.contains(document.activeElement));
         }
       }
       observations.push({ scenario, keyboardSteps: 20, trapped: true });

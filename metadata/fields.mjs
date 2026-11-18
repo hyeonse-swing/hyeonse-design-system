@@ -29,6 +29,14 @@ export const fieldEntries = {
     limitations: ['Options are not searchable; use Combobox for filtering.', 'Option values must be unique strings.'],
     keywords: ['select', 'dropdown', 'listbox', '선택', '드롭다운'],
   },
+  NativeSelect: {
+    ...shared,
+    summary: 'Labeled browser-native single-choice picker for fixed options.',
+    states: ['empty/selected', 'enabled/disabled', 'required', 'hint/error', 'controlled/uncontrolled'],
+    accessibility: ['The native select uses the browser and screen reader picker without Base UI focus guards.', 'Visible label, hint, and error are linked to the control.'],
+    limitations: ['Option values must be unique nonempty strings; empty string is reserved for the placeholder.', 'Native select has no readOnly mode, and picker appearance follows the browser and operating system.'],
+    keywords: ['native select', 'browser picker', 'screen reader', '선택', '접근성'],
+  },
   Combobox: {
     ...shared,
     summary: 'Searchable single-choice field restricted to supplied options.',

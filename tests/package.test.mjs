@@ -41,7 +41,7 @@ test('packed package exposes its own CLI/catalog/docs and usable React examples 
     assert(!catalogText.includes(root), 'catalog metadata must not expose the author workspace');
     assert.doesNotMatch(catalogText, /(?:\/Users\/|\/home\/|\/var\/folders\/|[A-Z]:\\Users\\)/, 'catalog metadata must use package paths');
     const catalog = JSON.parse(catalogText);
-    for (const [module, count] of [['fields', 12], ['overlays', 9], ['display', 36], ['layout', 5]]) {
+    for (const [module, count] of [['fields', 13], ['overlays', 10], ['display', 36], ['layout', 5]]) {
       const importPath = `@hyeonse/design-system/${module}`;
       assert.equal(installedPackage.exports[`./${module}`].default, `./dist/${module}.js`);
       assert.equal(installedPackage.exports[`./${module}`].types, `./dist/${module}.d.ts`);

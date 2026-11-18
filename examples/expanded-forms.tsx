@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Input, Textarea, Select, Combobox, MultiSelect, Switch, RadioGroup, Slider, NumberField, DateField, FileInput, PasswordField } from '@hyeonse/design-system/fields';
+import { Input, Textarea, Select, NativeSelect, Combobox, MultiSelect, Switch, RadioGroup, Slider, NumberField, DateField, FileInput, PasswordField } from '@hyeonse/design-system/fields';
 import '@hyeonse/design-system/tokens.css';
 import '@hyeonse/design-system/components.css';
 
@@ -24,6 +24,7 @@ export function ExpandedForms({ onSubmit }: { onSubmit: (data: FormData) => void
     <Input id="expanded-alias" name="alias" required autoComplete="nickname" />
     <Textarea label="소개" name="bio" rows={3} hint="간단한 설명을 입력하세요." />
     <Select label="거주 국가" name="country" options={languages} placeholder="국가 선택" value={country} onValueChange={setCountry} required />
+    <NativeSelect label="기본 국가 선택" name="nativeCountry" options={languages} placeholder="국가 선택" />
     <Combobox label="기본 언어" name="primaryLanguage" options={languages} value={search} onValueChange={setSearch} />
     <MultiSelect label="사용 언어" name="languages" options={languages} value={skills} onValueChange={setSkills} />
     <Switch label="알림 허용" name="notifications" defaultChecked hint="언제든 바꿀 수 있습니다." />

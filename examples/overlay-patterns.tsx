@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { Button } from '@hyeonse/design-system/primitives';
-import { AlertDialog, ContextMenu, Dialog, DropdownMenu, Popover, Sheet, ToastProvider, Tooltip, useToast } from '@hyeonse/design-system/overlays';
+import { AlertDialog, ContextMenu, Dialog, NativeDialog, DropdownMenu, Popover, Sheet, ToastProvider, Tooltip, useToast } from '@hyeonse/design-system/overlays';
+import { NativeSelect } from '@hyeonse/design-system/fields';
 import type { MenuEntry } from '@hyeonse/design-system/overlays';
 import '@hyeonse/design-system/tokens.css';
 import '@hyeonse/design-system/components.css';
@@ -27,6 +28,9 @@ function OverlayControls() {
     <Dialog trigger={<Button type="button" variant="secondary">대화상자 열기</Button>} title="프로젝트 설정" description="변경할 항목을 확인하세요." footer={<Button type="button" onClick={() => setStatus('저장했어요.')}>저장</Button>}>
       설정 내용
     </Dialog>
+    <NativeDialog trigger={<Button type="button" variant="secondary">네이티브 대화상자 열기</Button>} title="기본 설정" description="고정된 항목을 선택하세요.">
+      <NativeSelect label="공개 범위" name="nativeVisibility" options={[{ value: 'private', label: '비공개' }, { value: 'public', label: '공개' }]} defaultValue="private" />
+    </NativeDialog>
     <AlertDialog trigger={<Button type="button" variant="secondary">삭제 확인</Button>}
       title="프로젝트를 삭제할까요?" description="삭제 후에는 되돌릴 수 없습니다."
       confirmLabel="삭제" cancelLabel="취소" onConfirm={() => setStatus('삭제했어요.')} />

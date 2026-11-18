@@ -1,6 +1,6 @@
 # @hyeonse/design-system
 
-Installed package version: 0.4.2
+Installed package version: 0.4.3
 
 ## Setup
 
@@ -671,6 +671,63 @@ export declare function Select({ label, hint, error, size, options, name, form, 
 
 Examples: `hds example expanded-forms`
 
+## NativeSelect
+
+Labeled browser-native single-choice picker for fixed options.
+
+Kind: component · Import: `@hyeonse/design-system/fields`
+
+```typescript
+export declare function NativeSelect({ label, hint, error, size, options, name, form, id, required, disabled, value, defaultValue, onValueChange, placeholder, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: NativeSelectProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `form?`: `string`
+- `label`: `string`
+- `size?`: `HdsSize`
+- `disabled?`: `boolean`
+- `name?`: `string`
+- `placeholder?`: `string`
+- `required?`: `boolean`
+- `value?`: `string | null`
+- `defaultValue?`: `string | null`
+- `className?`: `string`
+- `id?`: `string`
+- `aria-describedby?`: `string`
+- `aria-invalid?`: `boolean | 'grammar' | 'spelling'`
+- `hint?`: `string`
+- `error?`: `string`
+- `options`: `readonly FieldOption[]`
+- `onValueChange?`: `(value: string | null) => void`
+- `ref?`: `Ref<HTMLSelectElement>`
+
+### Usage
+
+- Import from @hyeonse/design-system/fields; load tokens.css before components.css.
+- The caller owns validation, error text, and controlled state.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- empty/selected
+- enabled/disabled
+- required
+- hint/error
+- controlled/uncontrolled
+
+### Accessibility
+
+- The native select uses the browser and screen reader picker without Base UI focus guards.
+- Visible label, hint, and error are linked to the control.
+
+### Limits
+
+- Option values must be unique nonempty strings; empty string is reserved for the placeholder.
+- Native select has no readOnly mode, and picker appearance follows the browser and operating system.
+
+Examples: `hds example expanded-forms`
+
 ## Combobox
 
 Searchable single-choice field restricted to supplied options.
@@ -1268,6 +1325,53 @@ export declare function Dialog({ size, trigger, title, description, children, fo
 
 - Caller controls business actions in children and footer.
 - The supplied trigger component must forward its ref and DOM props.
+
+Examples: `hds example overlay-patterns`
+
+## NativeDialog
+
+Browser-native modal dialog with a title, optional description, body, footer, and close control.
+
+Kind: component · Import: `@hyeonse/design-system/overlays`
+
+```typescript
+export declare function NativeDialog({ size, trigger, title, description, children, footer, closeLabel, open, defaultOpen, onOpenChange }: DialogProps): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `trigger`: `ReactElement`
+- `title`: `string`
+- `description?`: `string`
+- `children?`: `ReactNode`
+- `footer?`: `ReactNode`
+- `closeLabel?`: `string`
+- `open?`: `boolean`
+- `defaultOpen?`: `boolean`
+- `onOpenChange?`: `(open: boolean) => void`
+- `size?`: `HdsSize`
+
+### Usage
+
+- Import from @hyeonse/design-system/overlays and load tokens.css then components.css.
+- Pass a button trigger and a required title; use this native path when Base UI popup composition is unnecessary.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- controlled or uncontrolled open
+- optional description and footer
+- xs/sm/md/lg/xl size
+
+### Accessibility
+
+- showModal supplies the native modal top layer; this wrapper keeps Tab and Shift+Tab inside without Base UI focus guards.
+- Escape, close, outside dismissal, and trigger focus return are checked across browser engines.
+
+### Limits
+
+- Browser and screen-reader presentation can vary; actual VoiceOver speech still needs direct confirmation.
+- The trigger must forward onClick and DOM ARIA props. Nested Base UI popup components can still render their own guards.
 
 Examples: `hds example overlay-patterns`
 
@@ -2624,6 +2728,11 @@ export type SelectProps = ChoiceProps & {
     ref?: Ref<HTMLButtonElement>;
 };
 export declare function Select({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: SelectProps): import("react").JSX.Element;
+/** Native picker for fixed choices when browser and screen-reader controls are preferred. */
+export type NativeSelectProps = Omit<ChoiceProps, 'readOnly'> & {
+    ref?: Ref<HTMLSelectElement>;
+};
+export declare function NativeSelect({ label, hint, error, size, options, name, form, id, required, disabled, value, defaultValue, onValueChange, placeholder, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: NativeSelectProps): import("react").JSX.Element;
 export type ComboboxProps = ChoiceProps & {
     ref?: Ref<HTMLInputElement>;
     emptyText?: string;
@@ -2787,6 +2896,8 @@ export type DialogProps = {
     size?: HdsSize;
 };
 export declare function Dialog({ size, trigger, title, description, children, footer, closeLabel, open, defaultOpen, onOpenChange }: DialogProps): import("react").JSX.Element;
+/** Native modal alternative for journeys that do not need Base UI's popup composition. */
+export declare function NativeDialog({ size, trigger, title, description, children, footer, closeLabel, open, defaultOpen, onOpenChange }: DialogProps): import("react").JSX.Element;
 export type AlertDialogProps = {
     trigger: ReactElement;
     title: string;
@@ -3703,7 +3814,7 @@ Text, selection, search, number, date, and file controls with public imports.
 'use client';
 
 import { useState } from 'react';
-import { Input, Textarea, Select, Combobox, MultiSelect, Switch, RadioGroup, Slider, NumberField, DateField, FileInput, PasswordField } from '@hyeonse/design-system/fields';
+import { Input, Textarea, Select, NativeSelect, Combobox, MultiSelect, Switch, RadioGroup, Slider, NumberField, DateField, FileInput, PasswordField } from '@hyeonse/design-system/fields';
 import '@hyeonse/design-system/tokens.css';
 import '@hyeonse/design-system/components.css';
 
@@ -3726,6 +3837,7 @@ export function ExpandedForms({ onSubmit }: { onSubmit: (data: FormData) => void
     <Input id="expanded-alias" name="alias" required autoComplete="nickname" />
     <Textarea label="소개" name="bio" rows={3} hint="간단한 설명을 입력하세요." />
     <Select label="거주 국가" name="country" options={languages} placeholder="국가 선택" value={country} onValueChange={setCountry} required />
+    <NativeSelect label="기본 국가 선택" name="nativeCountry" options={languages} placeholder="국가 선택" />
     <Combobox label="기본 언어" name="primaryLanguage" options={languages} value={search} onValueChange={setSearch} />
     <MultiSelect label="사용 언어" name="languages" options={languages} value={skills} onValueChange={setSkills} />
     <Switch label="알림 허용" name="notifications" defaultChecked hint="언제든 바꿀 수 있습니다." />
@@ -3751,7 +3863,8 @@ Menus, dialogs, sheets, popovers, tooltips, and scoped toast notifications.
 
 import { useState } from 'react';
 import { Button } from '@hyeonse/design-system/primitives';
-import { AlertDialog, ContextMenu, Dialog, DropdownMenu, Popover, Sheet, ToastProvider, Tooltip, useToast } from '@hyeonse/design-system/overlays';
+import { AlertDialog, ContextMenu, Dialog, NativeDialog, DropdownMenu, Popover, Sheet, ToastProvider, Tooltip, useToast } from '@hyeonse/design-system/overlays';
+import { NativeSelect } from '@hyeonse/design-system/fields';
 import type { MenuEntry } from '@hyeonse/design-system/overlays';
 import '@hyeonse/design-system/tokens.css';
 import '@hyeonse/design-system/components.css';
@@ -3776,6 +3889,9 @@ function OverlayControls() {
     <Dialog trigger={<Button type="button" variant="secondary">대화상자 열기</Button>} title="프로젝트 설정" description="변경할 항목을 확인하세요." footer={<Button type="button" onClick={() => setStatus('저장했어요.')}>저장</Button>}>
       설정 내용
     </Dialog>
+    <NativeDialog trigger={<Button type="button" variant="secondary">네이티브 대화상자 열기</Button>} title="기본 설정" description="고정된 항목을 선택하세요.">
+      <NativeSelect label="공개 범위" name="nativeVisibility" options={[{ value: 'private', label: '비공개' }, { value: 'public', label: '공개' }]} defaultValue="private" />
+    </NativeDialog>
     <AlertDialog trigger={<Button type="button" variant="secondary">삭제 확인</Button>}
       title="프로젝트를 삭제할까요?" description="삭제 후에는 되돌릴 수 없습니다."
       confirmLabel="삭제" cancelLabel="취소" onConfirm={() => setStatus('삭제했어요.')} />

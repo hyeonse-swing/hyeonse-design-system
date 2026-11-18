@@ -24,6 +24,14 @@ export const overlayEntries = {
     limitations: ['Caller controls business actions in children and footer.', 'The supplied trigger component must forward its ref and DOM props.'],
     examples: ['overlay-patterns'], keywords: ['dialog', 'modal', 'focus', '모달', '대화상자'],
   },
+  NativeDialog: {
+    kind: 'component', summary: 'Browser-native modal dialog with a title, optional description, body, footer, and close control.',
+    usage: ['Import from @hyeonse/design-system/overlays and load tokens.css then components.css.', 'Pass a button trigger and a required title; use this native path when Base UI popup composition is unnecessary.'],
+    states: ['controlled or uncontrolled open', 'optional description and footer', 'xs/sm/md/lg/xl size'],
+    accessibility: ['showModal supplies the native modal top layer; this wrapper keeps Tab and Shift+Tab inside without Base UI focus guards.', 'Escape, close, outside dismissal, and trigger focus return are checked across browser engines.'],
+    limitations: ['Browser and screen-reader presentation can vary; actual VoiceOver speech still needs direct confirmation.', 'The trigger must forward onClick and DOM ARIA props. Nested Base UI popup components can still render their own guards.'],
+    examples: ['overlay-patterns'], keywords: ['native dialog', 'modal', 'focus', 'screen reader', '모달', '대화상자'],
+  },
   AlertDialog: {
     kind: 'component', summary: 'Confirmation dialog that calls onConfirm only from its confirm button.',
     usage: ['Pass required title, confirmLabel, cancelLabel, and onConfirm.', 'Use pending or confirmDisabled for externally controlled work; a rejected promise keeps the dialog open and is sent to onError.'],

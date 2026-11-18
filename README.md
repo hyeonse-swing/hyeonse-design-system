@@ -4,10 +4,10 @@
 
 ## 사용
 
-`v0.4.2` [설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.2.tgz)는 `v0.4.0`에서 추가한 폼·오버레이·표시·레이아웃 컴포넌트와 공통 5단계 크기를 포함합니다. 필드의 Grid 늘어남과 오른쪽 내장 버튼의 테두리 겹침을 고치고, 기본 회색을 밝게·초점 상태를 진하게 조정했습니다. 쇼케이스에는 HDS `Select`와 섹션 스크롤 탐색을 적용했습니다. v0.4.2는 설치본에서 스킬과 참조를 함께 복사하는 절차, 설치 버전의 API 조회, 기존 앱의 CSS·화면 설정 통합 안내를 보완했습니다. 공개 API 시그니처는 그대로입니다. `v0.4.0`·`v0.4.1` 아카이브는 변경 없이 보존합니다. npm 레지스트리나 GitHub `v0.4.x` 태그로 발행한 패키지는 아닙니다. 기존 GitHub 안정 태그 `v0.3.0`에는 기본 컴포넌트 네 개만 있습니다.
+`v0.4.3` [설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.3.tgz)는 고정 항목 선택과 일반 모달에 쓸 수 있는 `NativeSelect`, `NativeDialog`를 추가합니다. 두 컴포넌트는 브라우저 네이티브 요소를 사용하며 Base UI 초점 가드를 만들지 않습니다. 기존 `Select`·`Dialog`와 나머지 Base UI 오버레이의 WebKit 초점 가드 문제는 남아 있으므로 [검증 범위](docs/code-freeze.md)를 확인하세요. `v0.4.0`~`v0.4.2` 아카이브는 변경 없이 보존합니다. npm 레지스트리나 GitHub `v0.4.x` 태그로 발행한 패키지는 아닙니다. 기존 GitHub 안정 태그 `v0.3.0`에는 기본 컴포넌트 네 개만 있습니다.
 
 ```sh
-npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.2.tgz
+npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.3.tgz
 
 # 기존 v0.3.0 태그가 필요한 프로젝트만
 npm install github:hyeonse-swing/hyeonse-design-system#v0.3.0
@@ -62,7 +62,7 @@ CSS만 필요한 화면에는 두 파일을 순서대로 불러옵니다.
 
 React 화면에서는 `@hyeonse/design-system/react`의 `PreferencesProvider`, `ThemeToggle`, `PreferencesPanel`, `usePreferences`를 사용합니다. 초기 테마 깜빡임을 줄이려면 `@hyeonse/design-system/preferences`의 `preferenceScript`를 문서 `<head>`에 CSS보다 먼저 삽입하세요. 다른 저장 키가 필요하면 `createPreferenceScript(storageKey)`를 사용하고 Provider에도 같은 `storageKey`를 전달합니다. 기본 저장 키는 `hyeonse-site-preferences`입니다.
 
-`v0.3.0`의 폼 기본 컴포넌트는 `@hyeonse/design-system/primitives`에서 가져옵니다. `v0.4.0` 아카이브는 `layout`, `fields`, `overlays`, `display` 공개 진입점을 추가합니다. `SizeProvider`, `Container`, `Stack`, `Inline`, `Grid`는 `layout`, `Input`과 `Select`는 `fields`, `Dialog`는 `overlays`, `Card`는 `display`에서 가져옵니다. [컴포넌트 안내](docs/components.md)와 [폼 예제](examples/form-controls.tsx)를 참고하세요.
+`v0.3.0`의 폼 기본 컴포넌트는 `@hyeonse/design-system/primitives`에서 가져옵니다. `v0.4.0` 아카이브는 `layout`, `fields`, `overlays`, `display` 공개 진입점을 추가합니다. `SizeProvider`, `Container`, `Stack`, `Inline`, `Grid`는 `layout`, `Input`·`Select`·`NativeSelect`는 `fields`, `Dialog`·`NativeDialog`는 `overlays`, `Card`는 `display`에서 가져옵니다. [컴포넌트 안내](docs/components.md)와 [폼 예제](examples/form-controls.tsx)를 참고하세요.
 
 `v0.4.0`의 컴포넌트와 레이아웃은 `xs/sm/md/lg/xl` 크기를 사용합니다. 생략하면 가장 가까운 `SizeProvider`나 레이아웃의 크기를 물려받고, 최상위 기본값은 `md`입니다. 자식의 `size`로 개별 크기를 덮어쓸 수 있습니다. `md` 조작 높이는 일반 포인터에서 36px이며, 터치 포인터가 있는 기기에서는 최소 44px 조작 영역을 확보합니다. [크기와 밀도 규칙](docs/foundations.md#크기와-밀도)을 참고하세요.
 

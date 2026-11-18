@@ -76,3 +76,11 @@ Base UI 1.9.0은 WebKit에서 VoiceOver 가상 커서의 초점 이동을 받기
 ## v0.4.0 패키지 제공 방식
 
 릴리스 대상은 `https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.0.tgz`의 버전 고정 아카이브와 `/releases/manifest.json`이다. 매니페스트의 `name`, `version`, `file`, `url`, `sha256`, `integrity`, `size`를 실제 배포 파일과 비교한 뒤 공개 완료를 기록한다. 이 방식은 npm 레지스트리 게시나 GitHub `v0.4.0` 태그 발행이 아니다. 기존 GitHub `v0.3.0` 태그는 네 개 기본 컴포넌트의 이전 버전이다. WebKit의 [상위 라이브러리 이슈 #5237](https://github.com/mui/base-ui/issues/5237)가 남아 있으므로 패키지 제공과 접근성 프리즈 완료를 같은 상태로 기록하지 않는다.
+
+## v0.4.3 네이티브 선택·모달 대안
+
+0.4.2 기준 실제 WebKit 접근성 트리에서 열린 `Select` 가드 4개와 `Dialog` 가드 2개는 이름 없는 버튼으로 나타났고, 확장 접근성 검사의 Base UI `aria-command-name` 24건은 미해결이었다. Chromium·Firefox에서는 같은 가드가 접근성 트리에 노출되지 않았다. CSS 생성 문구는 WebKit 트리에 이름처럼 보였지만 axe는 여전히 가드를 이름 없는 버튼으로 판정했다. 상위 라이브러리 내부를 덮어쓰거나 검사 규칙을 제외하는 근거로 사용하지 않는다.
+
+`NativeSelect`와 `NativeDialog`는 고정 선택과 일반 모달의 별도 공개 경로다. `<select>`와 `<dialog>.showModal()`을 사용하므로 이 둘만 조합한 화면에는 Base UI 가드가 생기지 않는다. WebKit의 네이티브 모달에서는 Tab이 문서 본문으로 빠지는 경우를 확인해, `NativeDialog`가 보이는 내부 조작 요소 사이의 Tab·Shift+Tab 이동을 직접 관리한다. Escape·닫기·바깥 클릭 뒤 초점 복귀도 검사한다. 네이티브 선택의 메뉴 모양과 일부 키 동작은 브라우저·OS에 맡긴다. 검색 목록·메뉴·시트·팝오버, 또는 이들을 `NativeDialog` 안에 둔 경우에는 기존 Base UI 가드가 남는다.
+
+브라우저 검사의 `native-alternatives`는 네이티브 선택의 이름·값·폼 초기화, 모달 접근성 트리의 제목·필드 이름, axe 전체 규칙, Tab·Shift+Tab 각 10회, Escape·닫기·바깥 클릭·제어형 모달 닫힘과 초점 복귀를 Chromium·Firefox·WebKit에서 검사한다. 이 별도 시나리오의 통과는 기존 `expanded-accessibility`의 `REVIEW`를 통과로 바꾸지 않는다. 2026-11-18에 VoiceOver를 임시 실행해 로컬 Safari 창을 확인하려 했으나 AppleScript 자막 조회가 시간 초과되어 실제 발화와 가상 커서는 관측하지 못했다. 자체 창을 닫고 VoiceOver 실행 상태를 다시 꺼짐으로 확인했다. 실제 보조 기술 검증은 남은 조건이다.

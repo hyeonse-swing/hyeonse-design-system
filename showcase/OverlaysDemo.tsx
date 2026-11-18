@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '../dist/primitives.js';
-import { Select, Combobox } from '../dist/fields.js';
-import { AlertDialog, ContextMenu, Dialog, DropdownMenu, Popover, Sheet, ToastProvider, Tooltip, useToast } from '../dist/overlays.js';
+import { Select, NativeSelect, Combobox } from '../dist/fields.js';
+import { AlertDialog, ContextMenu, Dialog, NativeDialog, DropdownMenu, Popover, Sheet, ToastProvider, Tooltip, useToast } from '../dist/overlays.js';
 import type { MenuEntry } from '../dist/overlays.js';
 
 function DemoControls() {
@@ -31,6 +31,9 @@ function DemoControls() {
           <Popover trigger={<Button variant="ghost">공개 범위 도움말</Button>} title="공개 범위 안내"><p>팀 공개 항목은 팀 구성원과 공유합니다.</p></Popover>
         </div>
       </Dialog>
+      <NativeDialog trigger={<Button type="button" variant="secondary">네이티브 대화상자</Button>} title="기본 설정" description="브라우저 기본 선택 목록을 사용할 수 있습니다.">
+        <NativeSelect label="기본 공개 범위" options={[{ value: 'private', label: '비공개' }, { value: 'team', label: '팀 공개' }]} defaultValue="private" />
+      </NativeDialog>
       <AlertDialog trigger={<Button type="button" variant="secondary">삭제 확인</Button>}
         title="프로젝트를 삭제할까요?" description="이 작업은 되돌릴 수 없습니다."
         cancelLabel="취소" confirmLabel="삭제" onConfirm={() => setMessage('프로젝트를 삭제했어요.')} />

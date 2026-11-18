@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "package": {
     "name": "@hyeonse/design-system",
-    "version": "0.4.2"
+    "version": "0.4.3"
   },
   "boundaries": {
     "provided": [
@@ -193,7 +193,7 @@
       "subpath": "./fields",
       "importPath": "@hyeonse/design-system/fields",
       "source": "src/fields.tsx",
-      "declarations": "import type { ComponentPropsWithRef, Ref } from 'react';\nimport type { HdsSize } from './sizing.js';\ntype FieldText = {\n    label: string;\n    hint?: string;\n    error?: string;\n    size?: HdsSize;\n};\ntype TextualType = 'text' | 'email' | 'search' | 'tel' | 'url';\nexport type InputProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size'> & {\n    type?: TextualType;\n    size?: HdsSize;\n    inputSize?: number;\n};\nexport declare function Input({ type, size, inputSize, className, ref, ...props }: InputProps): import(\"react\").JSX.Element;\nexport type TextareaProps = Omit<ComponentPropsWithRef<'textarea'>, 'children'> & FieldText;\nexport declare function Textarea({ label, hint, error, size, id, className, disabled, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: TextareaProps): import(\"react\").JSX.Element;\nexport type FieldOption = {\n    value: string;\n    label: string;\n    disabled?: boolean;\n};\ntype ChoiceProps = FieldText & {\n    options: readonly FieldOption[];\n    name?: string;\n    form?: string;\n    id?: string;\n    required?: boolean;\n    disabled?: boolean;\n    readOnly?: boolean;\n    value?: string | null;\n    defaultValue?: string | null;\n    onValueChange?: (value: string | null) => void;\n    placeholder?: string;\n    className?: string;\n    'aria-describedby'?: string;\n    'aria-invalid'?: boolean | 'grammar' | 'spelling';\n};\nexport type SelectProps = ChoiceProps & {\n    ref?: Ref<HTMLButtonElement>;\n};\nexport declare function Select({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: SelectProps): import(\"react\").JSX.Element;\nexport type ComboboxProps = ChoiceProps & {\n    ref?: Ref<HTMLInputElement>;\n    emptyText?: string;\n    openLabel?: string;\n    inputValue?: string;\n    defaultInputValue?: string;\n    onInputValueChange?: (value: string) => void;\n};\nexport declare function Combobox({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder, emptyText, openLabel, inputValue, defaultInputValue, onInputValueChange, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: ComboboxProps): import(\"react\").JSX.Element;\nexport type MultiSelectProps = Omit<ChoiceProps, 'value' | 'defaultValue' | 'onValueChange'> & {\n    ref?: Ref<HTMLInputElement>;\n    value?: readonly string[];\n    defaultValue?: readonly string[];\n    onValueChange?: (value: string[]) => void;\n    emptyText?: string;\n    openLabel?: string;\n    selectedLabel?: string;\n    removeLabel?: (label: string) => string;\n    chipDescription?: string;\n    inputDescription?: (count: number) => string;\n    inputValue?: string;\n    defaultInputValue?: string;\n    onInputValueChange?: (value: string) => void;\n};\nexport declare function MultiSelect({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder, emptyText, openLabel, selectedLabel, removeLabel, chipDescription, inputDescription, inputValue, defaultInputValue, onInputValueChange, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: MultiSelectProps): import(\"react\").JSX.Element;\nexport type SwitchProps = FieldText & {\n    id?: string;\n    name?: string;\n    form?: string;\n    value?: string;\n    uncheckedValue?: string;\n    required?: boolean;\n    disabled?: boolean;\n    readOnly?: boolean;\n    checked?: boolean;\n    defaultChecked?: boolean;\n    onCheckedChange?: (checked: boolean) => void;\n    ref?: Ref<HTMLInputElement>;\n    className?: string;\n    'aria-describedby'?: string;\n    'aria-invalid'?: boolean | 'grammar' | 'spelling';\n};\nexport declare function Switch({ label, hint, error, size, id, name, form, value, uncheckedValue, required, disabled, readOnly, checked, defaultChecked, onCheckedChange, ref, className, 'aria-describedby': describedBy, 'aria-invalid': invalid }: SwitchProps): import(\"react\").JSX.Element;\nexport type RadioGroupProps = FieldText & {\n    options: readonly FieldOption[];\n    name?: string;\n    form?: string;\n    required?: boolean;\n    disabled?: boolean;\n    readOnly?: boolean;\n    value?: string;\n    defaultValue?: string;\n    onValueChange?: (value: string) => void;\n    ref?: Ref<HTMLInputElement>;\n    className?: string;\n    'aria-describedby'?: string;\n    'aria-invalid'?: boolean | 'grammar' | 'spelling';\n};\nexport declare function RadioGroup({ label, hint, error, size, options, name, form, required, disabled, readOnly, value, defaultValue, onValueChange, ref, className, 'aria-describedby': describedBy, 'aria-invalid': invalid }: RadioGroupProps): import(\"react\").JSX.Element;\nexport type SliderProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size' | 'readOnly'> & FieldText & {\n    inputSize?: number;\n};\nexport declare function Slider({ label, hint, error, size, inputSize, id, disabled, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: SliderProps): import(\"react\").JSX.Element;\nexport type NumberFieldProps = FieldText & {\n    id?: string;\n    name?: string;\n    form?: string;\n    required?: boolean;\n    disabled?: boolean;\n    readOnly?: boolean;\n    value?: number | null;\n    defaultValue?: number;\n    onValueChange?: (value: number | null) => void;\n    min?: number;\n    max?: number;\n    step?: number | 'any';\n    locale?: Intl.LocalesArgument;\n    placeholder?: string;\n    incrementLabel?: string;\n    decrementLabel?: string;\n    ref?: Ref<HTMLInputElement>;\n    className?: string;\n    'aria-describedby'?: string;\n    'aria-invalid'?: boolean | 'grammar' | 'spelling';\n};\nexport declare function NumberField({ label, hint, error, size, id, name, form, required, disabled, readOnly, value, defaultValue, onValueChange, min, max, step, locale, placeholder, incrementLabel, decrementLabel, ref, className, 'aria-describedby': describedBy, 'aria-invalid': invalid }: NumberFieldProps): import(\"react\").JSX.Element;\nexport type DateFieldProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size'> & FieldText & {\n    inputSize?: number;\n};\nexport declare function DateField({ label, hint, error, size, inputSize, id, disabled, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: DateFieldProps): import(\"react\").JSX.Element;\nexport type FileInputProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size' | 'value' | 'defaultValue' | 'readOnly'> & FieldText & {\n    inputSize?: number;\n};\nexport declare function FileInput({ label, hint, error, size, inputSize, id, disabled, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: FileInputProps): import(\"react\").JSX.Element;\nexport type PasswordFieldProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size'> & FieldText & {\n    inputSize?: number;\n    showLabel?: string;\n    hideLabel?: string;\n};\nexport declare function PasswordField({ label, hint, error, size, inputSize, id, disabled, className, ref, showLabel, hideLabel, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: PasswordFieldProps): import(\"react\").JSX.Element;\nexport {};\n",
+      "declarations": "import type { ComponentPropsWithRef, Ref } from 'react';\nimport type { HdsSize } from './sizing.js';\ntype FieldText = {\n    label: string;\n    hint?: string;\n    error?: string;\n    size?: HdsSize;\n};\ntype TextualType = 'text' | 'email' | 'search' | 'tel' | 'url';\nexport type InputProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size'> & {\n    type?: TextualType;\n    size?: HdsSize;\n    inputSize?: number;\n};\nexport declare function Input({ type, size, inputSize, className, ref, ...props }: InputProps): import(\"react\").JSX.Element;\nexport type TextareaProps = Omit<ComponentPropsWithRef<'textarea'>, 'children'> & FieldText;\nexport declare function Textarea({ label, hint, error, size, id, className, disabled, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: TextareaProps): import(\"react\").JSX.Element;\nexport type FieldOption = {\n    value: string;\n    label: string;\n    disabled?: boolean;\n};\ntype ChoiceProps = FieldText & {\n    options: readonly FieldOption[];\n    name?: string;\n    form?: string;\n    id?: string;\n    required?: boolean;\n    disabled?: boolean;\n    readOnly?: boolean;\n    value?: string | null;\n    defaultValue?: string | null;\n    onValueChange?: (value: string | null) => void;\n    placeholder?: string;\n    className?: string;\n    'aria-describedby'?: string;\n    'aria-invalid'?: boolean | 'grammar' | 'spelling';\n};\nexport type SelectProps = ChoiceProps & {\n    ref?: Ref<HTMLButtonElement>;\n};\nexport declare function Select({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: SelectProps): import(\"react\").JSX.Element;\n/** Native picker for fixed choices when browser and screen-reader controls are preferred. */\nexport type NativeSelectProps = Omit<ChoiceProps, 'readOnly'> & {\n    ref?: Ref<HTMLSelectElement>;\n};\nexport declare function NativeSelect({ label, hint, error, size, options, name, form, id, required, disabled, value, defaultValue, onValueChange, placeholder, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: NativeSelectProps): import(\"react\").JSX.Element;\nexport type ComboboxProps = ChoiceProps & {\n    ref?: Ref<HTMLInputElement>;\n    emptyText?: string;\n    openLabel?: string;\n    inputValue?: string;\n    defaultInputValue?: string;\n    onInputValueChange?: (value: string) => void;\n};\nexport declare function Combobox({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder, emptyText, openLabel, inputValue, defaultInputValue, onInputValueChange, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: ComboboxProps): import(\"react\").JSX.Element;\nexport type MultiSelectProps = Omit<ChoiceProps, 'value' | 'defaultValue' | 'onValueChange'> & {\n    ref?: Ref<HTMLInputElement>;\n    value?: readonly string[];\n    defaultValue?: readonly string[];\n    onValueChange?: (value: string[]) => void;\n    emptyText?: string;\n    openLabel?: string;\n    selectedLabel?: string;\n    removeLabel?: (label: string) => string;\n    chipDescription?: string;\n    inputDescription?: (count: number) => string;\n    inputValue?: string;\n    defaultInputValue?: string;\n    onInputValueChange?: (value: string) => void;\n};\nexport declare function MultiSelect({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder, emptyText, openLabel, selectedLabel, removeLabel, chipDescription, inputDescription, inputValue, defaultInputValue, onInputValueChange, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: MultiSelectProps): import(\"react\").JSX.Element;\nexport type SwitchProps = FieldText & {\n    id?: string;\n    name?: string;\n    form?: string;\n    value?: string;\n    uncheckedValue?: string;\n    required?: boolean;\n    disabled?: boolean;\n    readOnly?: boolean;\n    checked?: boolean;\n    defaultChecked?: boolean;\n    onCheckedChange?: (checked: boolean) => void;\n    ref?: Ref<HTMLInputElement>;\n    className?: string;\n    'aria-describedby'?: string;\n    'aria-invalid'?: boolean | 'grammar' | 'spelling';\n};\nexport declare function Switch({ label, hint, error, size, id, name, form, value, uncheckedValue, required, disabled, readOnly, checked, defaultChecked, onCheckedChange, ref, className, 'aria-describedby': describedBy, 'aria-invalid': invalid }: SwitchProps): import(\"react\").JSX.Element;\nexport type RadioGroupProps = FieldText & {\n    options: readonly FieldOption[];\n    name?: string;\n    form?: string;\n    required?: boolean;\n    disabled?: boolean;\n    readOnly?: boolean;\n    value?: string;\n    defaultValue?: string;\n    onValueChange?: (value: string) => void;\n    ref?: Ref<HTMLInputElement>;\n    className?: string;\n    'aria-describedby'?: string;\n    'aria-invalid'?: boolean | 'grammar' | 'spelling';\n};\nexport declare function RadioGroup({ label, hint, error, size, options, name, form, required, disabled, readOnly, value, defaultValue, onValueChange, ref, className, 'aria-describedby': describedBy, 'aria-invalid': invalid }: RadioGroupProps): import(\"react\").JSX.Element;\nexport type SliderProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size' | 'readOnly'> & FieldText & {\n    inputSize?: number;\n};\nexport declare function Slider({ label, hint, error, size, inputSize, id, disabled, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: SliderProps): import(\"react\").JSX.Element;\nexport type NumberFieldProps = FieldText & {\n    id?: string;\n    name?: string;\n    form?: string;\n    required?: boolean;\n    disabled?: boolean;\n    readOnly?: boolean;\n    value?: number | null;\n    defaultValue?: number;\n    onValueChange?: (value: number | null) => void;\n    min?: number;\n    max?: number;\n    step?: number | 'any';\n    locale?: Intl.LocalesArgument;\n    placeholder?: string;\n    incrementLabel?: string;\n    decrementLabel?: string;\n    ref?: Ref<HTMLInputElement>;\n    className?: string;\n    'aria-describedby'?: string;\n    'aria-invalid'?: boolean | 'grammar' | 'spelling';\n};\nexport declare function NumberField({ label, hint, error, size, id, name, form, required, disabled, readOnly, value, defaultValue, onValueChange, min, max, step, locale, placeholder, incrementLabel, decrementLabel, ref, className, 'aria-describedby': describedBy, 'aria-invalid': invalid }: NumberFieldProps): import(\"react\").JSX.Element;\nexport type DateFieldProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size'> & FieldText & {\n    inputSize?: number;\n};\nexport declare function DateField({ label, hint, error, size, inputSize, id, disabled, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: DateFieldProps): import(\"react\").JSX.Element;\nexport type FileInputProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size' | 'value' | 'defaultValue' | 'readOnly'> & FieldText & {\n    inputSize?: number;\n};\nexport declare function FileInput({ label, hint, error, size, inputSize, id, disabled, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: FileInputProps): import(\"react\").JSX.Element;\nexport type PasswordFieldProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'children' | 'size'> & FieldText & {\n    inputSize?: number;\n    showLabel?: string;\n    hideLabel?: string;\n};\nexport declare function PasswordField({ label, hint, error, size, inputSize, id, disabled, className, ref, showLabel, hideLabel, 'aria-describedby': describedBy, 'aria-invalid': invalid, ...props }: PasswordFieldProps): import(\"react\").JSX.Element;\nexport {};\n",
       "exports": [
         {
           "name": "InputProps",
@@ -229,6 +229,16 @@
           "name": "Select",
           "kind": "value",
           "signature": "export declare function Select({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: SelectProps): import(\"react\").JSX.Element;"
+        },
+        {
+          "name": "NativeSelectProps",
+          "kind": "type",
+          "signature": "export type NativeSelectProps = Omit<ChoiceProps, 'readOnly'> & {\n    ref?: Ref<HTMLSelectElement>;\n};"
+        },
+        {
+          "name": "NativeSelect",
+          "kind": "value",
+          "signature": "export declare function NativeSelect({ label, hint, error, size, options, name, form, id, required, disabled, value, defaultValue, onValueChange, placeholder, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: NativeSelectProps): import(\"react\").JSX.Element;"
         },
         {
           "name": "ComboboxProps",
@@ -326,7 +336,7 @@
       "subpath": "./overlays",
       "importPath": "@hyeonse/design-system/overlays",
       "source": "src/overlays.tsx",
-      "declarations": "import type { ReactElement, ReactNode } from 'react';\nimport type { HdsSize } from './sizing.js';\nexport type MenuEntry = {\n    kind: 'action';\n    id: string;\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n    danger?: boolean;\n} | {\n    kind: 'checkbox';\n    id: string;\n    label: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n} | {\n    kind: 'separator';\n    id: string;\n} | {\n    kind: 'submenu';\n    id: string;\n    label: string;\n    items: readonly MenuEntry[];\n    disabled?: boolean;\n};\nexport type DropdownMenuProps = {\n    trigger: ReactElement;\n    items: readonly MenuEntry[];\n    open?: boolean;\n    defaultOpen?: boolean;\n    onOpenChange?: (open: boolean) => void;\n    size?: HdsSize;\n};\nexport declare function DropdownMenu({ size, trigger, items, open, defaultOpen, onOpenChange }: DropdownMenuProps): import(\"react\").JSX.Element;\nexport type ContextMenuProps = {\n    trigger: ReactElement;\n    items: readonly MenuEntry[];\n    open?: boolean;\n    defaultOpen?: boolean;\n    onOpenChange?: (open: boolean) => void;\n    size?: HdsSize;\n};\nexport declare function ContextMenu({ size, trigger, items, open, defaultOpen, onOpenChange }: ContextMenuProps): import(\"react\").JSX.Element;\nexport type DialogProps = {\n    trigger: ReactElement;\n    title: string;\n    description?: string;\n    children?: ReactNode;\n    footer?: ReactNode;\n    closeLabel?: string;\n    open?: boolean;\n    defaultOpen?: boolean;\n    onOpenChange?: (open: boolean) => void;\n    size?: HdsSize;\n};\nexport declare function Dialog({ size, trigger, title, description, children, footer, closeLabel, open, defaultOpen, onOpenChange }: DialogProps): import(\"react\").JSX.Element;\nexport type AlertDialogProps = {\n    trigger: ReactElement;\n    title: string;\n    description?: string;\n    children?: ReactNode;\n    confirmLabel: string;\n    cancelLabel: string;\n    onConfirm: () => void | Promise<void>;\n    onError?: (error: unknown) => void;\n    pending?: boolean;\n    confirmDisabled?: boolean;\n    open?: boolean;\n    defaultOpen?: boolean;\n    onOpenChange?: (open: boolean) => void;\n    size?: HdsSize;\n};\nexport declare function AlertDialog({ size, trigger, title, description, children, confirmLabel, cancelLabel, onConfirm, onError, pending, confirmDisabled, open, defaultOpen, onOpenChange }: AlertDialogProps): import(\"react\").JSX.Element;\nexport type SheetProps = DialogProps & {\n    side?: 'left' | 'right';\n    size?: HdsSize;\n};\nexport declare function Sheet({ trigger, title, description, children, footer, closeLabel, side, size, open, defaultOpen, onOpenChange }: SheetProps): import(\"react\").JSX.Element;\nexport type PopoverProps = {\n    trigger: ReactElement;\n    title: string;\n    description?: string;\n    children?: ReactNode;\n    closeLabel?: string;\n    open?: boolean;\n    defaultOpen?: boolean;\n    onOpenChange?: (open: boolean) => void;\n    size?: HdsSize;\n};\nexport declare function Popover({ size, trigger, title, description, children, closeLabel, open, defaultOpen, onOpenChange }: PopoverProps): import(\"react\").JSX.Element;\nexport type TooltipProps = {\n    trigger: ReactElement;\n    content: string;\n    delay?: number;\n    size?: HdsSize;\n};\nexport declare function Tooltip({ size, trigger, content, delay }: TooltipProps): import(\"react\").JSX.Element;\nexport type ToastMessage = {\n    title: string;\n    description?: string;\n    tone?: 'neutral' | 'success' | 'warning' | 'danger';\n    timeout?: number;\n};\nexport type ToastProviderProps = {\n    children: ReactNode;\n    viewportLabel?: string;\n    closeLabel?: string;\n    timeout?: number;\n    limit?: number;\n    size?: HdsSize;\n};\nexport declare function ToastProvider({ size, children, viewportLabel, closeLabel, timeout, limit }: ToastProviderProps): import(\"react\").JSX.Element;\nexport declare function useToast(): {\n    add: (message: ToastMessage) => string;\n    close: (id: string) => void;\n};\n",
+      "declarations": "import type { ReactElement, ReactNode } from 'react';\nimport type { HdsSize } from './sizing.js';\nexport type MenuEntry = {\n    kind: 'action';\n    id: string;\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n    danger?: boolean;\n} | {\n    kind: 'checkbox';\n    id: string;\n    label: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    disabled?: boolean;\n} | {\n    kind: 'separator';\n    id: string;\n} | {\n    kind: 'submenu';\n    id: string;\n    label: string;\n    items: readonly MenuEntry[];\n    disabled?: boolean;\n};\nexport type DropdownMenuProps = {\n    trigger: ReactElement;\n    items: readonly MenuEntry[];\n    open?: boolean;\n    defaultOpen?: boolean;\n    onOpenChange?: (open: boolean) => void;\n    size?: HdsSize;\n};\nexport declare function DropdownMenu({ size, trigger, items, open, defaultOpen, onOpenChange }: DropdownMenuProps): import(\"react\").JSX.Element;\nexport type ContextMenuProps = {\n    trigger: ReactElement;\n    items: readonly MenuEntry[];\n    open?: boolean;\n    defaultOpen?: boolean;\n    onOpenChange?: (open: boolean) => void;\n    size?: HdsSize;\n};\nexport declare function ContextMenu({ size, trigger, items, open, defaultOpen, onOpenChange }: ContextMenuProps): import(\"react\").JSX.Element;\nexport type DialogProps = {\n    trigger: ReactElement;\n    title: string;\n    description?: string;\n    children?: ReactNode;\n    footer?: ReactNode;\n    closeLabel?: string;\n    open?: boolean;\n    defaultOpen?: boolean;\n    onOpenChange?: (open: boolean) => void;\n    size?: HdsSize;\n};\nexport declare function Dialog({ size, trigger, title, description, children, footer, closeLabel, open, defaultOpen, onOpenChange }: DialogProps): import(\"react\").JSX.Element;\n/** Native modal alternative for journeys that do not need Base UI's popup composition. */\nexport declare function NativeDialog({ size, trigger, title, description, children, footer, closeLabel, open, defaultOpen, onOpenChange }: DialogProps): import(\"react\").JSX.Element;\nexport type AlertDialogProps = {\n    trigger: ReactElement;\n    title: string;\n    description?: string;\n    children?: ReactNode;\n    confirmLabel: string;\n    cancelLabel: string;\n    onConfirm: () => void | Promise<void>;\n    onError?: (error: unknown) => void;\n    pending?: boolean;\n    confirmDisabled?: boolean;\n    open?: boolean;\n    defaultOpen?: boolean;\n    onOpenChange?: (open: boolean) => void;\n    size?: HdsSize;\n};\nexport declare function AlertDialog({ size, trigger, title, description, children, confirmLabel, cancelLabel, onConfirm, onError, pending, confirmDisabled, open, defaultOpen, onOpenChange }: AlertDialogProps): import(\"react\").JSX.Element;\nexport type SheetProps = DialogProps & {\n    side?: 'left' | 'right';\n    size?: HdsSize;\n};\nexport declare function Sheet({ trigger, title, description, children, footer, closeLabel, side, size, open, defaultOpen, onOpenChange }: SheetProps): import(\"react\").JSX.Element;\nexport type PopoverProps = {\n    trigger: ReactElement;\n    title: string;\n    description?: string;\n    children?: ReactNode;\n    closeLabel?: string;\n    open?: boolean;\n    defaultOpen?: boolean;\n    onOpenChange?: (open: boolean) => void;\n    size?: HdsSize;\n};\nexport declare function Popover({ size, trigger, title, description, children, closeLabel, open, defaultOpen, onOpenChange }: PopoverProps): import(\"react\").JSX.Element;\nexport type TooltipProps = {\n    trigger: ReactElement;\n    content: string;\n    delay?: number;\n    size?: HdsSize;\n};\nexport declare function Tooltip({ size, trigger, content, delay }: TooltipProps): import(\"react\").JSX.Element;\nexport type ToastMessage = {\n    title: string;\n    description?: string;\n    tone?: 'neutral' | 'success' | 'warning' | 'danger';\n    timeout?: number;\n};\nexport type ToastProviderProps = {\n    children: ReactNode;\n    viewportLabel?: string;\n    closeLabel?: string;\n    timeout?: number;\n    limit?: number;\n    size?: HdsSize;\n};\nexport declare function ToastProvider({ size, children, viewportLabel, closeLabel, timeout, limit }: ToastProviderProps): import(\"react\").JSX.Element;\nexport declare function useToast(): {\n    add: (message: ToastMessage) => string;\n    close: (id: string) => void;\n};\n",
       "exports": [
         {
           "name": "MenuEntry",
@@ -362,6 +372,11 @@
           "name": "Dialog",
           "kind": "value",
           "signature": "export declare function Dialog({ size, trigger, title, description, children, footer, closeLabel, open, defaultOpen, onOpenChange }: DialogProps): import(\"react\").JSX.Element;"
+        },
+        {
+          "name": "NativeDialog",
+          "kind": "value",
+          "signature": "export declare function NativeDialog({ size, trigger, title, description, children, footer, closeLabel, open, defaultOpen, onOpenChange }: DialogProps): import(\"react\").JSX.Element;"
         },
         {
           "name": "AlertDialogProps",
@@ -1799,6 +1814,138 @@
       ]
     },
     {
+      "id": "NativeSelect",
+      "kind": "component",
+      "summary": "Labeled browser-native single-choice picker for fixed options.",
+      "importPath": "@hyeonse/design-system/fields",
+      "source": "src/fields.tsx",
+      "signature": "export declare function NativeSelect({ label, hint, error, size, options, name, form, id, required, disabled, value, defaultValue, onValueChange, placeholder, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: NativeSelectProps): import(\"react\").JSX.Element;",
+      "usage": [
+        "Import from @hyeonse/design-system/fields; load tokens.css before components.css.",
+        "The caller owns validation, error text, and controlled state.",
+        "size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals."
+      ],
+      "states": [
+        "empty/selected",
+        "enabled/disabled",
+        "required",
+        "hint/error",
+        "controlled/uncontrolled"
+      ],
+      "accessibility": [
+        "The native select uses the browser and screen reader picker without Base UI focus guards.",
+        "Visible label, hint, and error are linked to the control."
+      ],
+      "limitations": [
+        "Option values must be unique nonempty strings; empty string is reserved for the placeholder.",
+        "Native select has no readOnly mode, and picker appearance follows the browser and operating system."
+      ],
+      "examples": [
+        "expanded-forms"
+      ],
+      "keywords": [
+        "native select",
+        "browser picker",
+        "screen reader",
+        "선택",
+        "접근성",
+        "size",
+        "사이징"
+      ],
+      "props": [
+        {
+          "name": "form",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "size",
+          "type": "HdsSize",
+          "required": false
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "value",
+          "type": "string | null",
+          "required": false
+        },
+        {
+          "name": "defaultValue",
+          "type": "string | null",
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "aria-describedby",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "aria-invalid",
+          "type": "boolean | 'grammar' | 'spelling'",
+          "required": false
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "options",
+          "type": "readonly FieldOption[]",
+          "required": true
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string | null) => void",
+          "required": false
+        },
+        {
+          "name": "ref",
+          "type": "Ref<HTMLSelectElement>",
+          "required": false
+        }
+      ]
+    },
+    {
       "id": "Combobox",
       "kind": "component",
       "summary": "Searchable single-choice field restricted to supplied options.",
@@ -2999,6 +3146,97 @@
         "dialog",
         "modal",
         "focus",
+        "모달",
+        "대화상자",
+        "size",
+        "사이징"
+      ],
+      "props": [
+        {
+          "name": "trigger",
+          "type": "ReactElement",
+          "required": true
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "footer",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "closeLabel",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false
+        },
+        {
+          "name": "size",
+          "type": "HdsSize",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "NativeDialog",
+      "kind": "component",
+      "summary": "Browser-native modal dialog with a title, optional description, body, footer, and close control.",
+      "importPath": "@hyeonse/design-system/overlays",
+      "source": "src/overlays.tsx",
+      "signature": "export declare function NativeDialog({ size, trigger, title, description, children, footer, closeLabel, open, defaultOpen, onOpenChange }: DialogProps): import(\"react\").JSX.Element;",
+      "usage": [
+        "Import from @hyeonse/design-system/overlays and load tokens.css then components.css.",
+        "Pass a button trigger and a required title; use this native path when Base UI popup composition is unnecessary.",
+        "size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals."
+      ],
+      "states": [
+        "controlled or uncontrolled open",
+        "optional description and footer",
+        "xs/sm/md/lg/xl size"
+      ],
+      "accessibility": [
+        "showModal supplies the native modal top layer; this wrapper keeps Tab and Shift+Tab inside without Base UI focus guards.",
+        "Escape, close, outside dismissal, and trigger focus return are checked across browser engines."
+      ],
+      "limitations": [
+        "Browser and screen-reader presentation can vary; actual VoiceOver speech still needs direct confirmation.",
+        "The trigger must forward onClick and DOM ARIA props. Nested Base UI popup components can still render their own guards."
+      ],
+      "examples": [
+        "overlay-patterns"
+      ],
+      "keywords": [
+        "native dialog",
+        "modal",
+        "focus",
+        "screen reader",
         "모달",
         "대화상자",
         "size",
@@ -5824,7 +6062,7 @@
         {
           "path": "examples/expanded-forms.tsx",
           "language": "tsx",
-          "code": "'use client';\n\nimport { useState } from 'react';\nimport { Input, Textarea, Select, Combobox, MultiSelect, Switch, RadioGroup, Slider, NumberField, DateField, FileInput, PasswordField } from '@hyeonse/design-system/fields';\nimport '@hyeonse/design-system/tokens.css';\nimport '@hyeonse/design-system/components.css';\n\nconst languages = [\n  { value: 'ko', label: '한국어' },\n  { value: 'en', label: 'English' },\n  { value: 'ja', label: '日本語' },\n];\n\nexport function ExpandedForms({ onSubmit }: { onSubmit: (data: FormData) => void }) {\n  const [country, setCountry] = useState<string | null>(null);\n  const [skills, setSkills] = useState<string[]>(['ko']);\n  const [search, setSearch] = useState<string | null>(null);\n\n  return <form onSubmit={event => {\n    event.preventDefault();\n    onSubmit(new FormData(event.currentTarget));\n  }}>\n    <label htmlFor=\"expanded-alias\">표시 이름</label>\n    <Input id=\"expanded-alias\" name=\"alias\" required autoComplete=\"nickname\" />\n    <Textarea label=\"소개\" name=\"bio\" rows={3} hint=\"간단한 설명을 입력하세요.\" />\n    <Select label=\"거주 국가\" name=\"country\" options={languages} placeholder=\"국가 선택\" value={country} onValueChange={setCountry} required />\n    <Combobox label=\"기본 언어\" name=\"primaryLanguage\" options={languages} value={search} onValueChange={setSearch} />\n    <MultiSelect label=\"사용 언어\" name=\"languages\" options={languages} value={skills} onValueChange={setSkills} />\n    <Switch label=\"알림 허용\" name=\"notifications\" defaultChecked hint=\"언제든 바꿀 수 있습니다.\" />\n    <RadioGroup label=\"접근 수준\" name=\"access\" options={[{ value: 'viewer', label: '읽기' }, { value: 'editor', label: '편집' }]} defaultValue=\"viewer\" />\n    <Slider label=\"알림 빈도\" name=\"frequency\" min={0} max={10} defaultValue={5} />\n    <NumberField label=\"초대 인원\" name=\"seats\" min={1} max={20} defaultValue={2} />\n    <DateField label=\"시작 날짜\" name=\"startDate\" />\n    <FileInput label=\"첨부 파일\" name=\"attachment\" accept=\".pdf,.png\" />\n    <PasswordField label=\"접속 비밀번호\" name=\"password\" minLength={8} autoComplete=\"new-password\" />\n    <button type=\"submit\">입력 확인</button>\n  </form>;\n}\n"
+          "code": "'use client';\n\nimport { useState } from 'react';\nimport { Input, Textarea, Select, NativeSelect, Combobox, MultiSelect, Switch, RadioGroup, Slider, NumberField, DateField, FileInput, PasswordField } from '@hyeonse/design-system/fields';\nimport '@hyeonse/design-system/tokens.css';\nimport '@hyeonse/design-system/components.css';\n\nconst languages = [\n  { value: 'ko', label: '한국어' },\n  { value: 'en', label: 'English' },\n  { value: 'ja', label: '日本語' },\n];\n\nexport function ExpandedForms({ onSubmit }: { onSubmit: (data: FormData) => void }) {\n  const [country, setCountry] = useState<string | null>(null);\n  const [skills, setSkills] = useState<string[]>(['ko']);\n  const [search, setSearch] = useState<string | null>(null);\n\n  return <form onSubmit={event => {\n    event.preventDefault();\n    onSubmit(new FormData(event.currentTarget));\n  }}>\n    <label htmlFor=\"expanded-alias\">표시 이름</label>\n    <Input id=\"expanded-alias\" name=\"alias\" required autoComplete=\"nickname\" />\n    <Textarea label=\"소개\" name=\"bio\" rows={3} hint=\"간단한 설명을 입력하세요.\" />\n    <Select label=\"거주 국가\" name=\"country\" options={languages} placeholder=\"국가 선택\" value={country} onValueChange={setCountry} required />\n    <NativeSelect label=\"기본 국가 선택\" name=\"nativeCountry\" options={languages} placeholder=\"국가 선택\" />\n    <Combobox label=\"기본 언어\" name=\"primaryLanguage\" options={languages} value={search} onValueChange={setSearch} />\n    <MultiSelect label=\"사용 언어\" name=\"languages\" options={languages} value={skills} onValueChange={setSkills} />\n    <Switch label=\"알림 허용\" name=\"notifications\" defaultChecked hint=\"언제든 바꿀 수 있습니다.\" />\n    <RadioGroup label=\"접근 수준\" name=\"access\" options={[{ value: 'viewer', label: '읽기' }, { value: 'editor', label: '편집' }]} defaultValue=\"viewer\" />\n    <Slider label=\"알림 빈도\" name=\"frequency\" min={0} max={10} defaultValue={5} />\n    <NumberField label=\"초대 인원\" name=\"seats\" min={1} max={20} defaultValue={2} />\n    <DateField label=\"시작 날짜\" name=\"startDate\" />\n    <FileInput label=\"첨부 파일\" name=\"attachment\" accept=\".pdf,.png\" />\n    <PasswordField label=\"접속 비밀번호\" name=\"password\" minLength={8} autoComplete=\"new-password\" />\n    <button type=\"submit\">입력 확인</button>\n  </form>;\n}\n"
         }
       ]
     },
@@ -5835,7 +6073,7 @@
         {
           "path": "examples/overlay-patterns.tsx",
           "language": "tsx",
-          "code": "'use client';\n\nimport { useState } from 'react';\nimport { Button } from '@hyeonse/design-system/primitives';\nimport { AlertDialog, ContextMenu, Dialog, DropdownMenu, Popover, Sheet, ToastProvider, Tooltip, useToast } from '@hyeonse/design-system/overlays';\nimport type { MenuEntry } from '@hyeonse/design-system/overlays';\nimport '@hyeonse/design-system/tokens.css';\nimport '@hyeonse/design-system/components.css';\n\nfunction OverlayControls() {\n  const [pinned, setPinned] = useState(false);\n  const [status, setStatus] = useState('');\n  const toast = useToast();\n  const items: MenuEntry[] = [\n    { kind: 'action', id: 'copy', label: '복사', onSelect: () => setStatus('복사했어요.') },\n    { kind: 'checkbox', id: 'pin', label: '상단에 고정', checked: pinned, onCheckedChange: setPinned },\n    { kind: 'submenu', id: 'move', label: '이동', items: [\n      { kind: 'action', id: 'archive', label: '보관함', onSelect: () => setStatus('보관함으로 이동했어요.') },\n    ] },\n    { kind: 'separator', id: 'divider' },\n    { kind: 'action', id: 'remove', label: '삭제', danger: true, onSelect: () => setStatus('삭제를 선택했어요.') },\n  ];\n\n  return <div>\n    <DropdownMenu trigger={<Button type=\"button\" variant=\"secondary\">작업 메뉴</Button>} items={items} />\n    <ContextMenu trigger={<button type=\"button\">우클릭 메뉴 영역</button>} items={items} />\n    <Dialog trigger={<Button type=\"button\" variant=\"secondary\">대화상자 열기</Button>} title=\"프로젝트 설정\" description=\"변경할 항목을 확인하세요.\" footer={<Button type=\"button\" onClick={() => setStatus('저장했어요.')}>저장</Button>}>\n      설정 내용\n    </Dialog>\n    <AlertDialog trigger={<Button type=\"button\" variant=\"secondary\">삭제 확인</Button>}\n      title=\"프로젝트를 삭제할까요?\" description=\"삭제 후에는 되돌릴 수 없습니다.\"\n      confirmLabel=\"삭제\" cancelLabel=\"취소\" onConfirm={() => setStatus('삭제했어요.')} />\n    <Sheet trigger={<Button type=\"button\" variant=\"secondary\">상세 패널</Button>} title=\"프로젝트 상세\" side=\"right\" size=\"md\">\n      상세 내용을 여기에 표시합니다.\n    </Sheet>\n    <Popover trigger={<Button type=\"button\" variant=\"secondary\">도움말 보기</Button>} title=\"도움말\" description=\"최근 작업 내용을 확인하세요.\">\n      필요한 정보를 여기에 표시합니다.\n    </Popover>\n    <Tooltip trigger={<Button type=\"button\" variant=\"ghost\" aria-label=\"단축키 도움말\">단축키</Button>} content=\"단축키 도움말\" />\n    <Button type=\"button\" onClick={() => toast.add({ title: '저장 완료', description: '변경 사항을 저장했어요.', tone: 'success' })}>알림 보기</Button>\n    <p role=\"status\">{status}</p>\n  </div>;\n}\n\nexport function OverlayPatterns() {\n  return <ToastProvider><OverlayControls /></ToastProvider>;\n}\n"
+          "code": "'use client';\n\nimport { useState } from 'react';\nimport { Button } from '@hyeonse/design-system/primitives';\nimport { AlertDialog, ContextMenu, Dialog, NativeDialog, DropdownMenu, Popover, Sheet, ToastProvider, Tooltip, useToast } from '@hyeonse/design-system/overlays';\nimport { NativeSelect } from '@hyeonse/design-system/fields';\nimport type { MenuEntry } from '@hyeonse/design-system/overlays';\nimport '@hyeonse/design-system/tokens.css';\nimport '@hyeonse/design-system/components.css';\n\nfunction OverlayControls() {\n  const [pinned, setPinned] = useState(false);\n  const [status, setStatus] = useState('');\n  const toast = useToast();\n  const items: MenuEntry[] = [\n    { kind: 'action', id: 'copy', label: '복사', onSelect: () => setStatus('복사했어요.') },\n    { kind: 'checkbox', id: 'pin', label: '상단에 고정', checked: pinned, onCheckedChange: setPinned },\n    { kind: 'submenu', id: 'move', label: '이동', items: [\n      { kind: 'action', id: 'archive', label: '보관함', onSelect: () => setStatus('보관함으로 이동했어요.') },\n    ] },\n    { kind: 'separator', id: 'divider' },\n    { kind: 'action', id: 'remove', label: '삭제', danger: true, onSelect: () => setStatus('삭제를 선택했어요.') },\n  ];\n\n  return <div>\n    <DropdownMenu trigger={<Button type=\"button\" variant=\"secondary\">작업 메뉴</Button>} items={items} />\n    <ContextMenu trigger={<button type=\"button\">우클릭 메뉴 영역</button>} items={items} />\n    <Dialog trigger={<Button type=\"button\" variant=\"secondary\">대화상자 열기</Button>} title=\"프로젝트 설정\" description=\"변경할 항목을 확인하세요.\" footer={<Button type=\"button\" onClick={() => setStatus('저장했어요.')}>저장</Button>}>\n      설정 내용\n    </Dialog>\n    <NativeDialog trigger={<Button type=\"button\" variant=\"secondary\">네이티브 대화상자 열기</Button>} title=\"기본 설정\" description=\"고정된 항목을 선택하세요.\">\n      <NativeSelect label=\"공개 범위\" name=\"nativeVisibility\" options={[{ value: 'private', label: '비공개' }, { value: 'public', label: '공개' }]} defaultValue=\"private\" />\n    </NativeDialog>\n    <AlertDialog trigger={<Button type=\"button\" variant=\"secondary\">삭제 확인</Button>}\n      title=\"프로젝트를 삭제할까요?\" description=\"삭제 후에는 되돌릴 수 없습니다.\"\n      confirmLabel=\"삭제\" cancelLabel=\"취소\" onConfirm={() => setStatus('삭제했어요.')} />\n    <Sheet trigger={<Button type=\"button\" variant=\"secondary\">상세 패널</Button>} title=\"프로젝트 상세\" side=\"right\" size=\"md\">\n      상세 내용을 여기에 표시합니다.\n    </Sheet>\n    <Popover trigger={<Button type=\"button\" variant=\"secondary\">도움말 보기</Button>} title=\"도움말\" description=\"최근 작업 내용을 확인하세요.\">\n      필요한 정보를 여기에 표시합니다.\n    </Popover>\n    <Tooltip trigger={<Button type=\"button\" variant=\"ghost\" aria-label=\"단축키 도움말\">단축키</Button>} content=\"단축키 도움말\" />\n    <Button type=\"button\" onClick={() => toast.add({ title: '저장 완료', description: '변경 사항을 저장했어요.', tone: 'success' })}>알림 보기</Button>\n    <p role=\"status\">{status}</p>\n  </div>;\n}\n\nexport function OverlayPatterns() {\n  return <ToastProvider><OverlayControls /></ToastProvider>;\n}\n"
         }
       ]
     },

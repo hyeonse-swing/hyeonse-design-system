@@ -69,6 +69,7 @@ export function CompactForm() {
 | `Input` | 레이블 없는 네이티브 한 줄 입력. 사용처에서 `<label htmlFor>` 또는 접근 가능한 이름을 제공. `text/email/search/tel/url`만 지원 |
 | `Textarea` | 레이블·설명·오류가 있는 네이티브 여러 줄 입력 |
 | `Select` | 고정 항목 중 하나를 선택. `value/defaultValue`는 `string \| null`, `onValueChange`도 같은 값을 전달 |
+| `NativeSelect` | 브라우저 네이티브 단일 선택. `Select`와 같은 `value/defaultValue/onValueChange` 모델이며 검색·`readOnly`는 제공하지 않음 |
 | `Combobox` | 고정 항목을 검색해 하나 선택. 선택값과 검색 문자열(`inputValue/onInputValueChange`)은 별개 |
 | `MultiSelect` | 고정 항목을 여러 개 선택하고 칩으로 제거. `value/defaultValue`는 문자열 배열, `onValueChange`는 `string[]` 전달 |
 | `Switch` | 참/거짓 설정. `checked/defaultChecked`와 `onCheckedChange(boolean)` 사용 |
@@ -79,6 +80,17 @@ export function CompactForm() {
 | `FileInput` | 네이티브 파일 선택. `accept/multiple` 지원, `value/defaultValue` 제어 불가 |
 | `PasswordField` | 네이티브 비밀번호 입력과 표시 전환 버튼. 표시 상태는 컴포넌트 내부에서 관리 |
 
+`v0.4.3`부터 고정 항목 선택에 `NativeSelect`를 사용할 수 있습니다. 브라우저의 `<select>`를 그대로 사용해 Base UI 초점 가드를 만들지 않습니다. 빈 문자열은 선택 전 문구에 예약되어 있으므로 항목 `value`는 서로 다른 비어 있지 않은 문자열이어야 합니다. 필수 선택에는 빈 문구가 유효한 값이 아니며, 선택 UI의 모양과 키보드 동작은 브라우저와 운영체제를 따릅니다. 네이티브 `<select>`에는 읽기 전용 상태가 없어 `readOnly`를 받지 않습니다.
+
+```tsx
+import { NativeSelect } from '@hyeonse/design-system/fields';
+
+<NativeSelect label="팀" name="team" required options={[
+  { value: 'design', label: '디자인' },
+  { value: 'operations', label: '운영' },
+]} />
+```
+
 레이블이 있는 필드는 `label`이 필수이며 `hint`, `error`와 전달한 `aria-describedby`를 입력에 연결합니다. `error`를 주면 `aria-invalid`가 적용됩니다. `Select`, `Combobox`, `MultiSelect`, `RadioGroup`의 옵션은 서로 다른 문자열 `value`를 사용하세요. 검색 텍스트는 자유 입력 제출값이 아닙니다. `Switch`의 꺼짐 상태는 `uncheckedValue`를 지정하지 않으면 제출값이 없습니다. 검증 규칙, 오류 문구, 제어 상태는 앱이 관리합니다. 네이티브 폼 reset은 비제어 값을 최초 기본값으로 되돌리며, `form="id"`로 연결한 외부 폼도 지원합니다. reset이 취소되면 값은 바뀌지 않습니다. 제어형 `value`·`checked`·`inputValue`는 호출자가 초기화해야 하며, reset 자체로 값 변경 콜백을 호출하지 않습니다. [폼 예제](../examples/expanded-forms.tsx)를 참고하세요.
 
 ### 오버레이 (`overlays`)
@@ -86,6 +98,19 @@ export function CompactForm() {
 `DropdownMenu`와 `ContextMenu`는 `items`에 `action`, `checkbox`, `separator`, `submenu` 종류를 받습니다. 각 항목에 안정적인 `id`를 주고 체크 상태와 실행 결과는 앱에서 관리합니다. `ContextMenu`의 중요한 작업은 보이는 대체 조작도 제공하세요. `danger`는 시각 표현일 뿐 확인 절차가 아닙니다.
 
 `Dialog`, `AlertDialog`, `Sheet`, `Popover`는 제목과 트리거를 받습니다. `Tooltip`은 포커스 가능한 트리거와 짧은 텍스트 `content`를 받으며, 시각적 보조 레이블 용도이므로 트리거 자체의 접근 가능한 이름을 제공하고 필수 정보나 터치 전용 안내를 넣지 마세요. [Base UI 사용 지침](https://base-ui.com/react/components/tooltip#usage-guidelines)을 따릅니다. 트리거로 전달하는 컴포넌트는 DOM props와 ref를 전달해야 합니다. 메뉴와 대화상자 계열은 `open/defaultOpen/onOpenChange`를 지원합니다. 제어형 `open`을 사용하면 콜백에서 앱 상태를 갱신하세요.
+
+`v0.4.3`의 `NativeDialog`는 일반 모달에 쓸 수 있는 `<dialog>` 기반 대안입니다. `Dialog`와 같은 `trigger/title/description/children/footer/open/defaultOpen/onOpenChange/size`를 받습니다. 브라우저의 모달 최상위 레이어를 사용하고 Tab·Shift+Tab은 컴포넌트가 내부 조작 요소 사이에서 순환시킵니다. Escape, 닫기 버튼, 바깥 클릭으로 닫고 트리거로 초점을 돌립니다. 트리거는 `onClick`과 ARIA 속성을 실제 DOM 버튼까지 전달해야 합니다. 검색 목록·메뉴 등 Base UI 팝업을 안에 넣으면 그 팝업의 초점 가드는 여전히 생깁니다. 복잡한 중첩 팝업이 없는 모달에서 `NativeSelect`와 함께 사용하세요.
+
+```tsx
+import { NativeDialog } from '@hyeonse/design-system/overlays';
+import { NativeSelect } from '@hyeonse/design-system/fields';
+
+<NativeDialog trigger={<button type="button">설정 열기</button>} title="설정">
+  <NativeSelect label="공개 범위" options={[{ value: 'private', label: '비공개' }, { value: 'public', label: '공개' }]} />
+</NativeDialog>
+```
+
+Chromium·Firefox·WebKit 자동 검사에서 두 네이티브 대안의 접근성 트리 이름, 폼 선택·초기화, 모달 초점 순환·닫힘·복귀를 확인했습니다. 실제 VoiceOver 발화와 가상 커서 이동은 이 검사만으로 증명되지 않습니다. 기존 Base UI `Select`·`Dialog` 및 다른 팝업의 WebKit 이름 없는 가드도 그대로 남습니다. [접근성 검증 범위](code-freeze.md#브라우저-검사-범위)를 확인하세요.
 
 `AlertDialog`는 확인 버튼에서만 `onConfirm`을 호출합니다. 비동기 확인 중에는 중복 실행을 막고, 거절된 Promise는 대화상자를 열린 채로 두며 `onError`로 전달합니다. `pending`과 `confirmDisabled`는 앱이 제어합니다. `Sheet`에는 `side='left'|'right'`와 공통 다섯 단계 `size`가 있습니다. `ToastProvider` 안에서 `useToast().add({ title, description?, tone?, timeout? })`를 호출하면 ID가 반환되고 `close(id)`로 닫을 수 있습니다. 기본 표시 제한은 3개, 기본 제한 시간은 5000ms입니다. `viewportLabel`(기본 `알림`)과 `closeLabel`(기본 `알림 닫기`)로 접근 가능한 이름을 지정합니다. F6으로 알림 영역에 이동할 수 있습니다. 토스트만으로 지속적으로 필요한 중요 정보를 전달하지 마세요. [오버레이 예제](../examples/overlay-patterns.tsx)를 참고하세요.
 

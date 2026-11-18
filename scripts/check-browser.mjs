@@ -43,13 +43,15 @@ async function fingerprint() {
       hash.update(directory + '/' + file).update(await readFile(join(root, directory, file)));
     }
   }
-  for (const file of ['.site/index.html', '.site/showcase.css', 'tests/browser/consumer.tsx', 'scripts/check-browser.mjs', 'scripts/browser-suites.mjs']) hash.update(file).update(await readFile(join(root, file)));
+  for (const file of ['.site/index.html', '.site/showcase.css', 'tests/browser/consumer.tsx', 'tests/browser/native-alternatives.tsx', 'scripts/check-browser.mjs', 'scripts/browser-suites.mjs']) hash.update(file).update(await readFile(join(root, file)));
   return hash.digest('hex');
 }
 
 async function prepareConsumer() {
   await build({ absWorkingDir: root, entryPoints: ['tests/browser/consumer.tsx'], outfile: join(fixture, 'consumer.js'), bundle: true, minify: true, platform: 'browser', format: 'esm', target: 'es2020', define: { 'process.env.NODE_ENV': '"production"' }, logLevel: 'silent' });
   await writeFile(join(fixture, 'index.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HDS consumer checks</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/dist/tokens.css"><link rel="stylesheet" href="/dist/components.css"><style>body{margin:16px;color:var(--ink);background:var(--paper);font-family:system-ui}main{max-width:600px}form{display:grid;gap:12px}.actions,.statuses{display:flex;flex-wrap:wrap;gap:12px}section{margin-top:20px}output[data-settings]{display:block;overflow-wrap:anywhere}fieldset{min-width:0}</style></head><body><div id="consumer"></div><div id="settings-A"></div><div id="settings-B"></div><script type="module" src="./consumer.js"></script></body></html>`);
+  await build({ absWorkingDir: root, entryPoints: ['tests/browser/native-alternatives.tsx'], outfile: join(fixture, 'native-alternatives.js'), bundle: true, minify: true, platform: 'browser', format: 'esm', target: 'es2020', define: { 'process.env.NODE_ENV': '"production"' }, logLevel: 'silent' });
+  await writeFile(join(fixture, 'native-alternatives.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HDS native alternatives</title><link rel="stylesheet" href="/dist/tokens.css"><link rel="stylesheet" href="/dist/components.css"><style>body{margin:16px;color:var(--ink);background:var(--paper);font-family:system-ui}main{max-width:600px}form{display:grid;gap:12px}</style></head><body><div id="consumer"></div><script type="module" src="./native-alternatives.js"></script></body></html>`);
 }
 
 async function a11y(page, selector = 'body') {
@@ -194,6 +196,100 @@ async function runCase(browser, engine, name, options, run) {
   } finally { await context.close(); }
 }
 
+async function exerciseNativeAlternatives(page, base) {
+  const waitForFocus = async locator => page.waitForFunction(element => element === document.activeElement, await locator.elementHandle());
+  await page.goto(base + '__consumer/native-alternatives.html');
+  const team = page.getByRole('combobox', { name: 'Team', exact: true });
+  await team.waitFor();
+  await a11y(page);
+  assert.equal(await team.inputValue(), '');
+  await team.selectOption('operations');
+  assert.equal(await page.locator('#native-form').evaluate(form => new FormData(form).get('team')), 'operations');
+  const controlledTeam = page.getByRole('combobox', { name: 'Controlled team' });
+  await controlledTeam.selectOption('operations');
+  assert.equal(await controlledTeam.inputValue(), 'operations');
+  await page.getByRole('button', { name: 'Reset fields' }).click();
+  assert.equal(await team.inputValue(), '');
+  await page.waitForFunction(() => document.querySelector('select[name="controlledTeam"]')?.value === 'operations');
+  assert.equal(await controlledTeam.inputValue(), 'operations', 'Reset preserves caller-controlled native value');
+  assert.equal(await page.locator('#native-form').evaluate(form => new FormData(form).get('controlledTeam')), 'operations');
+  await team.focus();
+  const fullKeyboardTab = page.context().browser().browserType().name() === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab';
+  await page.keyboard.press(fullKeyboardTab);
+  assert.equal(await controlledTeam.evaluate(element => element === document.activeElement), true);
+  await page.keyboard.press(fullKeyboardTab);
+  assert.equal(await page.getByRole('button', { name: 'Reset fields' }).evaluate(element => element === document.activeElement), true);
+  await page.keyboard.press(fullKeyboardTab === 'Alt+Tab' ? 'Shift+Alt+Tab' : 'Shift+Tab');
+  assert.equal(await controlledTeam.evaluate(element => element === document.activeElement), true);
+  await page.keyboard.press(fullKeyboardTab === 'Alt+Tab' ? 'Shift+Alt+Tab' : 'Shift+Tab');
+  assert.equal(await team.evaluate(element => element === document.activeElement), true);
+  const trigger = page.getByRole('button', { name: 'Open native dialog' });
+  await trigger.click();
+  const dialog = page.getByRole('dialog', { name: 'Native settings' });
+  await dialog.waitFor();
+  const snapshot = await dialog.ariaSnapshot();
+  assert.match(snapshot, /dialog "Native settings"/);
+  assert.match(snapshot, /combobox "Visibility"/);
+  assert.equal(await page.locator('[data-base-ui-focus-guard]').count(), 0, 'Native path has no Base UI focus guards');
+  await a11y(page);
+  const visibility = dialog.getByRole('combobox', { name: 'Visibility' });
+  assert.equal(await visibility.inputValue(), 'private');
+  await visibility.selectOption('public');
+  assert.equal(await visibility.inputValue(), 'public');
+  const standard = dialog.getByRole('radio', { name: 'Standard' });
+  const advanced = dialog.getByRole('radio', { name: 'Advanced' });
+  await standard.focus();
+  await page.keyboard.press('Tab');
+  await page.waitForFunction(() => document.querySelector('dialog[open]')?.contains(document.activeElement));
+  assert.equal(await advanced.evaluate(element => element === document.activeElement), false, 'Tab skips the unchecked radio in a group');
+  const notes = dialog.getByRole('textbox', { name: 'Notes' });
+  await notes.focus();
+  await page.keyboard.type('!');
+  assert.match(await notes.innerText(), /!/);
+  const insideAction = dialog.getByRole('button', { name: 'Inside action' });
+  await page.keyboard.press(fullKeyboardTab);
+  await waitForFocus(insideAction);
+  assert.equal(await insideAction.evaluate(element => element === document.activeElement), true, 'Tab leaves contenteditable for the next action');
+  await notes.focus();
+  await page.keyboard.press(fullKeyboardTab === 'Alt+Tab' ? 'Shift+Alt+Tab' : 'Shift+Tab');
+  await waitForFocus(standard);
+  assert.equal(await standard.evaluate(element => element === document.activeElement), true, 'Shift+Tab leaves contenteditable for the checked radio');
+  await insideAction.focus();
+  await insideAction.evaluate(element => element.addEventListener('keydown', event => {
+    if (event.key === 'Tab') event.preventDefault();
+  }, { once: true }));
+  await page.keyboard.press('Tab');
+  assert.equal(await insideAction.evaluate(element => element === document.activeElement), true, 'A canceled Tab stays on its current action');
+  for (const key of ['Tab', 'Shift+Tab']) {
+    for (let index = 0; index < 10; index++) {
+      await page.keyboard.press(key);
+      await page.waitForFunction(() => document.querySelector('dialog[open]')?.contains(document.activeElement));
+      assert.equal(await dialog.evaluate(element => element.contains(document.activeElement)), true, `${key} step ${index}: ${await page.evaluate(() => document.activeElement?.outerHTML.slice(0, 200))}`);
+    }
+  }
+  await page.keyboard.press('Escape');
+  await dialog.waitFor({ state: 'hidden' });
+  await waitForFocus(trigger);
+  await trigger.click();
+  await dialog.getByRole('button', { name: 'Close native dialog' }).click();
+  await dialog.waitFor({ state: 'hidden' });
+  await waitForFocus(trigger);
+  await trigger.click();
+  const box = await dialog.boundingBox();
+  assert(box);
+  await page.mouse.click(Math.max(0, box.x - 10), Math.max(0, box.y - 10));
+  await dialog.waitFor({ state: 'hidden' });
+  await waitForFocus(trigger);
+  const controlled = page.getByRole('button', { name: 'Open controlled dialog' });
+  await controlled.click();
+  const controlledDialog = page.getByRole('dialog', { name: 'Controlled settings' });
+  await controlledDialog.waitFor();
+  await page.keyboard.press('Escape');
+  await controlledDialog.waitFor({ state: 'hidden' });
+  await waitForFocus(controlled);
+  return { nativeDialogAX: snapshot, modalKeyboardSteps: 20, radioGroupTab: true, contentEditable: true, dismissals: ['Escape', 'close', 'outside', 'controlled-Escape'], resetAndFormData: true, focusRestored: true };
+}
+
 async function exerciseShowcase(page, base, engine) {
   await page.goto(base);
   const formExample = page.locator('#component-textfield');
@@ -310,6 +406,7 @@ try {
     try {
       await runCase(browser, name, 'showcase', {}, page => exerciseShowcase(page, base, name));
       await runCase(browser, name, 'native-consumer', {}, page => exerciseConsumer(page, base));
+      await runCase(browser, name, 'native-alternatives', {}, page => exerciseNativeAlternatives(page, base));
       await runCase(browser, name, 'expanded-overlays', { viewport: { width: 390, height: 844 }, colorScheme: 'dark' }, page => exerciseOverlays(page, base));
       await runCase(browser, name, 'expanded-display', { viewport: { width: 390, height: 844 } }, page => exerciseDisplay(page, base));
       await runCase(browser, name, 'focus-guard-navigation', {}, async page => { const result = await exerciseFocusGuards(page, base); verifiedFocusGuardEngines.add(name); return result; });

@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import type { ReactElement, ReactNode } from 'react';
+import { cloneElement, useId, useLayoutEffect, useRef, useState } from 'react';
+import type { MouseEvent as ReactMouseEvent, ReactElement, ReactNode } from 'react';
 import { SizeContext, useHdsSize } from './sizing.js';
 import type { HdsSize } from './sizing.js';
 import { Menu } from '@base-ui/react/menu';
@@ -116,6 +116,107 @@ export function Dialog({ size, trigger, title, description, children, footer, cl
       <BaseDialog.Popup className="hds-dialog__popup">{dialogContent({ title, description, children, footer, closeLabel })}</BaseDialog.Popup>
     </BaseDialog.Portal>
   </BaseDialog.Root>}</Sized>;
+}
+
+function nativeDialogTabStops(dialog: HTMLDialogElement) {
+  const candidates = Array.from(dialog.querySelectorAll<HTMLElement>('a[href], button, input, select, textarea, summary, [contenteditable], [tabindex]'))
+    .filter(element => (element.tabIndex >= 0 || (element.hasAttribute('contenteditable') && element.isContentEditable && !element.parentElement?.isContentEditable))
+      && !element.matches(':disabled') && !element.closest('[inert], [hidden], [aria-hidden="true"]') && element.getClientRects().length > 0 && getComputedStyle(element).visibility === 'visible');
+  const stops = candidates.filter(element => {
+    if (!(element instanceof HTMLInputElement) || element.type !== 'radio' || !element.name) return true;
+    const group = candidates.filter(candidate => candidate instanceof HTMLInputElement && candidate.type === 'radio' && candidate.name === element.name && candidate.form === element.form);
+    return element === (group.find(candidate => (candidate as HTMLInputElement).checked) ?? group[0]);
+  });
+  return stops.map((element, index) => ({ element, index })).sort((a, b) => {
+    const first = a.element.tabIndex > 0 ? a.element.tabIndex : Infinity;
+    const second = b.element.tabIndex > 0 ? b.element.tabIndex : Infinity;
+    return first - second || a.index - b.index;
+  }).map(item => item.element);
+}
+
+/** Native modal alternative for journeys that do not need Base UI's popup composition. */
+export function NativeDialog({ size, trigger, title, description, children, footer, closeLabel = '닫기', open, defaultOpen = false, onOpenChange }: DialogProps) {
+  const [localOpen, setLocalOpen] = useState(defaultOpen);
+  const currentOpen = open ?? localOpen;
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const titleId = useId();
+  const descriptionId = useId();
+  const dialogId = useId();
+  const resolvedSize = useHdsSize(size);
+  const changeOpen = (next: boolean) => {
+    if (open === undefined) setLocalOpen(next);
+    onOpenChange?.(next);
+  };
+  useLayoutEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (currentOpen && !dialog.open) {
+      if (!previousFocusRef.current?.isConnected) previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      dialog.showModal();
+    } else if (!currentOpen && dialog.open) {
+      dialog.close();
+    }
+  }, [currentOpen]);
+  const originalTrigger = trigger.props as { onClick?: (event: ReactMouseEvent<HTMLElement>) => void };
+  const nativeTrigger = cloneElement(trigger as ReactElement<{ onClick?: (event: ReactMouseEvent<HTMLElement>) => void; 'aria-haspopup'?: 'dialog'; 'aria-expanded'?: boolean; 'aria-controls'?: string }>, {
+    onClick: event => {
+      originalTrigger.onClick?.(event);
+      if (!event.defaultPrevented) {
+        previousFocusRef.current = event.currentTarget;
+        changeOpen(true);
+      }
+    },
+    'aria-haspopup': 'dialog',
+    'aria-expanded': currentOpen,
+    'aria-controls': currentOpen ? dialogId : undefined,
+  });
+  return <SizeContext.Provider value={resolvedSize}>
+    {nativeTrigger}
+    <dialog ref={dialogRef} id={dialogId} tabIndex={-1} data-hds-size={resolvedSize} className="hds-dialog__popup hds-nativeDialog"
+      aria-labelledby={titleId} aria-describedby={description ? descriptionId : undefined}
+      onKeyDown={event => {
+        if (event.key !== 'Tab' || event.defaultPrevented) return;
+        const dialog = event.currentTarget;
+        const elements = nativeDialogTabStops(dialog);
+        const current = elements.indexOf(document.activeElement as HTMLElement);
+        const reverse = event.shiftKey;
+        if (current < 0 || (reverse ? current === 0 : current === elements.length - 1)) {
+          event.preventDefault();
+          (elements[reverse ? elements.length - 1 : 0] ?? dialog).focus();
+          return;
+        }
+        const from = document.activeElement;
+        requestAnimationFrame(() => {
+          // Safari can move from an inner native select to body when full
+          // keyboard navigation is off. Leave successful middle moves native.
+          if (!dialog.open || dialog.contains(document.activeElement)) return;
+          const remaining = nativeDialogTabStops(dialog);
+          const index = remaining.indexOf(from as HTMLElement);
+          (remaining[reverse ? Math.max(0, index - 1) : Math.min(remaining.length - 1, index + 1)] ?? dialog).focus();
+        });
+      }}
+      onCancel={event => { event.preventDefault(); changeOpen(false); }}
+      onClose={() => {
+        if (currentOpen) changeOpen(false);
+        const previous = previousFocusRef.current;
+        requestAnimationFrame(() => {
+          if (previous?.isConnected && !dialogRef.current?.open && (document.activeElement === document.body || dialogRef.current?.contains(document.activeElement))) previous.focus();
+        });
+      }}
+      onClick={event => {
+        const bounds = event.currentTarget.getBoundingClientRect();
+        if (event.target === event.currentTarget && (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom)) changeOpen(false);
+      }}>
+      <header className="hds-dialog__header">
+        <div><h2 id={titleId} className="hds-dialog__title">{title}</h2>
+          {description && <p id={descriptionId} className="hds-dialog__description">{description}</p>}</div>
+        <button type="button" className="hds-dialog__close" aria-label={closeLabel} onClick={() => changeOpen(false)}><span aria-hidden="true">×</span></button>
+      </header>
+      {children && <div className="hds-dialog__body">{children}</div>}
+      {footer && <div className="hds-dialog__footer">{footer}</div>}
+    </dialog>
+  </SizeContext.Provider>;
 }
 
 export type AlertDialogProps = {

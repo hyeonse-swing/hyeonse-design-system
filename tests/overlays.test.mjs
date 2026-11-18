@@ -33,7 +33,7 @@ const items = [
 
 test('all overlay APIs are public named runtime functions', () => {
   assert.deepEqual(Object.keys(overlays).sort(), [
-    'AlertDialog', 'ContextMenu', 'Dialog', 'DropdownMenu', 'Popover', 'Sheet', 'ToastProvider', 'Tooltip', 'useToast',
+    'AlertDialog', 'ContextMenu', 'Dialog', 'DropdownMenu', 'NativeDialog', 'Popover', 'Sheet', 'ToastProvider', 'Tooltip', 'useToast',
   ]);
   assert.ok(Object.values(overlays).every(value => typeof value === 'function'));
 });
@@ -43,6 +43,7 @@ test('composed triggers keep one native button and caller attributes in SSR', ()
     [overlays.DropdownMenu, { items }],
     [overlays.ContextMenu, { items }],
     [overlays.Dialog, { title: '설정' }],
+    [overlays.NativeDialog, { title: '기본 설정' }],
     [overlays.AlertDialog, { title: '삭제', confirmLabel: '삭제', cancelLabel: '취소', onConfirm() {} }],
     [overlays.Sheet, { title: '상세', side: 'left', size: 'sm' }],
     [overlays.Popover, { title: '도움말' }],
@@ -51,7 +52,7 @@ test('composed triggers keep one native button and caller attributes in SSR', ()
   for (const [Component, props] of components) {
     const name = Component.name;
     const dom = new JSDOM(renderToStaticMarkup(el(Component, { ...props, trigger: trigger(name, `trigger-${name}`) })));
-    const buttons = dom.window.document.querySelectorAll('button');
+    const buttons = [...dom.window.document.querySelectorAll('button')].filter(button => !button.closest('dialog'));
     assert.equal(buttons.length, 1, `${name} must not nest or duplicate trigger buttons`);
     assert.equal(buttons[0].id, `trigger-${name}`);
     assert.equal(buttons[0].type, 'button');

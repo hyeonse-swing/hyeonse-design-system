@@ -139,6 +139,47 @@ export function Select({ label, hint, error, size, options, name, form, id, requ
   </FieldShell>;
 }
 
+/** Native picker for fixed choices when browser and screen-reader controls are preferred. */
+export type NativeSelectProps = Omit<ChoiceProps, 'readOnly'> & { ref?: Ref<HTMLSelectElement> };
+export function NativeSelect({ label, hint, error, size, options, name, form, id, required, disabled, value, defaultValue, onValueChange, placeholder = '선택하세요', className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: NativeSelectProps) {
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+  const { hintId, errorId } = ids(generatedId, hint, error);
+  const resolvedSize = useHdsSize(size);
+  const selectRef = useRef<HTMLSelectElement | null>(null);
+  const valueRef = useRef(value);
+  valueRef.current = value;
+  const setRef = useCallback((node: HTMLSelectElement | null) => {
+    selectRef.current = node;
+    if (typeof ref === 'function') ref(node);
+    else if (ref) ref.current = node;
+  }, [ref]);
+  useEffect(() => {
+    const select = selectRef.current;
+    const owner = select?.form;
+    if (!select || !owner) return;
+    let active = true;
+    const onReset = (event: Event) => {
+      // Native reset runs after the reset event's microtask checkpoint.
+      setTimeout(() => {
+        if (active && !event.defaultPrevented && valueRef.current !== undefined) select.value = valueRef.current ?? '';
+      }, 0);
+    };
+    owner.addEventListener('reset', onReset);
+    return () => { active = false; owner.removeEventListener('reset', onReset); };
+  }, [form]);
+  return <FieldShell {...{ label, hint, error, hintId, errorId, disabled }} size={resolvedSize} id={inputId}>
+    <select ref={setRef} id={inputId} name={name} form={form} required={required} disabled={disabled}
+      value={value === undefined ? undefined : value ?? ''} defaultValue={value === undefined ? defaultValue ?? '' : undefined}
+      onChange={event => onValueChange?.(event.currentTarget.value || null)}
+      aria-describedby={description({ hintId, errorId, describedBy })} aria-invalid={error ? true : invalid}
+      className={`hds-field__control hds-field__nativeSelect${className ? ` ${className}` : ''}`}>
+      <option value="" disabled={required}>{placeholder}</option>
+      {options.map(option => <option key={option.value} value={option.value} disabled={option.disabled}>{option.label}</option>)}
+    </select>
+  </FieldShell>;
+}
+
 export type ComboboxProps = ChoiceProps & {
   ref?: Ref<HTMLInputElement>;
   emptyText?: string;

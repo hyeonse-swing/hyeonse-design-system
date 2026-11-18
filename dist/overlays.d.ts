@@ -55,6 +55,8 @@ export type DialogProps = {
     size?: HdsSize;
 };
 export declare function Dialog({ size, trigger, title, description, children, footer, closeLabel, open, defaultOpen, onOpenChange }: DialogProps): import("react").JSX.Element;
+/** Native modal alternative for journeys that do not need Base UI's popup composition. */
+export declare function NativeDialog({ size, trigger, title, description, children, footer, closeLabel, open, defaultOpen, onOpenChange }: DialogProps): import("react").JSX.Element;
 export type AlertDialogProps = {
     trigger: ReactElement;
     title: string;

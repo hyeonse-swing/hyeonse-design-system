@@ -40,6 +40,11 @@ export type SelectProps = ChoiceProps & {
     ref?: Ref<HTMLButtonElement>;
 };
 export declare function Select({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: SelectProps): import("react").JSX.Element;
+/** Native picker for fixed choices when browser and screen-reader controls are preferred. */
+export type NativeSelectProps = Omit<ChoiceProps, 'readOnly'> & {
+    ref?: Ref<HTMLSelectElement>;
+};
+export declare function NativeSelect({ label, hint, error, size, options, name, form, id, required, disabled, value, defaultValue, onValueChange, placeholder, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: NativeSelectProps): import("react").JSX.Element;
 export type ComboboxProps = ChoiceProps & {
     ref?: Ref<HTMLInputElement>;
     emptyText?: string;

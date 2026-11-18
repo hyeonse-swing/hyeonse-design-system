@@ -105,6 +105,39 @@ export function Select({ label, hint, error, size, options, name, form, id, requ
     const resolvedSize = useHdsSize(size);
     return _jsx(FieldShell, { label, hint, error, hintId, errorId, disabled, size: resolvedSize, id: triggerId, labelNode: null, children: _jsxs(BaseSelect.Root, { id: triggerId, items: options, name: name, form: form, required: required, disabled: disabled, readOnly: readOnly, value: selected.current, inputRef: selected.inputRef, onValueChange: next => { onValueChange?.(next); selected.change(next); }, children: [_jsx(BaseSelect.Label, { className: "hds-field__label", children: label }), _jsxs(BaseSelect.Trigger, { ref: ref, id: triggerId, className: `hds-field__control hds-field__trigger${className ? ` ${className}` : ''}`, "aria-label": label, "aria-describedby": description({ hintId, errorId, describedBy }), "aria-invalid": error ? true : invalid, children: [_jsx(BaseSelect.Value, { placeholder: placeholder }), _jsx(BaseSelect.Icon, { className: "hds-field__chevron", "aria-hidden": "true", children: _jsx(FieldChevron, {}) })] }), _jsx(BaseSelect.Portal, { children: _jsx(BaseSelect.Positioner, { sideOffset: 4, alignItemWithTrigger: false, "data-hds-size": resolvedSize, className: "hds-field__positioner", children: _jsx(BaseSelect.Popup, { className: "hds-field__popup", children: _jsx(BaseSelect.List, { className: "hds-field__list", children: options.map(option => _jsxs(BaseSelect.Item, { value: option.value, label: option.label, disabled: option.disabled, className: "hds-field__option", children: [_jsx(BaseSelect.ItemText, { children: option.label }), _jsx(BaseSelect.ItemIndicator, { "aria-hidden": "true", children: "\u2713" })] }, option.value)) }) }) }) })] }) });
 }
+export function NativeSelect({ label, hint, error, size, options, name, form, id, required, disabled, value, defaultValue, onValueChange, placeholder = '선택하세요', className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }) {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const { hintId, errorId } = ids(generatedId, hint, error);
+    const resolvedSize = useHdsSize(size);
+    const selectRef = useRef(null);
+    const valueRef = useRef(value);
+    valueRef.current = value;
+    const setRef = useCallback((node) => {
+        selectRef.current = node;
+        if (typeof ref === 'function')
+            ref(node);
+        else if (ref)
+            ref.current = node;
+    }, [ref]);
+    useEffect(() => {
+        const select = selectRef.current;
+        const owner = select?.form;
+        if (!select || !owner)
+            return;
+        let active = true;
+        const onReset = (event) => {
+            // Native reset runs after the reset event's microtask checkpoint.
+            setTimeout(() => {
+                if (active && !event.defaultPrevented && valueRef.current !== undefined)
+                    select.value = valueRef.current ?? '';
+            }, 0);
+        };
+        owner.addEventListener('reset', onReset);
+        return () => { active = false; owner.removeEventListener('reset', onReset); };
+    }, [form]);
+    return _jsx(FieldShell, { label, hint, error, hintId, errorId, disabled, size: resolvedSize, id: inputId, children: _jsxs("select", { ref: setRef, id: inputId, name: name, form: form, required: required, disabled: disabled, value: value === undefined ? undefined : value ?? '', defaultValue: value === undefined ? defaultValue ?? '' : undefined, onChange: event => onValueChange?.(event.currentTarget.value || null), "aria-describedby": description({ hintId, errorId, describedBy }), "aria-invalid": error ? true : invalid, className: `hds-field__control hds-field__nativeSelect${className ? ` ${className}` : ''}`, children: [_jsx("option", { value: "", disabled: required, children: placeholder }), options.map(option => _jsx("option", { value: option.value, disabled: option.disabled, children: option.label }, option.value))] }) });
+}
 export function Combobox({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder = '검색해서 선택하세요', emptyText = '일치하는 항목이 없어요.', openLabel = '목록 열기', inputValue, defaultInputValue, onInputValueChange, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }) {
     const generatedId = useId();
     const inputId = id ?? generatedId;

@@ -224,7 +224,7 @@ export const catalogMetadata = {
 };
 
 // Size contracts live in authored guidance as well as the public declarations.
-const sizedEntries = ['Button', 'TextField', 'Checkbox', 'Badge', 'Input', 'Textarea', 'Select', 'Combobox', 'MultiSelect', 'Switch', 'RadioGroup', 'Slider', 'NumberField', 'PasswordField', 'DateField', 'FileInput', 'DropdownMenu', 'ContextMenu', 'Dialog', 'AlertDialog', 'Sheet', 'Popover', 'Tooltip', 'ToastProvider', 'Tabs', 'Accordion', 'Collapsible', 'Breadcrumb', 'Pagination', 'Stepper', 'SegmentedControl', 'Toggle', 'Card', 'Table', 'Alert', 'Avatar', 'Separator', 'Skeleton', 'Spinner', 'Progress', 'EmptyState', 'AspectRatio', 'ScrollArea', 'Label'];
+const sizedEntries = ['Button', 'TextField', 'Checkbox', 'Badge', 'Input', 'Textarea', 'Select', 'NativeSelect', 'Combobox', 'MultiSelect', 'Switch', 'RadioGroup', 'Slider', 'NumberField', 'PasswordField', 'DateField', 'FileInput', 'DropdownMenu', 'ContextMenu', 'Dialog', 'NativeDialog', 'AlertDialog', 'Sheet', 'Popover', 'Tooltip', 'ToastProvider', 'Tabs', 'Accordion', 'Collapsible', 'Breadcrumb', 'Pagination', 'Stepper', 'SegmentedControl', 'Toggle', 'Card', 'Table', 'Alert', 'Avatar', 'Separator', 'Skeleton', 'Spinner', 'Progress', 'EmptyState', 'AspectRatio', 'ScrollArea', 'Label'];
 for (const name of sizedEntries) {
   const entry = catalogMetadata.entries[name];
   entry.usage = [...entry.usage, 'size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.'];
