@@ -84,3 +84,12 @@ Base UI 1.9.0은 WebKit에서 VoiceOver 가상 커서의 초점 이동을 받기
 `NativeSelect`와 `NativeDialog`는 고정 선택과 일반 모달의 별도 공개 경로다. `<select>`와 `<dialog>.showModal()`을 사용하므로 이 둘만 조합한 화면에는 Base UI 가드가 생기지 않는다. WebKit의 네이티브 모달에서는 Tab이 문서 본문으로 빠지는 경우를 확인해, `NativeDialog`가 보이는 내부 조작 요소 사이의 Tab·Shift+Tab 이동을 직접 관리한다. Escape·닫기·바깥 클릭 뒤 초점 복귀도 검사한다. 네이티브 선택의 메뉴 모양과 일부 키 동작은 브라우저·OS에 맡긴다. 검색 목록·메뉴·시트·팝오버, 또는 이들을 `NativeDialog` 안에 둔 경우에는 기존 Base UI 가드가 남는다.
 
 브라우저 검사의 `native-alternatives`는 네이티브 선택의 이름·값·폼 초기화, 모달 접근성 트리의 제목·필드 이름, axe 전체 규칙, Tab·Shift+Tab 각 10회, Escape·닫기·바깥 클릭·제어형 모달 닫힘과 초점 복귀를 Chromium·Firefox·WebKit에서 검사한다. 이 별도 시나리오의 통과는 기존 `expanded-accessibility`의 `REVIEW`를 통과로 바꾸지 않는다. 2026-11-18에 VoiceOver를 임시 실행해 로컬 Safari 창을 확인하려 했으나 AppleScript 자막 조회가 시간 초과되어 실제 발화와 가상 커서는 관측하지 못했다. 자체 창을 닫고 VoiceOver 실행 상태를 다시 꺼짐으로 확인했다. 실제 보조 기술 검증은 남은 조건이다.
+
+
+## v0.4.4 폼·키보드 보완
+
+제어형 `NativeSelect`는 현재 `value`에 해당하는 option의 `defaultSelected`를 함께 설정한다. 브라우저의 `form.reset()` 기본 동작이 그 값을 즉시 복원하므로 reset 직후 동기 `FormData`의 선택값도 제어 상태와 같다. 비제어형 선택과 취소된 reset의 브라우저 동작은 기존 규칙을 따른다.
+
+`NativeDialog`는 macOS WebKit에서 Full Keyboard Access가 꺼져 있을 때 내부 버튼을 건너뛰어 잠시 문서 본문으로 초점이 나가는 경로를 처리한다. 계산한 다음 Tab 위치가 버튼이면 기본 이동 전에 그 버튼으로 초점을 옮긴다. 라디오 그룹·편집 영역·자식이 취소한 Tab 이동은 브라우저 조작을 유지한다.
+
+2026-11-18 현재 `@base-ui/react`의 npm 최신 버전은 1.9.0이고, [초점 가드 이슈 #5237](https://github.com/mui/base-ui/issues/5237)는 열려 있다. 기존 24건의 WebKit 접근성 검사 결과는 해결된 것으로 기록하지 않는다.

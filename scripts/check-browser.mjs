@@ -208,6 +208,11 @@ async function exerciseNativeAlternatives(page, base) {
   const controlledTeam = page.getByRole('combobox', { name: 'Controlled team' });
   await controlledTeam.selectOption('operations');
   assert.equal(await controlledTeam.inputValue(), 'operations');
+  const synchronousReset = await controlledTeam.evaluate(select => {
+    select.form.reset();
+    return { value: select.value, submitted: new FormData(select.form).get('controlledTeam') };
+  });
+  assert.deepEqual(synchronousReset, { value: 'operations', submitted: 'operations' }, 'Controlled select stays consistent through synchronous form reset');
   await page.getByRole('button', { name: 'Reset fields' }).click();
   assert.equal(await team.inputValue(), '');
   await page.waitForFunction(() => document.querySelector('select[name="controlledTeam"]')?.value === 'operations');
@@ -262,7 +267,9 @@ async function exerciseNativeAlternatives(page, base) {
   assert.equal(await insideAction.evaluate(element => element === document.activeElement), true, 'A canceled Tab stays on its current action');
   for (const key of ['Tab', 'Shift+Tab']) {
     for (let index = 0; index < 10; index++) {
+      const previousFocus = await page.evaluate(() => document.activeElement?.outerHTML.slice(0, 180));
       await page.keyboard.press(key);
+      assert.equal(await dialog.evaluate(element => element.contains(document.activeElement)), true, `${key} step ${index} from ${previousFocus} to ${await page.evaluate(() => document.activeElement?.outerHTML.slice(0, 180))} must keep focus in the modal before the next paint`);
       await page.waitForFunction(() => document.querySelector('dialog[open]')?.contains(document.activeElement));
       assert.equal(await dialog.evaluate(element => element.contains(document.activeElement)), true, `${key} step ${index}: ${await page.evaluate(() => document.activeElement?.outerHTML.slice(0, 200))}`);
     }

@@ -80,7 +80,7 @@ export function CompactForm() {
 | `FileInput` | 네이티브 파일 선택. `accept/multiple` 지원, `value/defaultValue` 제어 불가 |
 | `PasswordField` | 네이티브 비밀번호 입력과 표시 전환 버튼. 표시 상태는 컴포넌트 내부에서 관리 |
 
-`v0.4.3`부터 고정 항목 선택에 `NativeSelect`를 사용할 수 있습니다. 브라우저의 `<select>`를 그대로 사용해 Base UI 초점 가드를 만들지 않습니다. 빈 문자열은 선택 전 문구에 예약되어 있으므로 항목 `value`는 서로 다른 비어 있지 않은 문자열이어야 합니다. 필수 선택에는 빈 문구가 유효한 값이 아니며, 선택 UI의 모양과 키보드 동작은 브라우저와 운영체제를 따릅니다. 네이티브 `<select>`에는 읽기 전용 상태가 없어 `readOnly`를 받지 않습니다.
+`v0.4.3`부터 고정 항목 선택에 `NativeSelect`를 사용할 수 있습니다. 브라우저의 `<select>`를 그대로 사용해 Base UI 초점 가드를 만들지 않습니다. 빈 문자열은 선택 전 문구에 예약되어 있으므로 항목 `value`는 서로 다른 비어 있지 않은 문자열이어야 합니다. 필수 선택에는 빈 문구가 유효한 값이 아니며, 선택 UI의 모양과 키보드 동작은 브라우저와 운영체제를 따릅니다. 네이티브 `<select>`에는 읽기 전용 상태가 없어 `readOnly`를 받지 않습니다. `v0.4.4`에서는 제어형 `value`와 옵션의 기본 선택을 동기화하므로 `form.reset()` 직후의 동기 `FormData`도 현재 제어값을 반환합니다.
 
 ```tsx
 import { NativeSelect } from '@hyeonse/design-system/fields';
@@ -99,7 +99,7 @@ import { NativeSelect } from '@hyeonse/design-system/fields';
 
 `Dialog`, `AlertDialog`, `Sheet`, `Popover`는 제목과 트리거를 받습니다. `Tooltip`은 포커스 가능한 트리거와 짧은 텍스트 `content`를 받으며, 시각적 보조 레이블 용도이므로 트리거 자체의 접근 가능한 이름을 제공하고 필수 정보나 터치 전용 안내를 넣지 마세요. [Base UI 사용 지침](https://base-ui.com/react/components/tooltip#usage-guidelines)을 따릅니다. 트리거로 전달하는 컴포넌트는 DOM props와 ref를 전달해야 합니다. 메뉴와 대화상자 계열은 `open/defaultOpen/onOpenChange`를 지원합니다. 제어형 `open`을 사용하면 콜백에서 앱 상태를 갱신하세요.
 
-`v0.4.3`의 `NativeDialog`는 일반 모달에 쓸 수 있는 `<dialog>` 기반 대안입니다. `Dialog`와 같은 `trigger/title/description/children/footer/open/defaultOpen/onOpenChange/size`를 받습니다. 브라우저의 모달 최상위 레이어를 사용하고 Tab·Shift+Tab은 컴포넌트가 내부 조작 요소 사이에서 순환시킵니다. Escape, 닫기 버튼, 바깥 클릭으로 닫고 트리거로 초점을 돌립니다. 트리거는 `onClick`과 ARIA 속성을 실제 DOM 버튼까지 전달해야 합니다. 검색 목록·메뉴 등 Base UI 팝업을 안에 넣으면 그 팝업의 초점 가드는 여전히 생깁니다. 복잡한 중첩 팝업이 없는 모달에서 `NativeSelect`와 함께 사용하세요.
+`v0.4.3`의 `NativeDialog`는 일반 모달에 쓸 수 있는 `<dialog>` 기반 대안입니다. `Dialog`와 같은 `trigger/title/description/children/footer/open/defaultOpen/onOpenChange/size`를 받습니다. 브라우저의 모달 최상위 레이어를 사용하고 Tab·Shift+Tab은 컴포넌트가 내부 조작 요소 사이에서 순환시킵니다. `v0.4.4`에서는 macOS WebKit이 내부 버튼을 건너뛰는 경우에도 다음 버튼으로 즉시 초점을 옮깁니다. Escape, 닫기 버튼, 바깥 클릭으로 닫고 트리거로 초점을 돌립니다. 트리거는 `onClick`과 ARIA 속성을 실제 DOM 버튼까지 전달해야 합니다. 검색 목록·메뉴 등 Base UI 팝업을 안에 넣으면 그 팝업의 초점 가드는 여전히 생깁니다. 복잡한 중첩 팝업이 없는 모달에서 `NativeSelect`와 함께 사용하세요.
 
 ```tsx
 import { NativeDialog } from '@hyeonse/design-system/overlays';

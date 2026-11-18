@@ -4,10 +4,10 @@
 
 ## 사용
 
-`v0.4.3` [설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.3.tgz)는 고정 항목 선택과 일반 모달에 쓸 수 있는 `NativeSelect`, `NativeDialog`를 추가합니다. 두 컴포넌트는 브라우저 네이티브 요소를 사용하며 Base UI 초점 가드를 만들지 않습니다. 기존 `Select`·`Dialog`와 나머지 Base UI 오버레이의 WebKit 초점 가드 문제는 남아 있으므로 [검증 범위](docs/code-freeze.md)를 확인하세요. `v0.4.0`~`v0.4.2` 아카이브는 변경 없이 보존합니다. npm 레지스트리나 GitHub `v0.4.x` 태그로 발행한 패키지는 아닙니다. 기존 GitHub 안정 태그 `v0.3.0`에는 기본 컴포넌트 네 개만 있습니다.
+`v0.4.4` [설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.4.tgz)는 고정 항목 선택과 일반 모달에 쓸 수 있는 `NativeSelect`, `NativeDialog`의 폼 초기화와 키보드 이동을 보완합니다. 두 컴포넌트는 브라우저 네이티브 요소를 사용하며 Base UI 초점 가드를 만들지 않습니다. 기존 `Select`·`Dialog`와 나머지 Base UI 오버레이의 WebKit 초점 가드 문제는 남아 있으므로 [검증 범위](docs/code-freeze.md)를 확인하세요. `v0.4.0`~`v0.4.3` 아카이브는 변경 없이 보존합니다. npm 레지스트리나 GitHub `v0.4.x` 태그로 발행한 패키지는 아닙니다. 기존 GitHub 안정 태그 `v0.3.0`에는 기본 컴포넌트 네 개만 있습니다.
 
 ```sh
-npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.3.tgz
+npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.4.tgz
 
 # 기존 v0.3.0 태그가 필요한 프로젝트만
 npm install github:hyeonse-swing/hyeonse-design-system#v0.3.0

@@ -1,11 +1,11 @@
 # 공개 API와 통합
 
-패키지 이름은 `@hyeonse/design-system`입니다. 공개 안정 태그 `v0.3.0`은 `./tokens.css`, `./components.css`, `./preferences`, `./react`, `./primitives`, `./catalog.json`, `./catalog.schema.json`을 제공합니다. `v0.4.0` [버전 고정 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.0.tgz)에서 `./layout`, `./fields`, `./overlays`, `./display`를 추가했습니다. `v0.4.1`은 필드와 스타일을, `v0.4.2`는 설치 안내를 보완했습니다. [`v0.4.3` 설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.3.tgz)는 `./fields`에 `NativeSelect`, `./overlays`에 `NativeDialog`를 추가합니다. GitHub `v0.4.x` 태그나 npm 레지스트리 릴리스는 아닙니다. `./primitives`는 `v0.3.0`에서 추가되었으며 `v0.2.0`에는 없습니다. 사용 중인 패키지의 `package.json`과 타입 선언을 기준으로 확인하세요. 내부 `src/`나 `dist/` 경로를 직접 가져오지 않습니다.
+패키지 이름은 `@hyeonse/design-system`입니다. 공개 안정 태그 `v0.3.0`은 `./tokens.css`, `./components.css`, `./preferences`, `./react`, `./primitives`, `./catalog.json`, `./catalog.schema.json`을 제공합니다. `v0.4.0` [버전 고정 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.0.tgz)에서 `./layout`, `./fields`, `./overlays`, `./display`를 추가했습니다. `v0.4.1`은 필드와 스타일을, `v0.4.2`는 설치 안내를 보완했습니다. [`v0.4.3` 설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.3.tgz)는 `./fields`에 `NativeSelect`, `./overlays`에 `NativeDialog`를 추가했습니다. [`v0.4.4` 설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.4.tgz)는 두 컴포넌트의 폼 초기화와 키보드 초점 이동을 보완합니다. GitHub `v0.4.x` 태그나 npm 레지스트리 릴리스는 아닙니다. `./primitives`는 `v0.3.0`에서 추가되었으며 `v0.2.0`에는 없습니다. 사용 중인 패키지의 `package.json`과 타입 선언을 기준으로 확인하세요. 내부 `src/`나 `dist/` 경로를 직접 가져오지 않습니다.
 
 ## 설치
 
 ```sh
-npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.3.tgz
+npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.4.tgz
 ```
 
 [릴리스 매니페스트](https://design-system.hyeonse.dev/releases/manifest.json)의 `version`, `url`, `sha256`, `integrity`로 버전과 파일 무결성을 확인하세요. 기존 GitHub `v0.3.0` 태그에는 기본 컴포넌트 네 개가 있고 새 `layout`·`fields`·`overlays`·`display` 진입점은 없습니다. Base UI 1.9.0을 쓰는 컴포넌트에는 WebKit VoiceOver 초점 가드의 이름 누락([상위 이슈 #5237](https://github.com/mui/base-ui/issues/5237))이 남아 있습니다. 고정 선택과 일반 모달에는 `NativeSelect`, `NativeDialog`를 선택할 수 있습니다. [브라우저 검증 범위](code-freeze.md#브라우저-검사-범위)를 확인하세요.

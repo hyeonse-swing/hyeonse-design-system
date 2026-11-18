@@ -1,6 +1,6 @@
 # @hyeonse/design-system
 
-Installed package version: 0.4.3
+Installed package version: 0.4.4
 
 ## Setup
 

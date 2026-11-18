@@ -186,6 +186,15 @@ export function NativeDialog({ size, trigger, title, description, children, foot
           (elements[reverse ? elements.length - 1 : 0] ?? dialog).focus();
           return;
         }
+        // With Full Keyboard Access off, WebKit can skip buttons even within
+        // a modal. Focus that next tab stop before the browser moves to body.
+        // Native radio and editing navigation keep their default behavior.
+        const next = elements[current + (reverse ? -1 : 1)];
+        if (next instanceof HTMLButtonElement) {
+          event.preventDefault();
+          next.focus();
+          return;
+        }
         const from = document.activeElement;
         requestAnimationFrame(() => {
           // Safari can move from an inner native select to body when full

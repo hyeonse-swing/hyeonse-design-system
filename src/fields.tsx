@@ -147,27 +147,19 @@ export function NativeSelect({ label, hint, error, size, options, name, form, id
   const { hintId, errorId } = ids(generatedId, hint, error);
   const resolvedSize = useHdsSize(size);
   const selectRef = useRef<HTMLSelectElement | null>(null);
-  const valueRef = useRef(value);
-  valueRef.current = value;
   const setRef = useCallback((node: HTMLSelectElement | null) => {
     selectRef.current = node;
     if (typeof ref === 'function') ref(node);
     else if (ref) ref.current = node;
   }, [ref]);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const select = selectRef.current;
-    const owner = select?.form;
-    if (!select || !owner) return;
-    let active = true;
-    const onReset = (event: Event) => {
-      // Native reset runs after the reset event's microtask checkpoint.
-      setTimeout(() => {
-        if (active && !event.defaultPrevented && valueRef.current !== undefined) select.value = valueRef.current ?? '';
-      }, 0);
-    };
-    owner.addEventListener('reset', onReset);
-    return () => { active = false; owner.removeEventListener('reset', onReset); };
-  }, [form]);
+    if (!select || value === undefined) return;
+    // A native form reset restores each option's defaultSelected flag before
+    // returning to the caller. Keep that default aligned with the controlled
+    // value so synchronous FormData reads see the same value as React.
+    for (const option of Array.from(select.options)) option.defaultSelected = option.value === (value ?? '');
+  }, [value, options]);
   return <FieldShell {...{ label, hint, error, hintId, errorId, disabled }} size={resolvedSize} id={inputId}>
     <select ref={setRef} id={inputId} name={name} form={form} required={required} disabled={disabled}
       value={value === undefined ? undefined : value ?? ''} defaultValue={value === undefined ? defaultValue ?? '' : undefined}
