@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "package": {
     "name": "@hyeonse/design-system",
-    "version": "0.4.4"
+    "version": "0.4.5"
   },
   "boundaries": {
     "provided": [
@@ -2297,6 +2297,7 @@
       "usage": [
         "Import from @hyeonse/design-system/fields; load tokens.css before components.css.",
         "The caller owns validation, error text, and controlled state.",
+        "A controlled checked value is preserved when reading FormData immediately after form.reset().",
         "size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals."
       ],
       "states": [
@@ -2431,6 +2432,7 @@
       "usage": [
         "Import from @hyeonse/design-system/fields; load tokens.css before components.css.",
         "The caller owns validation, error text, and controlled state.",
+        "A controlled selection is preserved when reading FormData immediately after form.reset().",
         "size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals."
       ],
       "states": [
@@ -3214,6 +3216,7 @@
       "usage": [
         "Import from @hyeonse/design-system/overlays and load tokens.css then components.css.",
         "Pass a button trigger and a required title; use this native path when Base UI popup composition is unnecessary.",
+        "With controlled open, a method=\"dialog\" form requests onOpenChange(false). Keep open true to continue editing.",
         "size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals."
       ],
       "states": [

@@ -26,7 +26,7 @@ export const overlayEntries = {
   },
   NativeDialog: {
     kind: 'component', summary: 'Browser-native modal dialog with a title, optional description, body, footer, and close control.',
-    usage: ['Import from @hyeonse/design-system/overlays and load tokens.css then components.css.', 'Pass a button trigger and a required title; use this native path when Base UI popup composition is unnecessary.'],
+    usage: ['Import from @hyeonse/design-system/overlays and load tokens.css then components.css.', 'Pass a button trigger and a required title; use this native path when Base UI popup composition is unnecessary.', 'With controlled open, a method="dialog" form requests onOpenChange(false). Keep open true to continue editing.'],
     states: ['controlled or uncontrolled open', 'optional description and footer', 'xs/sm/md/lg/xl size'],
     accessibility: ['showModal supplies the native modal top layer; this wrapper keeps Tab and Shift+Tab inside without Base UI focus guards.', 'Escape, close, outside dismissal, and trigger focus return are checked across browser engines.'],
     limitations: ['Browser and screen-reader presentation can vary; actual VoiceOver speech still needs direct confirmation.', 'The trigger must forward onClick and DOM ARIA props. Nested Base UI popup components can still render their own guards.'],

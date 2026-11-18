@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 import { chromium, firefox, webkit } from 'playwright';
 import { exerciseFields, exerciseOverlays, exerciseDisplay, exerciseExpandedAccessibility, exerciseFocusGuards, exerciseComboboxDismissal } from './browser-suites.mjs';
+import { exerciseNativeDialogForm } from '../tests/browser/exercise-native-dialog-form.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const site = join(root, '.site');
@@ -43,15 +44,17 @@ async function fingerprint() {
       hash.update(directory + '/' + file).update(await readFile(join(root, directory, file)));
     }
   }
-  for (const file of ['.site/index.html', '.site/showcase.css', 'tests/browser/consumer.tsx', 'tests/browser/native-alternatives.tsx', 'scripts/check-browser.mjs', 'scripts/browser-suites.mjs']) hash.update(file).update(await readFile(join(root, file)));
+  for (const file of ['.site/index.html', '.site/showcase.css', 'tests/browser/consumer.tsx', 'tests/browser/native-alternatives.tsx', 'tests/browser/native-dialog-form.tsx', 'tests/browser/exercise-native-dialog-form.mjs', 'scripts/check-browser.mjs', 'scripts/browser-suites.mjs']) hash.update(file).update(await readFile(join(root, file)));
   return hash.digest('hex');
 }
 
 async function prepareConsumer() {
   await build({ absWorkingDir: root, entryPoints: ['tests/browser/consumer.tsx'], outfile: join(fixture, 'consumer.js'), bundle: true, minify: true, platform: 'browser', format: 'esm', target: 'es2020', define: { 'process.env.NODE_ENV': '"production"' }, logLevel: 'silent' });
   await writeFile(join(fixture, 'index.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HDS consumer checks</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/dist/tokens.css"><link rel="stylesheet" href="/dist/components.css"><style>body{margin:16px;color:var(--ink);background:var(--paper);font-family:system-ui}main{max-width:600px}form{display:grid;gap:12px}.actions,.statuses{display:flex;flex-wrap:wrap;gap:12px}section{margin-top:20px}output[data-settings]{display:block;overflow-wrap:anywhere}fieldset{min-width:0}</style></head><body><div id="consumer"></div><div id="settings-A"></div><div id="settings-B"></div><script type="module" src="./consumer.js"></script></body></html>`);
-  await build({ absWorkingDir: root, entryPoints: ['tests/browser/native-alternatives.tsx'], outfile: join(fixture, 'native-alternatives.js'), bundle: true, minify: true, platform: 'browser', format: 'esm', target: 'es2020', define: { 'process.env.NODE_ENV': '"production"' }, logLevel: 'silent' });
-  await writeFile(join(fixture, 'native-alternatives.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HDS native alternatives</title><link rel="stylesheet" href="/dist/tokens.css"><link rel="stylesheet" href="/dist/components.css"><style>body{margin:16px;color:var(--ink);background:var(--paper);font-family:system-ui}main{max-width:600px}form{display:grid;gap:12px}</style></head><body><div id="consumer"></div><script type="module" src="./native-alternatives.js"></script></body></html>`);
+  for (const name of ['native-alternatives', 'native-dialog-form']) {
+    await build({ absWorkingDir: root, entryPoints: [`tests/browser/${name}.tsx`], outfile: join(fixture, `${name}.js`), bundle: true, minify: true, platform: 'browser', format: 'esm', target: 'es2020', define: { 'process.env.NODE_ENV': '"production"' }, logLevel: 'silent' });
+    await writeFile(join(fixture, `${name}.html`), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HDS ${name}</title><link rel="stylesheet" href="/dist/tokens.css"><link rel="stylesheet" href="/dist/components.css"><style>body{margin:16px;color:var(--ink);background:var(--paper);font-family:system-ui}main{max-width:600px}form{display:grid;gap:12px}</style></head><body><div id="consumer"></div><script type="module" src="./${name}.js"></script></body></html>`);
+  }
 }
 
 async function a11y(page, selector = 'body') {
@@ -341,6 +344,17 @@ async function exerciseShowcase(page, base, engine) {
   assert.equal(await specimenConfirm.isDisabled(), true, 'Workbench rejects an empty name');
   await specimenInput.fill('Browser specimen');
   assert.equal(await specimenConfirm.isDisabled(), false);
+  const variant = page.locator('#component-button').getByRole('combobox', { name: '모양', exact: true });
+  await variant.selectOption('secondary');
+  assert.match(await page.locator('#component-button pre').innerText(), /variant="secondary"/);
+  const tokenGroup = page.locator('#tokens').getByRole('combobox', { name: '종류', exact: true });
+  await tokenGroup.selectOption('color');
+  assert.equal(await page.locator('.token-identity > code').filter({ hasText: '--shadow-' }).count(), 0);
+  await tokenGroup.selectOption('shadow');
+  const shadows = await page.locator('.token-symbol').evaluateAll(items => items.map(item => getComputedStyle(item).boxShadow));
+  assert.equal(shadows.length, 2);
+  assert(shadows.every(shadow => shadow !== 'none'));
+  await tokenGroup.selectOption('all');
   await page.getByRole('searchbox', { name: '토큰 검색' }).fill('forest');
   assert((await page.locator('.token-row').count()) > 0);
   await page.getByRole('searchbox', { name: '토큰 검색' }).fill('no-such-token-893');
@@ -414,6 +428,7 @@ try {
       await runCase(browser, name, 'showcase', {}, page => exerciseShowcase(page, base, name));
       await runCase(browser, name, 'native-consumer', {}, page => exerciseConsumer(page, base));
       await runCase(browser, name, 'native-alternatives', {}, page => exerciseNativeAlternatives(page, base));
+      await runCase(browser, name, 'native-dialog-form', {}, page => exerciseNativeDialogForm(page, base));
       await runCase(browser, name, 'expanded-overlays', { viewport: { width: 390, height: 844 }, colorScheme: 'dark' }, page => exerciseOverlays(page, base));
       await runCase(browser, name, 'expanded-display', { viewport: { width: 390, height: 844 } }, page => exerciseDisplay(page, base));
       await runCase(browser, name, 'focus-guard-navigation', {}, async page => { const result = await exerciseFocusGuards(page, base); verifiedFocusGuardEngines.add(name); return result; });

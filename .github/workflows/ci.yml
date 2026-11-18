@@ -26,7 +26,8 @@ jobs:
       - run: npm pack --dry-run
   browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # WebKit's Ubuntu system dependencies can take more than 15 minutes on a cold runner.
+    timeout-minutes: ${{ matrix.browser == 'webkit' && 30 || 15 }}
     strategy:
       fail-fast: false
       matrix:

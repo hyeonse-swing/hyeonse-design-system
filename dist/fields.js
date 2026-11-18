@@ -52,7 +52,7 @@ function useFormReset(reset, formId, forwardedRef) {
         owner.addEventListener('reset', onReset);
         return () => { active = false; owner.removeEventListener('reset', onReset); };
     }, [input, formId]);
-    return inputRef;
+    return { input, inputRef };
 }
 function copyInitial(value) {
     return Array.isArray(value) ? [...value] : value;
@@ -62,7 +62,7 @@ function useResettableValue(value, defaultValue, form, forwardedRef, afterReset)
     const [local, setLocal] = useState(() => copyInitial(initial.current));
     const [, refresh] = useReducer((count) => count + 1, 0);
     const controlled = value !== undefined;
-    const inputRef = useFormReset(() => {
+    const { input, inputRef } = useFormReset(() => {
         if (!controlled)
             setLocal(copyInitial(initial.current));
         afterReset?.();
@@ -74,6 +74,7 @@ function useResettableValue(value, defaultValue, form, forwardedRef, afterReset)
         current: controlled ? value : local,
         change(next) { if (!controlled)
             setLocal(next); },
+        input,
         inputRef,
     };
 }
@@ -169,6 +170,10 @@ export function Switch({ label, hint, error, size, id, name, form, value, unchec
     const inputId = id ?? generatedId;
     const { hintId, errorId } = ids(generatedId, hint, error);
     const selection = useResettableValue(checked, defaultChecked ?? false, form, ref);
+    useLayoutEffect(() => {
+        if (selection.input && checked !== undefined)
+            selection.input.defaultChecked = checked;
+    }, [selection.input, checked]);
     const resolvedSize = useHdsSize(size);
     return _jsx(FieldShell, { label, hint, error, hintId, errorId, disabled, size: resolvedSize, id: inputId, labelNode: _jsx("span", { className: "hds-field__label", children: label }), children: _jsx(BaseSwitch.Root, { id: inputId, inputRef: selection.inputRef, name: name, form: form, value: value, uncheckedValue: uncheckedValue, required: required, disabled: disabled, readOnly: readOnly, checked: selection.current, onCheckedChange: next => { onCheckedChange?.(next); selection.change(next); }, className: `hds-field__switch${className ? ` ${className}` : ''}`, "aria-label": label, "aria-describedby": description({ hintId, errorId, describedBy }), "aria-invalid": error ? true : invalid, children: _jsx(BaseSwitch.Thumb, { className: "hds-field__switchThumb" }) }) });
 }
@@ -176,6 +181,16 @@ export function RadioGroup({ label, hint, error, size, options, name, form, requ
     const generatedId = useId();
     const { hintId, errorId } = ids(generatedId, hint, error);
     const selection = useResettableValue(value, defaultValue ?? null, form, ref);
+    useLayoutEffect(() => {
+        if (!selection.input || value === undefined)
+            return;
+        // The browser resets Base UI's native radio inputs from defaultChecked.
+        // Keep each default aligned with the caller-owned selection.
+        const group = selection.input.closest('[role="radiogroup"]');
+        for (const input of Array.from(group?.querySelectorAll('input[type="radio"]') ?? [])) {
+            input.defaultChecked = input.value === value;
+        }
+    }, [selection.input, value, options]);
     const resolvedSize = useHdsSize(size);
     return _jsx(FieldShell, { label, hint, error, hintId, errorId, disabled, size: resolvedSize, id: generatedId, labelNode: _jsx("span", { className: "hds-field__label", id: `${generatedId}-label`, children: label }), children: _jsx(BaseRadioGroup, { value: selection.current, onValueChange: next => { if (next !== null)
                 onValueChange?.(next); selection.change(next); }, name: name, form: form, required: required, disabled: disabled, readOnly: readOnly, inputRef: selection.inputRef, className: `hds-field__radioGroup${className ? ` ${className}` : ''}`, "aria-labelledby": `${generatedId}-label`, "aria-describedby": description({ hintId, errorId, describedBy }), "aria-invalid": error ? true : invalid, children: options.map(option => _jsxs("label", { className: "hds-field__radioOption", children: [_jsx(BaseRadio.Root, { value: option.value, disabled: option.disabled, className: "hds-field__radio", children: _jsx(BaseRadio.Indicator, { className: "hds-field__radioIndicator" }) }), _jsx("span", { children: option.label })] }, option.value)) }) });

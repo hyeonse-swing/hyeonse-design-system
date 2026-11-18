@@ -93,13 +93,15 @@ import { NativeSelect } from '@hyeonse/design-system/fields';
 
 레이블이 있는 필드는 `label`이 필수이며 `hint`, `error`와 전달한 `aria-describedby`를 입력에 연결합니다. `error`를 주면 `aria-invalid`가 적용됩니다. `Select`, `Combobox`, `MultiSelect`, `RadioGroup`의 옵션은 서로 다른 문자열 `value`를 사용하세요. 검색 텍스트는 자유 입력 제출값이 아닙니다. `Switch`의 꺼짐 상태는 `uncheckedValue`를 지정하지 않으면 제출값이 없습니다. 검증 규칙, 오류 문구, 제어 상태는 앱이 관리합니다. 네이티브 폼 reset은 비제어 값을 최초 기본값으로 되돌리며, `form="id"`로 연결한 외부 폼도 지원합니다. reset이 취소되면 값은 바뀌지 않습니다. 제어형 `value`·`checked`·`inputValue`는 호출자가 초기화해야 하며, reset 자체로 값 변경 콜백을 호출하지 않습니다. [폼 예제](../examples/expanded-forms.tsx)를 참고하세요.
 
+제어형 `Switch`·`RadioGroup`은 `form.reset()` 직후 같은 호출 스택에서 읽은 `new FormData(form)`에도 현재의 `checked`·`value`를 반영합니다.
+
 ### 오버레이 (`overlays`)
 
 `DropdownMenu`와 `ContextMenu`는 `items`에 `action`, `checkbox`, `separator`, `submenu` 종류를 받습니다. 각 항목에 안정적인 `id`를 주고 체크 상태와 실행 결과는 앱에서 관리합니다. `ContextMenu`의 중요한 작업은 보이는 대체 조작도 제공하세요. `danger`는 시각 표현일 뿐 확인 절차가 아닙니다.
 
 `Dialog`, `AlertDialog`, `Sheet`, `Popover`는 제목과 트리거를 받습니다. `Tooltip`은 포커스 가능한 트리거와 짧은 텍스트 `content`를 받으며, 시각적 보조 레이블 용도이므로 트리거 자체의 접근 가능한 이름을 제공하고 필수 정보나 터치 전용 안내를 넣지 마세요. [Base UI 사용 지침](https://base-ui.com/react/components/tooltip#usage-guidelines)을 따릅니다. 트리거로 전달하는 컴포넌트는 DOM props와 ref를 전달해야 합니다. 메뉴와 대화상자 계열은 `open/defaultOpen/onOpenChange`를 지원합니다. 제어형 `open`을 사용하면 콜백에서 앱 상태를 갱신하세요.
 
-`v0.4.3`의 `NativeDialog`는 일반 모달에 쓸 수 있는 `<dialog>` 기반 대안입니다. `Dialog`와 같은 `trigger/title/description/children/footer/open/defaultOpen/onOpenChange/size`를 받습니다. 브라우저의 모달 최상위 레이어를 사용하고 Tab·Shift+Tab은 컴포넌트가 내부 조작 요소 사이에서 순환시킵니다. `v0.4.4`에서는 macOS WebKit이 내부 버튼을 건너뛰는 경우에도 다음 버튼으로 즉시 초점을 옮깁니다. Escape, 닫기 버튼, 바깥 클릭으로 닫고 트리거로 초점을 돌립니다. 트리거는 `onClick`과 ARIA 속성을 실제 DOM 버튼까지 전달해야 합니다. 검색 목록·메뉴 등 Base UI 팝업을 안에 넣으면 그 팝업의 초점 가드는 여전히 생깁니다. 복잡한 중첩 팝업이 없는 모달에서 `NativeSelect`와 함께 사용하세요.
+`v0.4.3`의 `NativeDialog`는 일반 모달에 쓸 수 있는 `<dialog>` 기반 대안입니다. `Dialog`와 같은 `trigger/title/description/children/footer/open/defaultOpen/onOpenChange/size`를 받습니다. 브라우저의 모달 최상위 레이어를 사용하고 Tab·Shift+Tab은 컴포넌트가 내부 조작 요소 사이에서 순환시킵니다. `v0.4.4`에서는 macOS WebKit이 내부 버튼을 건너뛰는 경우에도 다음 버튼으로 즉시 초점을 옮깁니다. Escape, 닫기 버튼, 바깥 클릭으로 닫고 트리거로 초점을 돌립니다. 트리거는 `onClick`과 ARIA 속성을 실제 DOM 버튼까지 전달해야 합니다. 검색 목록·메뉴 등 Base UI 팝업을 안에 넣으면 그 팝업의 초점 가드는 여전히 생깁니다. 복잡한 중첩 팝업이 없는 모달에서 `NativeSelect`와 함께 사용하세요. 제어형 모달 안의 `<form method="dialog">`에서 제출하면 `onOpenChange(false)`로 닫기를 요청합니다. 부모가 `open`을 유지하면 입력을 계속할 수 있고, 부모가 나중에 `open={false}`를 적용해도 마지막 제출 버튼 값을 `returnValue`로 사용합니다. 그 전에 Escape 또는 닫기 버튼으로 새 닫기 요청이 들어오면 보류 중인 제출값을 비웁니다. 유효성 검사에서 제출 자체를 거절할 때는 폼의 `onSubmit`에서 `event.preventDefault()`를 호출하세요.
 
 ```tsx
 import { NativeDialog } from '@hyeonse/design-system/overlays';

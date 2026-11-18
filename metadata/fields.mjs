@@ -56,6 +56,7 @@ export const fieldEntries = {
   Switch: {
     ...shared,
     summary: 'Labeled binary switch with native form participation.',
+    usage: [...shared.usage, 'A controlled checked value is preserved when reading FormData immediately after form.reset().'],
     states: ['on/off', 'enabled/disabled/readOnly', 'required', 'hint/error'],
     accessibility: ['Base UI provides switch semantics and keyboard interaction.', 'Visible text and optional descriptions communicate state without color alone.'],
     limitations: ['An unchecked switch submits no value unless uncheckedValue is supplied.'],
@@ -64,6 +65,7 @@ export const fieldEntries = {
   RadioGroup: {
     ...shared,
     summary: 'Labeled set of mutually exclusive choices.',
+    usage: [...shared.usage, 'A controlled selection is preserved when reading FormData immediately after form.reset().'],
     states: ['empty/selected', 'enabled/disabled/readOnly', 'required', 'hint/error'],
     accessibility: ['Base UI provides radio keyboard navigation and form participation.', 'The group is named by visible label and described by hint or error.'],
     limitations: ['Option values must be unique strings.'],

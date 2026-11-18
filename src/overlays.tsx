@@ -139,12 +139,16 @@ export function NativeDialog({ size, trigger, title, description, children, foot
   const [localOpen, setLocalOpen] = useState(defaultOpen);
   const currentOpen = open ?? localOpen;
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const controlledOpenRef = useRef(open);
+  useLayoutEffect(() => { controlledOpenRef.current = open; }, [open]);
+  const pendingReturnValueRef = useRef<string | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const titleId = useId();
   const descriptionId = useId();
   const dialogId = useId();
   const resolvedSize = useHdsSize(size);
-  const changeOpen = (next: boolean) => {
+  const changeOpen = (next: boolean, pendingReturnValue?: string) => {
+    pendingReturnValueRef.current = pendingReturnValue ?? null;
     if (open === undefined) setLocalOpen(next);
     onOpenChange?.(next);
   };
@@ -155,7 +159,10 @@ export function NativeDialog({ size, trigger, title, description, children, foot
       if (!previousFocusRef.current?.isConnected) previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       dialog.showModal();
     } else if (!currentOpen && dialog.open) {
-      dialog.close();
+      const returnValue = pendingReturnValueRef.current;
+      pendingReturnValueRef.current = null;
+      if (returnValue === null) dialog.close();
+      else dialog.close(returnValue);
     }
   }, [currentOpen]);
   const originalTrigger = trigger.props as { onClick?: (event: ReactMouseEvent<HTMLElement>) => void };
@@ -176,7 +183,7 @@ export function NativeDialog({ size, trigger, title, description, children, foot
     <dialog ref={dialogRef} id={dialogId} tabIndex={-1} data-hds-size={resolvedSize} className="hds-dialog__popup hds-nativeDialog"
       aria-labelledby={titleId} aria-describedby={description ? descriptionId : undefined}
       onKeyDown={event => {
-        if (event.key !== 'Tab' || event.defaultPrevented) return;
+        if (event.key !== 'Tab' || event.defaultPrevented || (event.target instanceof Element && event.target.closest('dialog') !== event.currentTarget)) return;
         const dialog = event.currentTarget;
         const elements = nativeDialogTabStops(dialog);
         const current = elements.indexOf(document.activeElement as HTMLElement);
@@ -205,12 +212,37 @@ export function NativeDialog({ size, trigger, title, description, children, foot
           (remaining[reverse ? Math.max(0, index - 1) : Math.min(remaining.length - 1, index + 1)] ?? dialog).focus();
         });
       }}
-      onCancel={event => { event.preventDefault(); changeOpen(false); }}
-      onClose={() => {
+      onSubmit={event => {
+        if (open === undefined || event.defaultPrevented || !(event.target instanceof HTMLFormElement) || event.target.closest('dialog') !== event.currentTarget) return;
+        const submitter = (event.nativeEvent as SubmitEvent).submitter;
+        const method = submitter?.getAttribute('formmethod')?.toLowerCase() ?? event.target.method;
+        if (method !== 'dialog') return;
+        // Only the browser has the selected image coordinates for its native return value.
+        if (submitter instanceof HTMLInputElement && submitter.type === 'image') return;
+        event.preventDefault();
+        const returnValue = submitter instanceof HTMLButtonElement || submitter instanceof HTMLInputElement ? submitter.value : '';
+        // The owner may accept this request asynchronously. Keep the submitter
+        // value until a later open/close request replaces it or the dialog closes.
+        changeOpen(false, returnValue);
+      }}
+      onCancel={event => { if (event.target !== event.currentTarget) return; event.preventDefault(); changeOpen(false); }}
+      onClose={event => {
+        // React can deliver a child's close event here, or a queued native
+        // close event after this dialog has already been opened again.
+        if (event.target !== event.currentTarget || event.currentTarget.open) return;
         if (currentOpen) changeOpen(false);
         const previous = previousFocusRef.current;
         requestAnimationFrame(() => {
-          if (previous?.isConnected && !dialogRef.current?.open && (document.activeElement === document.body || dialogRef.current?.contains(document.activeElement))) previous.focus();
+          const dialog = dialogRef.current;
+          // A native close can happen directly, including from dialog.close() or
+          // an image submitter. Restore the modal if its owner keeps it open.
+          if (controlledOpenRef.current === true && dialog?.isConnected && !dialog.open) {
+            dialog.showModal();
+            return;
+          }
+          if (previous?.isConnected && !dialog?.open && (
+            document.activeElement === document.body || dialog?.contains(document.activeElement) || previous.closest('dialog') === document.activeElement
+          )) previous.focus();
         });
       }}
       onClick={event => {

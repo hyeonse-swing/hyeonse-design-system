@@ -53,7 +53,7 @@ function useFormReset(reset: () => void, formId?: string, forwardedRef?: Ref<HTM
     owner.addEventListener('reset', onReset);
     return () => { active = false; owner.removeEventListener('reset', onReset); };
   }, [input, formId]);
-  return inputRef;
+  return { input, inputRef };
 }
 function copyInitial<T>(value: T): T {
   return Array.isArray(value) ? [...value] as T : value;
@@ -63,7 +63,7 @@ function useResettableValue<T>(value: T | undefined, defaultValue: T, form?: str
   const [local, setLocal] = useState<T>(() => copyInitial(initial.current));
   const [, refresh] = useReducer((count: number) => count + 1, 0);
   const controlled = value !== undefined;
-  const inputRef = useFormReset(() => {
+  const { input, inputRef } = useFormReset(() => {
     if (!controlled) setLocal(copyInitial(initial.current));
     afterReset?.();
     // Native reset also mutates Base UI's hidden input. Re-render controlled fields
@@ -73,6 +73,7 @@ function useResettableValue<T>(value: T | undefined, defaultValue: T, form?: str
   return {
     current: controlled ? value : local,
     change(next: T) { if (!controlled) setLocal(next); },
+    input,
     inputRef,
   };
 }
@@ -253,6 +254,9 @@ export function Switch({ label, hint, error, size, id, name, form, value, unchec
   const inputId = id ?? generatedId;
   const { hintId, errorId } = ids(generatedId, hint, error);
   const selection = useResettableValue(checked, defaultChecked ?? false, form, ref);
+  useLayoutEffect(() => {
+    if (selection.input && checked !== undefined) selection.input.defaultChecked = checked;
+  }, [selection.input, checked]);
   const resolvedSize = useHdsSize(size);
   return <FieldShell {...{ label, hint, error, hintId, errorId, disabled }} size={resolvedSize} id={inputId} labelNode={<span className="hds-field__label">{label}</span>}>
     <BaseSwitch.Root id={inputId} inputRef={selection.inputRef} name={name} form={form} value={value} uncheckedValue={uncheckedValue} required={required} disabled={disabled} readOnly={readOnly} checked={selection.current} onCheckedChange={next => { onCheckedChange?.(next); selection.change(next); }} className={`hds-field__switch${className ? ` ${className}` : ''}`} aria-label={label} aria-describedby={description({ hintId, errorId, describedBy })} aria-invalid={error ? true : invalid}><BaseSwitch.Thumb className="hds-field__switchThumb" /></BaseSwitch.Root>
@@ -264,6 +268,15 @@ export function RadioGroup({ label, hint, error, size, options, name, form, requ
   const generatedId = useId();
   const { hintId, errorId } = ids(generatedId, hint, error);
   const selection = useResettableValue<string | null>(value, defaultValue ?? null, form, ref);
+  useLayoutEffect(() => {
+    if (!selection.input || value === undefined) return;
+    // The browser resets Base UI's native radio inputs from defaultChecked.
+    // Keep each default aligned with the caller-owned selection.
+    const group = selection.input.closest('[role="radiogroup"]');
+    for (const input of Array.from(group?.querySelectorAll<HTMLInputElement>('input[type="radio"]') ?? [])) {
+      input.defaultChecked = input.value === value;
+    }
+  }, [selection.input, value, options]);
   const resolvedSize = useHdsSize(size);
   return <FieldShell {...{ label, hint, error, hintId, errorId, disabled }} size={resolvedSize} id={generatedId} labelNode={<span className="hds-field__label" id={`${generatedId}-label`}>{label}</span>}>
     <BaseRadioGroup<string | null> value={selection.current} onValueChange={next => { if (next !== null) onValueChange?.(next); selection.change(next); }} name={name} form={form} required={required} disabled={disabled} readOnly={readOnly} inputRef={selection.inputRef} className={`hds-field__radioGroup${className ? ` ${className}` : ''}`} aria-labelledby={`${generatedId}-label`} aria-describedby={description({ hintId, errorId, describedBy })} aria-invalid={error ? true : invalid}>

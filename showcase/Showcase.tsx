@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import { PreferencesPanel, PreferencesProvider, ThemeToggle, usePreferences } from '../dist/react.js';
 import { Badge, Button, Checkbox, TextField } from '../dist/primitives.js';
-import { Select } from '../dist/fields.js';
+import { NativeSelect } from '../dist/fields.js';
 import type { ButtonProps } from '../dist/primitives.js';
 import catalog from '../dist/catalog.json';
 import { SizingDemo } from './SizingDemo.js';
@@ -10,7 +10,7 @@ import { ComponentLibrary } from './ComponentLibrary.js';
 import { SectionNavigation } from './SectionNavigation.js';
 
 type Token = (typeof catalog.tokens)[number];
-type TokenGroup = 'all' | 'color' | 'space' | 'type' | 'other';
+type TokenGroup = 'all' | 'color' | 'space' | 'type' | 'other' | 'shadow';
 
 const sections = [
   ['overview', '시스템 소개', '01'], ['tokens', '토큰 탐색', '02'],
@@ -47,8 +47,16 @@ const initialScript = createPreferenceScript(undefined, defaults);
 function groupFor(token: Token): Exclude<TokenGroup, 'all'> {
   if (/^--(space-|gutter|control-min-size)/.test(token.name)) return 'space';
   if (/^--(font-|text-|leading-)/.test(token.name)) return 'type';
+  if (token.name.startsWith('--shadow-')) return 'shadow';
   if (/^--(radius-|duration-)/.test(token.name)) return 'other';
   return 'color';
+}
+
+function TokenSymbol({ token }: { token: Token }) {
+  const group = groupFor(token);
+  const value = `var(${token.name})`;
+  const style = group === 'color' ? { background: value } : group === 'shadow' ? { boxShadow: value } : undefined;
+  return <span className="token-symbol" aria-hidden="true" style={style}>{style ? '' : group === 'type' ? 'Aa' : '↔'}</span>;
 }
 
 function Arrow() { return <span aria-hidden="true">↗</span>; }
@@ -115,16 +123,16 @@ function TokenExplorer() {
     </div>
     <div className="token-toolbar">
       <TextField label="토큰 검색" type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="예: accent, forest, spacing" />
-      <Select label="종류" value={group} onValueChange={value => { if (value) setGroup(value as TokenGroup); }} options={[
+      <NativeSelect label="종류" value={group} onValueChange={value => { if (value) setGroup(value as TokenGroup); }} options={[
         { value: 'all', label: '모든 토큰' }, { value: 'color', label: '색과 상태' },
         { value: 'space', label: '간격과 크기' }, { value: 'type', label: '글자' },
-        { value: 'other', label: '모서리와 움직임' },
+        { value: 'other', label: '모서리와 움직임' }, { value: 'shadow', label: '그림자' },
       ]} />
     </div>
     <div className="results-heading"><p role="status">{filtered.length} / {catalog.tokens.length}개 토큰</p><span>현재 화면의 계산된 값</span></div>
     {filtered.length ? <div className="token-list">
       {filtered.map(token => <details key={token.name} className="token-row">
-        <summary><span className="token-symbol" style={groupFor(token) === 'color' ? { background: `var(${token.name})` } : undefined} aria-hidden="true">{groupFor(token) === 'color' ? '' : groupFor(token) === 'type' ? 'Aa' : '↔'}</span><span className="token-identity"><code>{token.name}</code><span>{token.role}</span></span><code className="token-value">{values[token.name] || token.value}</code><span className="expand-icon" aria-hidden="true">+</span></summary>
+        <summary><TokenSymbol token={token} /><span className="token-identity"><code>{token.name}</code><span>{token.role}</span></span><code className="token-value">{values[token.name] || token.value}</code><span className="expand-icon" aria-hidden="true">+</span></summary>
         <div className="token-detail"><CodeBlock code={`var(${token.name})`} label={`${token.name} CSS 변수`} language="CSS" />
           <p><strong>기본값</strong> <code>{token.value}</code></p>
           {token.overrides.length > 0 ? <ul className="condition-list">{token.overrides.map((override, index) => <li key={index}><code>{override.media ? `@media ${override.media} · ` : ''}{override.selector}</code><span>→ <code>{override.value}</code></span></li>)}</ul> : <p className="muted">테마나 기기 조건에 따른 별도 값이 없어요.</p>}
@@ -146,7 +154,7 @@ function ButtonPlayground() {
     <p>행동의 우선순위와 처리 중 상태를 표현해요. 기본 <code>type="button"</code>으로 폼을 뜻하지 않게 제출하는 일을 막습니다.</p>
     <div className="playground">
       <div className="playground-stage"><Button variant={variant} loading={loading} loadingLabel="저장 중…" disabled={disabled} onClick={() => setCount(count + 1)}>변경 사항 저장 <Arrow /></Button><p role="status" className="demo-status">{count ? `${count}번 동작했어요.` : '눌러서 동작을 확인하세요.'}</p></div>
-      <div className="playground-options"><Select label="모양" value={variant} onValueChange={value => { if (value) setVariant(value as typeof variant); }} options={[
+      <div className="playground-options"><NativeSelect label="모양" value={variant} onValueChange={value => { if (value) setVariant(value as typeof variant); }} options={[
         { value: 'primary', label: 'Primary' }, { value: 'secondary', label: 'Secondary' }, { value: 'ghost', label: 'Ghost' },
       ]} /><Checkbox label="로딩 상태" checked={loading} onChange={event => setLoading(event.target.checked)} /><Checkbox label="비활성 상태" checked={disabled} onChange={event => setDisabled(event.target.checked)} /></div>
     </div>
