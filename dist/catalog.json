@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "package": {
     "name": "@hyeonse/design-system",
-    "version": "0.4.6"
+    "version": "0.4.7"
   },
   "boundaries": {
     "provided": [

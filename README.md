@@ -4,10 +4,10 @@
 
 ## 사용
 
-[`v0.4.6` 설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.6.tgz)는 `NativeSelect`와 `NativeDialog`의 공개 가져오기 경로를 API 표에 포함합니다. 고정 항목 선택에는 `NativeSelect`, 일반 모달에는 `NativeDialog`를 사용할 수 있습니다. Base UI 오버레이의 WebKit 초점 가드는 [검증 범위](docs/code-freeze.md)에 기록했습니다. 이전 고정 아카이브는 각 버전 주소에서 계속 설치할 수 있습니다.
+[`v0.4.7` 설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.7.tgz)의 React 컴포넌트는 React와 React DOM 19.x를 사용합니다. React 19.0.0·19.3.0 설치본에서 서버 렌더링과 초기 화면 연결을 검증했습니다. React 없이 스타일을 쓰는 방법은 [CSS 설치 안내](docs/api.md#css)를 참고하세요.
 
 ```sh
-npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.6.tgz
+npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.7.tgz
 
 # 기존 v0.3.0 태그가 필요한 프로젝트만
 npm install github:hyeonse-swing/hyeonse-design-system#v0.3.0
@@ -17,7 +17,7 @@ npm install github:hyeonse-swing/hyeonse-design-system#v0.3.0
 
 아카이브의 파일명에 버전이 고정되어 있습니다. 설치 전 [릴리스 매니페스트](https://design-system.hyeonse.dev/releases/manifest.json)의 `version`, `url`, `sha256`, `integrity`를 확인하세요. GitHub 태그 설치는 저장소에 포함된 빌드된 `dist/`를 사용합니다.
 
-이 작업 트리의 개발 의존성에는 Node.js 22.22.2 이상 또는 24.15 이상이 필요합니다. 현재 개발 기준은 Node.js 24.22.1입니다. 소비 앱의 지원 범위는 패키지의 실제 실행 코드와 해당 앱 환경을 확인하세요.
+이 작업 트리의 개발 의존성에는 Node.js 22.22.2 이상인 22.x 또는 Node.js 24.15 이상이 필요합니다. CI에서 Node.js 22·24·26을 검사합니다.
 
 로컬 [쇼케이스](index.html)는 패키지 컴포넌트를 쓰는 정적 React 문서 작업대입니다. 다음 명령으로 `.site/`를 만든 뒤 `http://127.0.0.1:4347/`에서 확인할 수 있습니다. 이 절차는 공개 배포를 뜻하지 않습니다.
 
