@@ -8,6 +8,7 @@ import { RadioGroup as BaseRadioGroup } from '@base-ui/react/radio-group';
 import { Radio as BaseRadio } from '@base-ui/react/radio';
 import { NumberField as BaseNumberField } from '@base-ui/react/number-field';
 import { useHdsSize } from './sizing.js';
+import { useHdsFocusGuardLabels } from './focus-guard-labels.js';
 function ids(id, hint, error) {
     return { hintId: hint ? `${id}-hint` : undefined, errorId: error ? `${id}-error` : undefined };
 }
@@ -99,6 +100,7 @@ function optionLabel(options, value) {
     return value == null ? '' : options.find(option => option.value === value)?.label ?? value;
 }
 export function Select({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder = '선택하세요', className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }) {
+    useHdsFocusGuardLabels();
     const generatedId = useId();
     const triggerId = id ?? generatedId;
     const { hintId, errorId } = ids(generatedId, hint, error);
@@ -129,9 +131,10 @@ export function NativeSelect({ label, hint, error, size, options, name, form, id
         for (const option of Array.from(select.options))
             option.defaultSelected = option.value === (value ?? '');
     }, [value, options]);
-    return _jsx(FieldShell, { label, hint, error, hintId, errorId, disabled, size: resolvedSize, id: inputId, children: _jsxs("select", { ref: setRef, id: inputId, name: name, form: form, required: required, disabled: disabled, value: value === undefined ? undefined : value ?? '', defaultValue: value === undefined ? defaultValue ?? '' : undefined, onChange: event => onValueChange?.(event.currentTarget.value || null), "aria-describedby": description({ hintId, errorId, describedBy }), "aria-invalid": error ? true : invalid, className: `hds-field__control hds-field__nativeSelect${className ? ` ${className}` : ''}`, children: [_jsx("option", { value: "", disabled: required, children: placeholder }), options.map(option => _jsx("option", { value: option.value, disabled: option.disabled, children: option.label }, option.value))] }) });
+    return _jsx(FieldShell, { label, hint, error, hintId, errorId, disabled, size: resolvedSize, id: inputId, children: _jsxs("div", { className: "hds-field__nativeSelectWrap", children: [_jsxs("select", { ref: setRef, id: inputId, name: name, form: form, required: required, disabled: disabled, value: value === undefined ? undefined : value ?? '', defaultValue: value === undefined ? defaultValue ?? '' : undefined, onChange: event => onValueChange?.(event.currentTarget.value || null), "aria-describedby": description({ hintId, errorId, describedBy }), "aria-invalid": error ? true : invalid, className: `hds-field__control hds-field__nativeSelect${className ? ` ${className}` : ''}`, children: [_jsx("option", { value: "", disabled: required, children: placeholder }), options.map(option => _jsx("option", { value: option.value, disabled: option.disabled, children: option.label }, option.value))] }), _jsx("span", { className: "hds-field__chevron hds-field__nativeSelectIcon", "aria-hidden": "true", children: _jsx(FieldChevron, {}) })] }) });
 }
 export function Combobox({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder = '검색해서 선택하세요', emptyText = '일치하는 항목이 없어요.', openLabel = '목록 열기', inputValue, defaultInputValue, onInputValueChange, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }) {
+    useHdsFocusGuardLabels();
     const generatedId = useId();
     const inputId = id ?? generatedId;
     const { hintId, errorId } = ids(generatedId, hint, error);
@@ -152,6 +155,7 @@ export function Combobox({ label, hint, error, size, options, name, form, id, re
                 setQuery(next); }, children: [_jsxs(BaseCombobox.InputGroup, { className: "hds-field__inputGroup", children: [_jsx(BaseCombobox.Input, { ref: ref, id: inputId, placeholder: placeholder, className: `hds-field__control hds-field__comboInput${className ? ` ${className}` : ''}`, "aria-describedby": description({ hintId, errorId, describedBy }), "aria-invalid": error ? true : invalid }), _jsx(BaseCombobox.Trigger, { className: "hds-field__iconButton", "aria-label": openLabel, disabled: disabled || readOnly, children: _jsx(FieldChevron, {}) })] }), _jsx(BaseCombobox.Portal, { children: _jsx(BaseCombobox.Positioner, { sideOffset: 4, "data-hds-size": resolvedSize, className: "hds-field__positioner", children: _jsxs(BaseCombobox.Popup, { className: "hds-field__popup", children: [_jsx(BaseCombobox.Empty, { className: "hds-field__empty", children: emptyText }), _jsx(BaseCombobox.List, { className: "hds-field__list", children: (option) => _jsxs(BaseCombobox.Item, { value: option.value, disabled: option.disabled, className: "hds-field__option", children: [_jsx("span", { children: option.label }), _jsx(BaseCombobox.ItemIndicator, { "aria-hidden": "true", children: "\u2713" })] }, option.value) })] }) }) })] }) });
 }
 export function MultiSelect({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder = '검색해서 선택하세요', emptyText = '일치하는 항목이 없어요.', openLabel = '목록 열기', selectedLabel = '선택한 항목', removeLabel = item => `${item} 제거`, chipDescription = 'Backspace 또는 Delete 키로 제거', inputDescription = count => `${count}개 선택됨. 입력 시작점에서 왼쪽 화살표 키를 누르면 선택 항목으로 이동합니다.`, inputValue, defaultInputValue, onInputValueChange, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }) {
+    useHdsFocusGuardLabels();
     const generatedId = useId();
     const inputId = id ?? generatedId;
     const { hintId, errorId } = ids(generatedId, hint, error);

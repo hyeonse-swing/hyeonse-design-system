@@ -24,16 +24,18 @@ function DemoControls() {
     <div className="hds-demoOverlays__controls">
       <DropdownMenu trigger={<Button type="button" variant="secondary">드롭다운 메뉴</Button>} items={items} />
       <ContextMenu trigger={<Button type="button" variant="secondary">우클릭 메뉴</Button>} items={items} />
-      <Dialog trigger={<Button type="button" variant="secondary">대화상자</Button>} title="프로젝트 설정" description="기본 설정을 확인하세요." footer={<Button type="button" onClick={() => setMessage('설정을 저장했어요.')}>저장</Button>}>
+      <NativeDialog trigger={<Button type="button" variant="secondary">대화상자</Button>} title="프로젝트 설정" description="기본 설정을 확인하세요." footer={<Button type="button" onClick={() => setMessage('설정을 저장했어요.')}>저장</Button>}>
+        <div className="hds-demoOverlays__form">
+          <NativeSelect label="프로젝트 공개 범위" options={[{ value: 'team', label: '팀 공개' }, { value: 'private', label: '비공개' }]} value={visibility} onValueChange={setVisibility} />
+        </div>
+      </NativeDialog>
+      <Dialog trigger={<Button type="button" variant="secondary">복합 팝업 대화상자</Button>} title="복합 프로젝트 설정" description="중첩된 사용자 정의 팝업을 확인하세요.">
         <div className="hds-demoOverlays__form">
           <Select label="프로젝트 공개 범위" options={[{ value: 'team', label: '팀 공개' }, { value: 'private', label: '비공개' }]} value={visibility} onValueChange={setVisibility} />
           <DropdownMenu trigger={<Button variant="secondary">추가 설정</Button>} items={[{ kind: 'action', id: 'archive', label: '보관 설정', onSelect: () => setMessage('보관 설정을 선택했어요.') }]} />
           <Popover trigger={<Button variant="ghost">공개 범위 도움말</Button>} title="공개 범위 안내"><p>팀 공개 항목은 팀 구성원과 공유합니다.</p></Popover>
         </div>
       </Dialog>
-      <NativeDialog trigger={<Button type="button" variant="secondary">네이티브 대화상자</Button>} title="기본 설정" description="브라우저 기본 선택 목록을 사용할 수 있습니다.">
-        <NativeSelect label="기본 공개 범위" options={[{ value: 'private', label: '비공개' }, { value: 'team', label: '팀 공개' }]} defaultValue="private" />
-      </NativeDialog>
       <AlertDialog trigger={<Button type="button" variant="secondary">삭제 확인</Button>}
         title="프로젝트를 삭제할까요?" description="이 작업은 되돌릴 수 없습니다."
         cancelLabel="취소" confirmLabel="삭제" onConfirm={() => setMessage('프로젝트를 삭제했어요.')} />

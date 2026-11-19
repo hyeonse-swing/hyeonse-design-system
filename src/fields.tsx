@@ -10,6 +10,7 @@ import { Radio as BaseRadio } from '@base-ui/react/radio';
 import { NumberField as BaseNumberField } from '@base-ui/react/number-field';
 import { useHdsSize } from './sizing.js';
 import type { HdsSize } from './sizing.js';
+import { useHdsFocusGuardLabels } from './focus-guard-labels.js';
 
 type FieldText = { label: string; hint?: string; error?: string; size?: HdsSize };
 type FieldShellProps = FieldText & { id: string; hintId?: string; errorId?: string; disabled?: boolean; children: ReactNode; labelNode?: ReactNode; className?: string; size: HdsSize };
@@ -122,6 +123,7 @@ type ChoiceProps = FieldText & {
 
 export type SelectProps = ChoiceProps & { ref?: Ref<HTMLButtonElement> };
 export function Select({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder = '선택하세요', className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: SelectProps) {
+  useHdsFocusGuardLabels();
   const generatedId = useId();
   const triggerId = id ?? generatedId;
   const { hintId, errorId } = ids(generatedId, hint, error);
@@ -162,14 +164,17 @@ export function NativeSelect({ label, hint, error, size, options, name, form, id
     for (const option of Array.from(select.options)) option.defaultSelected = option.value === (value ?? '');
   }, [value, options]);
   return <FieldShell {...{ label, hint, error, hintId, errorId, disabled }} size={resolvedSize} id={inputId}>
-    <select ref={setRef} id={inputId} name={name} form={form} required={required} disabled={disabled}
-      value={value === undefined ? undefined : value ?? ''} defaultValue={value === undefined ? defaultValue ?? '' : undefined}
-      onChange={event => onValueChange?.(event.currentTarget.value || null)}
-      aria-describedby={description({ hintId, errorId, describedBy })} aria-invalid={error ? true : invalid}
-      className={`hds-field__control hds-field__nativeSelect${className ? ` ${className}` : ''}`}>
-      <option value="" disabled={required}>{placeholder}</option>
-      {options.map(option => <option key={option.value} value={option.value} disabled={option.disabled}>{option.label}</option>)}
-    </select>
+    <div className="hds-field__nativeSelectWrap">
+      <select ref={setRef} id={inputId} name={name} form={form} required={required} disabled={disabled}
+        value={value === undefined ? undefined : value ?? ''} defaultValue={value === undefined ? defaultValue ?? '' : undefined}
+        onChange={event => onValueChange?.(event.currentTarget.value || null)}
+        aria-describedby={description({ hintId, errorId, describedBy })} aria-invalid={error ? true : invalid}
+        className={`hds-field__control hds-field__nativeSelect${className ? ` ${className}` : ''}`}>
+        <option value="" disabled={required}>{placeholder}</option>
+        {options.map(option => <option key={option.value} value={option.value} disabled={option.disabled}>{option.label}</option>)}
+      </select>
+      <span className="hds-field__chevron hds-field__nativeSelectIcon" aria-hidden="true"><FieldChevron /></span>
+    </div>
   </FieldShell>;
 }
 
@@ -182,6 +187,7 @@ export type ComboboxProps = ChoiceProps & {
   onInputValueChange?: (value: string) => void;
 };
 export function Combobox({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder = '검색해서 선택하세요', emptyText = '일치하는 항목이 없어요.', openLabel = '목록 열기', inputValue, defaultInputValue, onInputValueChange, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: ComboboxProps) {
+  useHdsFocusGuardLabels();
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const { hintId, errorId } = ids(generatedId, hint, error);
@@ -222,6 +228,7 @@ export type MultiSelectProps = Omit<ChoiceProps, 'value' | 'defaultValue' | 'onV
   inputValue?: string; defaultInputValue?: string; onInputValueChange?: (value: string) => void;
 };
 export function MultiSelect({ label, hint, error, size, options, name, form, id, required, disabled, readOnly, value, defaultValue, onValueChange, placeholder = '검색해서 선택하세요', emptyText = '일치하는 항목이 없어요.', openLabel = '목록 열기', selectedLabel = '선택한 항목', removeLabel = item => `${item} 제거`, chipDescription = 'Backspace 또는 Delete 키로 제거', inputDescription = count => `${count}개 선택됨. 입력 시작점에서 왼쪽 화살표 키를 누르면 선택 항목으로 이동합니다.`, inputValue, defaultInputValue, onInputValueChange, className, ref, 'aria-describedby': describedBy, 'aria-invalid': invalid }: MultiSelectProps) {
+  useHdsFocusGuardLabels();
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const { hintId, errorId } = ids(generatedId, hint, error);

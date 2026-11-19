@@ -1,6 +1,6 @@
 # 코드 프리즈 기준
 
-코드 프리즈는 아래 검사로 확인한 패키지와 공개 API의 변경을 멈추는 시점이다. `v0.4.0` 패키지 아카이브에는 기존 CSS·폼 컴포넌트·화면 설정·CLI뿐 아니라 `layout`, `fields`, `overlays`, `display`도 포함한다. WebKit 검사에는 Base UI의 VoiceOver 초점 가드에 대한 `aria-command-name` 미해결 항목이 있어 접근성 프리즈 완료로 기록하지 않는다. 이전 베이스라인의 axe 39건 결과는 새 컴포넌트의 접근성 통과 근거가 아니다.
+코드 프리즈는 아래 검사로 확인한 패키지와 공개 API의 변경을 멈추는 시점이다. `v0.4.0` 패키지 아카이브에는 기존 CSS·폼 컴포넌트·화면 설정·CLI뿐 아니라 `layout`, `fields`, `overlays`, `display`도 포함한다. 2026-11-19 로컬 후보에서는 HDS가 만든 WebKit 초점 가드에 이름을 붙여 이전 `aria-command-name` 24건을 해결했지만, 실제 Safari·VoiceOver와 공개 배포 검증은 별도 기록한다. 이전 베이스라인의 axe 39건 결과는 새 컴포넌트의 접근성 통과 근거가 아니다.
 
 ## 반복 가능한 검사
 
@@ -55,7 +55,7 @@ axe는 WCAG 2·2.1 A/AA 태그의 자동 규칙을 사용한다. `incomplete` �
 
 Firefox의 소비 예제와 확장 입력 화면에서는 axe와 Playwright 역할·접근 가능한 이름 조회를 같은 문서에서 이어 실행할 때 content process 충돌이 재현됐다. 소비 예제는 새 문서의 axe 검사와 별도 문서의 전체 상호작용 검사로 분리했다. 확장 접근성 검사에서는 CSS·표시 텍스트로 실제 컨트롤을 조작하고, 역할·이름·키보드 계약은 별도 동작 시나리오에서 검사한다. 마크업과 모든 axe 규칙은 유지한다. 엔진 내부 원인은 확정하지 않았으며, 이 분리는 로딩 전환 중의 axe 검사를 증명하지 않는다. 전환 전후 이름·비활성·활성화 동작은 별도 브라우저 assertion과 Node 회귀 테스트로 확인한다.
 
-Base UI 1.9.0은 WebKit에서 VoiceOver 가상 커서의 초점 이동을 받기 위해 빈 초점 가드에 `role="button"`을 부여하고 `aria-hidden`을 제거한다. axe가 보고하는 이 요소의 `aria-command-name`은 미해결로 유지한다. 실행기는 나머지 동작 검사를 계속하되 해당 시나리오를 `REVIEW`, `pass: false`, `manualReviewRequired`로 기록하고 전체 종료 코드를 1로 반환한다. 일반 버튼의 이름 누락에는 이 분류를 적용하지 않는다. 가드에 DOM 초점을 주어 실제 요소로 이동한 결과는 VoiceOver의 읽기·가상 커서 검증을 대신하지 않는다. 가드가 없는 시나리오의 `guards: 0`도 가드 이동 성공으로 세지 않는다.
+Base UI 1.9.0은 WebKit에서 VoiceOver 가상 커서의 초점 이동을 받기 위해 빈 초점 가드에 `role="button"`을 부여하고 `aria-hidden`을 제거한다. 이전 버전의 HDS에서는 axe가 보고한 `aria-command-name`을 미해결로 유지했고 실행기는 해당 시나리오를 `REVIEW`, `pass: false`, `manualReviewRequired`로 기록하며 전체 종료 코드를 1로 반환했다. 현재 후보는 HDS 필드·포털의 직계 가드와 HDS 트리거에 직접 연결된 가드에만 `aria-label`을 붙인다. Base UI의 역할·숨김·초점 이동은 바꾸지 않고, 다른 Base UI 인스턴스의 가드는 건드리지 않는다. 기존 위반 분류와 axe 원문 보존은 유지하므로 이름이 다시 누락되면 검사는 다시 실패한다. 가드에 DOM 초점을 주어 실제 요소로 이동한 결과는 VoiceOver의 읽기·가상 커서 검증을 대신하지 않는다. 가드가 없는 시나리오의 `guards: 0`도 가드 이동 성공으로 세지 않는다.
 
 2026-11-17에 확인한 [상위 라이브러리 이슈 #5237](https://github.com/mui/base-ui/issues/5237)는 열려 있으며, 현재 최신 1.9.0의 공개 API에는 가드 이름이나 렌더링을 바꾸는 옵션이 없다. 실제 Safari의 접근성 트리에서도 이름 없는 가드가 노출됐다. VoiceOver를 켜서 추가 확인을 시도했으나 자동화 도구로 읽기 자막과 VoiceOver 명령의 결과를 관측하지 못해 실제 읽기 검증은 완료하지 않았다. 검사 후 VoiceOver는 원래의 꺼짐 상태로 복원했다. 이 결과를 근거로 검사 규칙을 제외하거나 포커스 가두기를 해제하지 않는다.
 
@@ -71,7 +71,7 @@ Base UI 1.9.0은 WebKit에서 VoiceOver 가상 커서의 초점 이동을 받기
 
 ## 2026-11-17 사이징 검증 추가
 
-`verify:freeze`는 타입·패키지·사이트 검증 후 `verify:sizing`과 기존 `verify:browser`를 실행한다. `verify:sizing`은 5단계 크기와 명시적 자식 재지정, 선택 목록·모달 포털, Grid 리플로우, compact 밀도, 터치 조작 영역을 Chromium·Firefox·WebKit에서 확인한다. 별도 크기 검사가 통과해도 기존 WebKit 초점 가드 접근성 미해결을 해소한 것으로 취급하지 않는다.
+`verify:freeze`는 타입·패키지·사이트 검증 후 `verify:sizing`과 기존 `verify:browser`를 실행한다. `verify:sizing`은 5단계 크기와 명시적 자식 재지정, 선택 목록·모달, Grid 리플로우, compact 밀도, 터치 조작 영역을 Chromium·Firefox·WebKit에서 확인한다. 크기 검사 결과와 WebKit 초점 가드 접근성 판정은 각각 기록한다.
 
 ## v0.4.0 패키지 제공 방식
 
@@ -81,9 +81,13 @@ Base UI 1.9.0은 WebKit에서 VoiceOver 가상 커서의 초점 이동을 받기
 
 0.4.2 기준 실제 WebKit 접근성 트리에서 열린 `Select` 가드 4개와 `Dialog` 가드 2개는 이름 없는 버튼으로 나타났고, 확장 접근성 검사의 Base UI `aria-command-name` 24건은 미해결이었다. Chromium·Firefox에서는 같은 가드가 접근성 트리에 노출되지 않았다. CSS 생성 문구는 WebKit 트리에 이름처럼 보였지만 axe는 여전히 가드를 이름 없는 버튼으로 판정했다. 상위 라이브러리 내부를 덮어쓰거나 검사 규칙을 제외하는 근거로 사용하지 않는다.
 
-`NativeSelect`와 `NativeDialog`는 고정 선택과 일반 모달의 별도 공개 경로다. `<select>`와 `<dialog>.showModal()`을 사용하므로 이 둘만 조합한 화면에는 Base UI 가드가 생기지 않는다. WebKit의 네이티브 모달에서는 Tab이 문서 본문으로 빠지는 경우를 확인해, `NativeDialog`가 보이는 내부 조작 요소 사이의 Tab·Shift+Tab 이동을 직접 관리한다. Escape·닫기·바깥 클릭 뒤 초점 복귀도 검사한다. 네이티브 선택의 메뉴 모양과 일부 키 동작은 브라우저·OS에 맡긴다. 검색 목록·메뉴·시트·팝오버, 또는 이들을 `NativeDialog` 안에 둔 경우에는 기존 Base UI 가드가 남는다.
+`NativeSelect`와 `NativeDialog`는 고정 선택과 일반 모달의 별도 공개 경로다. `<select>`와 `<dialog>.showModal()`을 사용하므로 이 둘만 조합한 화면에는 Base UI 가드가 생기지 않는다. WebKit의 네이티브 모달에서는 Tab이 문서 본문으로 빠지는 경우를 확인해, `NativeDialog`가 보이는 내부 조작 요소 사이의 Tab·Shift+Tab 이동을 직접 관리한다. Escape·닫기·바깥 클릭 뒤 초점 복귀도 검사한다. 네이티브 선택의 메뉴 모양과 일부 키 동작은 브라우저·OS에 맡긴다. 검색 목록·메뉴·시트·팝오버에는 Base UI 가드가 생길 수 있으며, HDS가 생성한 가드에만 이름을 붙인다. Base UI 팝업을 `NativeDialog` 안에 기본 포털로 중첩하는 조합은 최상위 레이어 밖에 열리므로 사용하지 않는다.
 
-브라우저 검사의 `native-alternatives`는 네이티브 선택의 이름·값·폼 초기화, 모달 접근성 트리의 제목·필드 이름, axe 전체 규칙, Tab·Shift+Tab 각 10회, Escape·닫기·바깥 클릭·제어형 모달 닫힘과 초점 복귀를 Chromium·Firefox·WebKit에서 검사한다. 이 별도 시나리오의 통과는 기존 `expanded-accessibility`의 `REVIEW`를 통과로 바꾸지 않는다. 2026-11-18에 VoiceOver를 임시 실행해 로컬 Safari 창을 확인하려 했으나 AppleScript 자막 조회가 시간 초과되어 실제 발화와 가상 커서는 관측하지 못했다. 자체 창을 닫고 VoiceOver 실행 상태를 다시 꺼짐으로 확인했다. 실제 보조 기술 검증은 남은 조건이다.
+2026-11-19 로컬 Safari 27.0 접근성 트리에서 Base `Dialog` 제목 영역의 `<header>`가 `AXLandmarkBanner`로 노출되고, NativeDialog에서는 같은 랜드마크가 없었다. Base `Dialog`와 `Sheet`가 공유하는 제목 영역을 일반 컨테이너로 바꾸어 중첩 배너를 제거했다. 제목·설명 연결과 닫기 버튼, 중첩 포털, Tab 순환·복귀는 그대로 검사한다. 일반 모달·고정 선택의 쇼케이스 경로는 `NativeDialog`·`NativeSelect`를 사용한다. 반면 Base UI 팝업을 `NativeDialog` 안에 기본 포털로 중첩하면 팝업이 최상위 레이어 밖에 생겨 클릭할 수 없음을 WebKit에서 확인했으므로 복합 팝업 예제는 `Dialog`를 유지한다. 모바일 WebKit의 `<select>`는 기본 `appearance`에서 CSS 최소 높이를 무시하므로 NativeSelect의 닫힌 필드에 HDS 스타일과 장식 화살표를 적용해 44px 터치 영역을 유지한다.
+
+같은 날 로컬 WebKit에서 HDS `Select`·메뉴·대화상자 계열의 가드는 `role="button"`과 포커스 동작을 유지한 채 한국어 `팝업 초점 이동` 또는 영어 `Popup focus navigation` 이름을 받았다. 순수 Base UI 선택기와 인접한 순수 Base UI 메뉴 가드는 이름을 받지 않는 격리 검사를 통과했다. 동적 `lang` 전환과 호출자가 직접 준 이름도 보존한다. `expanded-accessibility`의 기존 24건이 이름 수정 후 axe 원문에서 사라졌고, 검사의 제외 규칙이나 임계값은 바꾸지 않았다. 이 adapter는 Base UI 1.9.0의 가드와 `aria-owns` 포털 구조에 의존하므로 의존성 변경 시 같은 격리·초점·보조 기술 검사를 다시 실행해야 한다.
+
+브라우저 검사의 `native-alternatives`는 네이티브 선택의 이름·값·폼 초기화, 모달 접근성 트리의 제목·필드 이름, axe 전체 규칙, Tab·Shift+Tab 각 10회, Escape·닫기·바깥 클릭·제어형 모달 닫힘과 초점 복귀를 Chromium·Firefox·WebKit에서 검사한다. 이전 `expanded-accessibility`의 `REVIEW`는 현재 소스의 해당 시나리오를 다시 실행해 별도로 해소했다. 2026-11-18에는 VoiceOver를 임시 실행해 로컬 Safari 창을 확인하려 했으나 AppleScript 자막 조회가 시간 초과되어 실제 발화와 가상 커서는 관측하지 못했다. 자체 창을 닫고 VoiceOver 실행 상태를 다시 꺼짐으로 확인했다. 2026-11-19의 실제 VoiceOver 재검증 결과는 브라우저 자동 검사와 구별해 기록한다.
 
 
 ## v0.4.4 폼·키보드 보완

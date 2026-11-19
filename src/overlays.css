@@ -65,7 +65,7 @@
   line-height: var(--leading-body);
   pointer-events: auto;
 }
-.hds-nativeDialog { inset: 0; margin: auto; transform: none; }
+.hds-nativeDialog { inset: 0; margin: auto; max-width: none; transform: none; }
 .hds-nativeDialog:not([open]) { display: none; }
 .hds-nativeDialog::backdrop { background: var(--overlay-scrim); }
 

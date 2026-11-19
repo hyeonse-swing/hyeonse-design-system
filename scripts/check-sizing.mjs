@@ -34,7 +34,7 @@ async function metrics(page) {
     const button = [...surface.querySelectorAll('.hds-button')].find(node => node.textContent === '변경 사항 저장');
     const override = [...surface.querySelectorAll('.hds-button')].find(node => node.textContent === '항상 XS');
     const field = surface.querySelector('.hds-textField__input');
-    const select = surface.querySelector('.hds-field__trigger');
+    const select = surface.querySelector('.hds-field__nativeSelect');
     const card = surface.querySelector('.hds-card');
     const table = surface.querySelector('.hds-table');
     const stack = surface.querySelector('.hds-stack');
@@ -94,33 +94,29 @@ async function exercise(page, engine, width, touch = false) {
       recordNear(m.select, heights[i], `${engine} ${size}: inherited select`);
       near(m.override, 28, `${engine} ${size}: xs override height`);
     }
-    // A choice must still update the controlled surface after each size change.
-    const range = section.locator('.sizing-surface .hds-field__trigger');
-    if (touch) await range.tap(); else await range.click();
-    const positioner = page.locator('.hds-field__positioner').filter({ visible: true });
-    check(await positioner.getAttribute('data-hds-size'), size, `${engine} ${width}: Select portal ${size}`);
+    // Native fixed choices keep the selected value and inherited size.
+    const range = section.locator('.sizing-surface .hds-field__nativeSelect').first();
+    check(await range.evaluate(node => node.closest('[data-hds-size]')?.dataset.hdsSize), size, `${engine} ${width}: native Select size ${size}`);
     const desired = i % 2 ? '나만 보기' : '팀과 공유';
-    if (touch) await page.getByRole('option', { name: desired, exact: true }).tap();
-    else await page.getByRole('option', { name: desired, exact: true }).click();
-    const selectedText = await range.innerText();
-    check(selectedText.includes(desired), true, `${engine} ${width}: Select remains interactive ${size}; expected ${desired}, saw ${selectedText}`);
+    await range.selectOption({ label: desired });
+    check(await range.inputValue(), i % 2 ? 'private' : 'team', `${engine} ${width}: native Select remains interactive ${size}`);
     if (width === 1440 || width === 390 || width === 320) {
       if (touch) await section.getByRole('button', { name: '크기별 모달 열기' }).tap();
       else await section.getByRole('button', { name: '크기별 모달 열기' }).click();
       const dialog = page.getByRole('dialog', { name: '변경 사항 미리보기' });
       await dialog.waitFor();
-      check(await page.locator('.hds-dialog__portal').getAttribute('data-hds-size'), size, `${engine}: dialog portal ${size}`);
+      check(await dialog.getAttribute('data-hds-size'), size, `${engine}: native dialog size ${size}`);
+      check(await page.locator('[data-base-ui-focus-guard]').count(), 0, `${engine}: standard dialog has no Base UI guards`);
       const dialogWidth = await dialog.evaluate(node => node.getBoundingClientRect().width);
       near(dialogWidth, Math.min([320, 400, 520, 680, 840][i], width < 480 ? width - 24 : width - 32), `${engine}: dialog width ${size} at ${width}`);
       check(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false, `${engine}: modal page overflow ${size} at ${width}`);
       const nestedHeight = await dialog.getByRole('button', { name: '확인' }).evaluate(node => node.getBoundingClientRect().height);
       touch ? check(nestedHeight >= 44, true, `${engine}: touch nested button ${size}`) : width === 1440 ? near(nestedHeight, heights[i], `${engine}: nested button ${size}`) : check(nestedHeight >= heights[i], true, `${engine}: mobile nested button ${size}`);
       if (width === 1440) {
-        const nestedSelect = dialog.locator('.hds-field__trigger');
-        await nestedSelect.click();
-        check(await page.locator('.hds-field__positioner').filter({ visible: true }).getAttribute('data-hds-size'), size, `${engine}: nested Select portal ${size}`);
-        await page.getByRole('option', { name: '팀과 공유', exact: true }).click();
-        check((await nestedSelect.innerText()).includes('팀과 공유'), true, `${engine}: nested Select works ${size}`);
+        const nestedSelect = dialog.locator('.hds-field__nativeSelect');
+        check(await nestedSelect.evaluate(node => node.closest('[data-hds-size]')?.dataset.hdsSize), size, `${engine}: nested native Select size ${size}`);
+        await nestedSelect.selectOption({ label: '팀과 공유' });
+        check(await nestedSelect.inputValue(), 'team', `${engine}: nested native Select works ${size}`);
       }
       await page.keyboard.press('Escape');
       await dialog.waitFor({ state: 'hidden' });
@@ -133,9 +129,7 @@ async function exercise(page, engine, width, touch = false) {
     await section.getByRole('radio', { name: 'SM', exact: true }).check();
     const densityMeasurements = async () => {
       const card = await section.locator('.sizing-surface .hds-card').first().evaluate(node => parseFloat(getComputedStyle(node).paddingTop));
-      await section.locator('.sizing-surface .hds-field__trigger').click();
-      const option = await page.getByRole('option', { name: '팀과 공유', exact: true }).evaluate(node => parseFloat(getComputedStyle(node).paddingLeft));
-      await page.keyboard.press('Escape');
+      const option = await section.locator('.sizing-surface .hds-field__nativeSelect').first().evaluate(node => parseFloat(getComputedStyle(node).paddingLeft));
       await section.getByRole('button', { name: '크기별 모달 열기' }).click();
       const dialog = await page.getByRole('dialog', { name: '변경 사항 미리보기' }).evaluate(node => parseFloat(getComputedStyle(node).paddingTop));
       await page.keyboard.press('Escape');

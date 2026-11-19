@@ -50,6 +50,9 @@
 .hds-field__trigger[data-disabled], .hds-field__trigger[aria-disabled='true'] { cursor: not-allowed; }
 .hds-field__chevron { display: inline-flex; flex: none; align-items: center; color: var(--muted); line-height: 1; }
 .hds-field__chevron svg, .hds-field__iconButton svg { display: block; width: var(--hds-indicator-size); height: var(--hds-indicator-size); }
+.hds-field__nativeSelectWrap { position: relative; }
+.hds-field__nativeSelect { appearance: none; padding-right: calc(var(--hds-control-px) * var(--space-factor) + var(--hds-indicator-size) + var(--space-2)); cursor: pointer; }
+.hds-field__nativeSelectIcon { position: absolute; top: 50%; right: calc(var(--hds-control-px) * var(--space-factor)); transform: translateY(-50%); pointer-events: none; }
 .hds-field__positioner { z-index: 1100; pointer-events: auto; width: min(var(--anchor-width), calc(100vw - 24px)); max-width: calc(100vw - 24px); }
 .hds-field__popup {
   box-sizing: border-box;

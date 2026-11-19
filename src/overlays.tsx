@@ -4,6 +4,7 @@ import { cloneElement, useId, useLayoutEffect, useRef, useState } from 'react';
 import type { MouseEvent as ReactMouseEvent, ReactElement, ReactNode } from 'react';
 import { SizeContext, useHdsSize } from './sizing.js';
 import type { HdsSize } from './sizing.js';
+import { useHdsFocusGuardLabels } from './focus-guard-labels.js';
 import { Menu } from '@base-ui/react/menu';
 import { ContextMenu as BaseContextMenu } from '@base-ui/react/context-menu';
 import { Dialog as BaseDialog } from '@base-ui/react/dialog';
@@ -13,6 +14,7 @@ import { Tooltip as BaseTooltip } from '@base-ui/react/tooltip';
 import { Toast as BaseToast } from '@base-ui/react/toast';
 
 function Sized({ size, children }: { size?: HdsSize; children: (resolved: HdsSize) => ReactNode }) {
+  useHdsFocusGuardLabels();
   const resolved = useHdsSize(size);
   return <SizeContext.Provider value={resolved}>{children(resolved)}</SizeContext.Provider>;
 }
@@ -39,7 +41,7 @@ function renderMenuEntries(entries: readonly MenuEntry[], parts: MenuParts, size
       <SubmenuTrigger disabled={entry.disabled} className="hds-menu__item hds-menu__item--submenu">
         {entry.label}<span aria-hidden="true">›</span>
       </SubmenuTrigger>
-      <Portal><Positioner sideOffset={4} data-hds-size={size} className="hds-menu__positioner">
+      <Portal data-hds-focus-portal=""><Positioner sideOffset={4} data-hds-size={size} className="hds-menu__positioner">
         <Popup className="hds-menu__popup">{renderMenuEntries(entry.items, parts, size)}</Popup>
       </Positioner></Portal>
     </SubmenuRoot>;
@@ -57,8 +59,8 @@ export type DropdownMenuProps = {
 
 export function DropdownMenu({ size, trigger, items, open, defaultOpen, onOpenChange }: DropdownMenuProps) {
   return <Sized size={size}>{resolved => <Menu.Root open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
-    <Menu.Trigger render={trigger} />
-    <Menu.Portal><Menu.Positioner sideOffset={6} align="start" data-hds-size={resolved} className="hds-menu__positioner">
+    <Menu.Trigger render={trigger} data-hds-focus-trigger="" />
+    <Menu.Portal data-hds-focus-portal=""><Menu.Positioner sideOffset={6} align="start" data-hds-size={resolved} className="hds-menu__positioner">
       <Menu.Popup className="hds-menu__popup">{renderMenuEntries(items, Menu, resolved)}</Menu.Popup>
     </Menu.Positioner></Menu.Portal>
   </Menu.Root>}</Sized>;
@@ -75,8 +77,8 @@ export type ContextMenuProps = {
 
 export function ContextMenu({ size, trigger, items, open, defaultOpen, onOpenChange }: ContextMenuProps) {
   return <Sized size={size}>{resolved => <BaseContextMenu.Root open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
-    <BaseContextMenu.Trigger render={trigger} />
-    <BaseContextMenu.Portal><BaseContextMenu.Positioner data-hds-size={resolved} className="hds-menu__positioner">
+    <BaseContextMenu.Trigger render={trigger} data-hds-focus-trigger="" />
+    <BaseContextMenu.Portal data-hds-focus-portal=""><BaseContextMenu.Positioner data-hds-size={resolved} className="hds-menu__positioner">
       <BaseContextMenu.Popup className="hds-menu__popup">{renderMenuEntries(items, BaseContextMenu, resolved)}</BaseContextMenu.Popup>
     </BaseContextMenu.Positioner></BaseContextMenu.Portal>
   </BaseContextMenu.Root>}</Sized>;
@@ -97,12 +99,12 @@ export type DialogProps = {
 
 function dialogContent({ title, description, children, footer, closeLabel = '닫기' }: Pick<DialogProps, 'title' | 'description' | 'children' | 'footer' | 'closeLabel'>) {
   return <>
-    <header className="hds-dialog__header">
+    <div className="hds-dialog__header">
       <div><BaseDialog.Title className="hds-dialog__title">{title}</BaseDialog.Title>
         {description && <BaseDialog.Description className="hds-dialog__description">{description}</BaseDialog.Description>}
       </div>
       <BaseDialog.Close type="button" className="hds-dialog__close" aria-label={closeLabel}><span aria-hidden="true">×</span></BaseDialog.Close>
-    </header>
+    </div>
     {children && <div className="hds-dialog__body">{children}</div>}
     {footer && <div className="hds-dialog__footer">{footer}</div>}
   </>;
@@ -353,8 +355,8 @@ export type PopoverProps = {
 
 export function Popover({ size, trigger, title, description, children, closeLabel = '닫기', open, defaultOpen, onOpenChange }: PopoverProps) {
   return <Sized size={size}>{resolved => <BasePopover.Root open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
-    <BasePopover.Trigger render={trigger} />
-    <BasePopover.Portal><BasePopover.Positioner sideOffset={8} align="start" data-hds-size={resolved} className="hds-popover__positioner">
+    <BasePopover.Trigger render={trigger} data-hds-focus-trigger="" />
+    <BasePopover.Portal data-hds-focus-portal=""><BasePopover.Positioner sideOffset={8} align="start" data-hds-size={resolved} className="hds-popover__positioner">
       <BasePopover.Popup className="hds-popover__popup">
         <div className="hds-popover__header"><BasePopover.Title className="hds-dialog__title">{title}</BasePopover.Title>
           <BasePopover.Close type="button" className="hds-dialog__close" aria-label={closeLabel}><span aria-hidden="true">×</span></BasePopover.Close></div>

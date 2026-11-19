@@ -44,14 +44,14 @@ async function fingerprint() {
       hash.update(directory + '/' + file).update(await readFile(join(root, directory, file)));
     }
   }
-  for (const file of ['.site/index.html', '.site/showcase.css', 'tests/browser/consumer.tsx', 'tests/browser/native-alternatives.tsx', 'tests/browser/native-dialog-form.tsx', 'tests/browser/exercise-native-dialog-form.mjs', 'scripts/check-browser.mjs', 'scripts/browser-suites.mjs']) hash.update(file).update(await readFile(join(root, file)));
+  for (const file of ['.site/index.html', '.site/showcase.css', 'tests/browser/consumer.tsx', 'tests/browser/native-alternatives.tsx', 'tests/browser/native-dialog-form.tsx', 'tests/browser/focus-guard-isolation.tsx', 'tests/browser/exercise-native-dialog-form.mjs', 'scripts/check-browser.mjs', 'scripts/browser-suites.mjs']) hash.update(file).update(await readFile(join(root, file)));
   return hash.digest('hex');
 }
 
 async function prepareConsumer() {
   await build({ absWorkingDir: root, entryPoints: ['tests/browser/consumer.tsx'], outfile: join(fixture, 'consumer.js'), bundle: true, minify: true, platform: 'browser', format: 'esm', target: 'es2020', define: { 'process.env.NODE_ENV': '"production"' }, logLevel: 'silent' });
   await writeFile(join(fixture, 'index.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HDS consumer checks</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/dist/tokens.css"><link rel="stylesheet" href="/dist/components.css"><style>body{margin:16px;color:var(--ink);background:var(--paper);font-family:system-ui}main{max-width:600px}form{display:grid;gap:12px}.actions,.statuses{display:flex;flex-wrap:wrap;gap:12px}section{margin-top:20px}output[data-settings]{display:block;overflow-wrap:anywhere}fieldset{min-width:0}</style></head><body><div id="consumer"></div><div id="settings-A"></div><div id="settings-B"></div><script type="module" src="./consumer.js"></script></body></html>`);
-  for (const name of ['native-alternatives', 'native-dialog-form']) {
+  for (const name of ['native-alternatives', 'native-dialog-form', 'focus-guard-isolation']) {
     await build({ absWorkingDir: root, entryPoints: [`tests/browser/${name}.tsx`], outfile: join(fixture, `${name}.js`), bundle: true, minify: true, platform: 'browser', format: 'esm', target: 'es2020', define: { 'process.env.NODE_ENV': '"production"' }, logLevel: 'silent' });
     await writeFile(join(fixture, `${name}.html`), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HDS ${name}</title><link rel="stylesheet" href="/dist/tokens.css"><link rel="stylesheet" href="/dist/components.css"><style>body{margin:16px;color:var(--ink);background:var(--paper);font-family:system-ui}main{max-width:600px}form{display:grid;gap:12px}</style></head><body><div id="consumer"></div><script type="module" src="./${name}.js"></script></body></html>`);
   }
@@ -197,6 +197,59 @@ async function runCase(browser, engine, name, options, run) {
     results.push({ engine, name, pass: false, error: error.message, runtimeErrors: errors });
     throw new Error(`${engine}: ${name}: ${error.stack}\nFocus diagnostic: ${JSON.stringify(focus)}`, { cause: error });
   } finally { await context.close(); }
+}
+
+async function exerciseFocusGuardIsolation(page, base, engine) {
+  await page.goto(base + '__consumer/focus-guard-isolation.html');
+  const raw = page.getByRole('combobox', { name: 'Unrelated team', exact: true });
+  await raw.click();
+  const guards = page.locator('[data-base-ui-focus-guard]');
+  await page.waitForFunction(() => document.querySelectorAll('[data-base-ui-focus-guard]').length === 4);
+  assert.deepEqual(await guards.evaluateAll(elements => elements.map(element => element.getAttribute('aria-label'))), [null, null, null, null], 'Unrelated Base UI guards remain untouched');
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => document.querySelectorAll('[data-base-ui-focus-guard]').length === 0);
+
+  const hds = page.getByRole('combobox', { name: 'HDS team', exact: true });
+  await hds.click();
+  await page.waitForFunction(() => document.querySelectorAll('[data-base-ui-focus-guard]').length === 4);
+  if (engine === 'webkit') {
+    await page.waitForFunction(() => [...document.querySelectorAll('[data-base-ui-focus-guard]')].every(element => element.getAttribute('aria-label') === 'Popup focus navigation'));
+    assert.deepEqual(await guards.evaluateAll(elements => elements.map(element => ({ role: element.getAttribute('role'), hidden: element.getAttribute('aria-hidden') }))), Array(4).fill({ role: 'button', hidden: null }), 'Naming keeps Base UI focus semantics');
+    await page.evaluate(() => { document.documentElement.lang = 'ko'; });
+    await page.waitForFunction(() => [...document.querySelectorAll('[data-base-ui-focus-guard]')].every(element => element.getAttribute('aria-label') === '팝업 초점 이동'));
+    await guards.first().evaluate(element => element.setAttribute('aria-label', 'Caller label'));
+    await page.evaluate(() => { document.documentElement.lang = 'en'; });
+    await page.waitForFunction(() => [...document.querySelectorAll('[data-base-ui-focus-guard]')].slice(1).every(element => element.getAttribute('aria-label') === 'Popup focus navigation'));
+    assert.equal(await guards.first().getAttribute('aria-label'), 'Caller label', 'Caller-provided label is preserved');
+  } else {
+    assert.deepEqual(await guards.evaluateAll(elements => elements.map(element => ({ role: element.getAttribute('role'), hidden: element.getAttribute('aria-hidden'), label: element.getAttribute('aria-label') }))), Array(4).fill({ role: null, hidden: 'true', label: null }), 'Other engines retain hidden Base UI guards');
+  }
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => document.querySelectorAll('[data-base-ui-focus-guard]').length === 0);
+  await page.locator('#raw-menu').click();
+  await page.waitForFunction(() => document.querySelectorAll('[data-base-ui-focus-guard]').length >= 4);
+  assert((await page.locator('[data-base-ui-focus-guard]').evaluateAll(elements => elements.every(element => !element.hasAttribute('aria-label')))), 'Raw outside guards next to a closed HDS trigger stay unnamed');
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => document.querySelectorAll('[data-base-ui-focus-guard]').length === 0);
+  await page.getByRole('button', { name: 'Show adjacent menus', exact: true }).click();
+  await page.waitForFunction(() => document.querySelector('.raw-menu-popup') && document.querySelector('.hds-menu__popup'));
+  if (engine === 'webkit') {
+    const menuGuards = await page.locator('[data-base-ui-focus-guard]').evaluateAll(elements => elements.map(guard => {
+      const parent = guard.parentElement;
+      const directlyNextTo = id => guard.previousElementSibling?.id === id || guard.nextElementSibling?.id === id;
+      const spacer = [guard.previousElementSibling, guard.nextElementSibling].find(sibling => sibling?.matches('span[aria-owns]'));
+      const owns = spacer && document.getElementById(spacer.getAttribute('aria-owns') || '');
+      const owner = parent?.matches('.hds-menu__positioner') || directlyNextTo('hds-menu') || owns?.matches('[data-hds-focus-portal]') ? 'hds'
+        : parent?.matches('.raw-menu-positioner') || directlyNextTo('raw-menu') || owns?.matches('[data-base-ui-portal]') ? 'raw' : 'unknown';
+      return { owner, label: guard.getAttribute('aria-label') };
+    }));
+    assert(menuGuards.some(guard => guard.owner === 'hds'), 'HDS menu guards rendered');
+    assert(menuGuards.some(guard => guard.owner === 'raw'), 'Adjacent raw Base UI menu guards rendered');
+    assert.deepEqual(menuGuards.filter(guard => guard.owner === 'raw').map(guard => guard.label), menuGuards.filter(guard => guard.owner === 'raw').map(() => null), 'Adjacent raw menu guards remain untouched');
+    assert(menuGuards.filter(guard => guard.owner === 'hds').every(guard => guard.label === 'Popup focus navigation'), 'Adjacent HDS menu guards are named');
+    assert.equal(menuGuards.filter(guard => guard.owner === 'unknown').length, 0, 'Every adjacent guard has a known owner');
+  }
+  return { unrelatedGuardsUntouched: true, adjacentMenusIsolated: engine === 'webkit', hdsGuardsNamedOnWebKit: engine === 'webkit', languageSwitch: engine === 'webkit' };
 }
 
 async function exerciseNativeAlternatives(page, base) {
@@ -429,6 +482,7 @@ try {
       await runCase(browser, name, 'native-consumer', {}, page => exerciseConsumer(page, base));
       await runCase(browser, name, 'native-alternatives', {}, page => exerciseNativeAlternatives(page, base));
       await runCase(browser, name, 'native-dialog-form', {}, page => exerciseNativeDialogForm(page, base));
+      await runCase(browser, name, 'focus-guard-isolation', {}, page => exerciseFocusGuardIsolation(page, base, name));
       await runCase(browser, name, 'expanded-overlays', { viewport: { width: 390, height: 844 }, colorScheme: 'dark' }, page => exerciseOverlays(page, base));
       await runCase(browser, name, 'expanded-display', { viewport: { width: 390, height: 844 } }, page => exerciseDisplay(page, base));
       await runCase(browser, name, 'focus-guard-navigation', {}, async page => { const result = await exerciseFocusGuards(page, base); verifiedFocusGuardEngines.add(name); return result; });

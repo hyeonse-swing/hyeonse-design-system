@@ -15,7 +15,10 @@ export async function exerciseFields(page, base) {
   const scope = await category(page, base, 'fields');
   await scope.getByLabel('표시 이름', { exact: true }).fill('Browser example');
   await scope.getByLabel('추가 설명', { exact: true }).fill('Several\nlines');
-  const select = scope.getByRole('combobox', { name: '소속 팀', exact: true });
+  const nativeSelect = scope.getByRole('combobox', { name: '소속 팀', exact: true });
+  await nativeSelect.selectOption('design');
+  assert.equal(await nativeSelect.inputValue(), 'design');
+  const select = scope.getByRole('combobox', { name: '사용자 정의 선택기', exact: true });
   await select.click();
   assert.equal(await page.getByRole('listbox').getByRole('option', { name: '종료된 팀', exact: true }).getAttribute('aria-disabled'), 'true');
   await page.getByRole('listbox').getByRole('option', { name: '디자인', exact: true }).click();
@@ -72,9 +75,9 @@ export async function exerciseFields(page, base) {
   assert.equal(await password.getAttribute('type'), 'password');
   const form = await scope.locator('form').evaluate(element => {
     const data = new FormData(element);
-    return { team: data.get('team'), member: data.get('member'), members: data.getAll('members'), notifications: data.get('notifications'), visibility: data.get('visibility'), invites: data.get('invites'), dueDate: data.get('dueDate'), file: data.get('attachment')?.name };
+    return { team: data.get('team'), customTeam: data.get('customTeam'), member: data.get('member'), members: data.getAll('members'), notifications: data.get('notifications'), visibility: data.get('visibility'), invites: data.get('invites'), dueDate: data.get('dueDate'), file: data.get('attachment')?.name };
   });
-  assert.deepEqual(form, { team: 'design', member: 'operations', members: ['operations'], notifications: null, visibility: 'team', invites: '3', dueDate: '2026-12-01', file: 'example.pdf' });
+  assert.deepEqual(form, { team: 'design', customTeam: 'design', member: 'operations', members: ['operations'], notifications: null, visibility: 'team', invites: '3', dueDate: '2026-12-01', file: 'example.pdf' });
   await scope.getByRole('button', { name: '폼 값 확인', exact: true }).click();
   assert.equal((await scope.locator('.demo-status').innerText()).includes('browser-secret-42'), false, 'Demo never echoes a password');
   await scope.getByRole('button', { name: '초기화', exact: true }).click();
@@ -108,16 +111,31 @@ export async function exerciseOverlays(page, base) {
   await scope.getByRole('status').filter({ hasText: '링크 복사를 선택했어요.' }).waitFor();
   await scope.getByRole('button', { name: '우클릭 메뉴', exact: true }).click({ button: 'right' });
   await page.getByRole('menuitem', { name: '편집', exact: true }).click();
-  const dialogTrigger = scope.getByRole('button', { name: '대화상자', exact: true });
-  await dialogTrigger.click();
+  const nativeTrigger = scope.getByRole('button', { name: '대화상자', exact: true });
+  await nativeTrigger.click();
   const dialog = page.getByRole('dialog', { name: '프로젝트 설정', exact: true });
   await dialog.waitFor();
-  await dialog.getByRole('combobox', { name: '프로젝트 공개 범위', exact: true }).click();
+  assert.equal(await page.locator('[data-base-ui-focus-guard]').count(), 0, 'General dialog has no exposed Base UI focus guards');
+  await dialog.getByRole('combobox', { name: '프로젝트 공개 범위', exact: true }).selectOption('private');
+  assert.equal(await dialog.getByRole('combobox').inputValue(), 'private');
+  for (let index = 0; index < 5; index++) {
+    await page.keyboard.press('Tab');
+    assert.equal(await dialog.evaluate(element => element.contains(document.activeElement)), true, 'Native modal retains keyboard focus');
+  }
+  await page.keyboard.press('Escape');
+  await dialog.waitFor({ state: 'hidden' });
+  await waitForFocus(page, nativeTrigger);
+  const dialogTrigger = scope.getByRole('button', { name: '복합 팝업 대화상자', exact: true });
+  await dialogTrigger.click();
+  const composedDialog = page.getByRole('dialog', { name: '복합 프로젝트 설정', exact: true });
+  await composedDialog.waitFor();
+  assert.equal(await composedDialog.getByRole('banner').count(), 0, 'Dialog header must not expose a banner landmark');
+  await composedDialog.getByRole('combobox', { name: '프로젝트 공개 범위', exact: true }).click();
   await page.getByRole('option', { name: '비공개', exact: true }).click();
-  assert.match(await dialog.getByRole('combobox').innerText(), /비공개/);
-  await dialog.getByRole('button', { name: '추가 설정', exact: true }).click();
+  assert.match(await composedDialog.getByRole('combobox').innerText(), /비공개/);
+  await composedDialog.getByRole('button', { name: '추가 설정', exact: true }).click();
   await page.getByRole('menuitem', { name: '보관 설정', exact: true }).click();
-  await dialog.getByRole('button', { name: '공개 범위 도움말', exact: true }).click();
+  await composedDialog.getByRole('button', { name: '공개 범위 도움말', exact: true }).click();
   const nestedPopover = page.getByRole('dialog', { name: '공개 범위 안내', exact: true });
   await nestedPopover.getByRole('button', { name: '닫기', exact: true }).click();
   await nestedPopover.waitFor({ state: 'hidden' });
@@ -125,10 +143,10 @@ export async function exerciseOverlays(page, base) {
   for (let index = 0; index < 5; index++) {
     await page.keyboard.press('Tab');
     await page.waitForFunction(() => document.querySelector('.hds-dialog__popup[data-open]')?.contains(document.activeElement));
-    assert.equal(await dialog.evaluate(element => element.contains(document.activeElement)), true, `Modal retains keyboard focus: ${await page.evaluate(() => document.activeElement?.outerHTML)}`);
+    assert.equal(await composedDialog.evaluate(element => element.contains(document.activeElement)), true, `Composed modal retains keyboard focus: ${await page.evaluate(() => document.activeElement?.outerHTML)}`);
   }
   await page.keyboard.press('Escape');
-  await dialog.waitFor({ state: 'hidden' });
+  await composedDialog.waitFor({ state: 'hidden' });
   await waitForFocus(page, dialogTrigger);
   assert.equal(await dialogTrigger.evaluate(element => element === document.activeElement), true);
   await scope.getByRole('button', { name: '삭제 확인', exact: true }).click();
@@ -142,6 +160,7 @@ export async function exerciseOverlays(page, base) {
   await scope.getByRole('button', { name: '사이드 시트', exact: true }).click();
   const sheet = page.getByRole('dialog', { name: '작업 상세', exact: true });
   await sheet.waitFor();
+  assert.equal(await sheet.getByRole('banner').count(), 0, 'Sheet header must not expose a banner landmark');
   await sheet.getByRole('combobox', { name: '담당자', exact: true }).fill('임현');
   await page.getByRole('option', { name: '임현세', exact: true }).click();
   assert.equal(await sheet.getByRole('combobox', { name: '담당자', exact: true }).inputValue(), '임현세');
@@ -170,7 +189,7 @@ export async function exerciseOverlays(page, base) {
   await page.waitForFunction(() => document.activeElement?.classList.contains('hds-toast__viewport'));
   await toast.getByRole('button', { name: '알림 닫기', exact: true }).click();
   await toast.waitFor({ state: 'hidden' });
-  return { menuAndSubmenu: true, contextMenu: true, nestedPortals: true, focusTrapAndReturn: true, confirmAndCancel: true, sheet: true, popover: true, tooltip: true, toast: true };
+  return { menuAndSubmenu: true, contextMenu: true, nativeDialogNoGuards: true, nestedPortals: true, focusTrapAndReturn: true, confirmAndCancel: true, sheet: true, popover: true, tooltip: true, toast: true };
 }
 
 export async function exerciseDisplay(page, base) {
@@ -228,7 +247,7 @@ export async function exerciseExpandedAccessibility(page, base, check, snapshot)
     }
   }
   let scope = await category(page, base, 'fields');
-  await scope.locator('button.hds-field__trigger[aria-label="소속 팀"]').click();
+  await scope.locator('button.hds-field__trigger[aria-label="사용자 정의 선택기"]').click();
   await page.locator('[role="option"]:visible').filter({ hasText: /^디자인$/ }).waitFor();
   await check(page);
   await page.keyboard.press('Escape');
@@ -242,20 +261,22 @@ export async function exerciseExpandedAccessibility(page, base, check, snapshot)
   for (const [trigger, role, name] of [
     ['드롭다운 메뉴', 'menu', null],
     ['대화상자', 'dialog', '프로젝트 설정'],
+    ['복합 팝업 대화상자', 'dialog', '복합 프로젝트 설정'],
     ['삭제 확인', 'alertdialog', '프로젝트를 삭제할까요?'],
     ['사이드 시트', 'dialog', '작업 상세'],
     ['팝오버', 'dialog', '최근 알림'],
   ]) {
     if (trigger === '팝오버') await check(page);
     await scope.locator('button').filter({ hasText: new RegExp(`^${trigger}$`) }).click();
-    const surface = page.locator(`[role="${role}"]:visible`);
+    const surface = trigger === '대화상자' ? page.locator('dialog[open]') : page.locator(`[role="${role}"]:visible`);
     if (name) await surface.filter({ hasText: name }).waitFor();
     await surface.waitFor();
     // Non-modal popovers cover otherwise visible page text. Inspect the portal
     // while open and the unobscured body before/after, preserving every axe rule.
     await check(page, trigger === '팝오버' ? '.hds-popover__positioner' : 'body');
     assert.equal(await surface.evaluate(element => { const rect = element.getBoundingClientRect(); return rect.left >= -1 && rect.right <= innerWidth + 1; }), true, `${trigger} fits viewport`);
-    if (trigger === '대화상자') {
+    if (trigger === '대화상자') assert.equal(await page.locator('[data-base-ui-focus-guard]').count(), 0, 'General dialog accessibility scan has no Base UI guards');
+    if (trigger === '복합 팝업 대화상자') {
       await surface.locator('button.hds-field__trigger[aria-label="프로젝트 공개 범위"]').click();
       await page.locator('[role="option"]:visible').filter({ hasText: /^비공개$/ }).waitFor();
       await check(page);
@@ -285,9 +306,9 @@ export async function exerciseFocusGuards(page, base) {
   async function open(name) {
     const fields = ['select', 'combobox', 'multi'].includes(name);
     const scope = await category(page, base, fields ? 'fields' : 'overlays');
-    if (name === 'select') await scope.getByRole('combobox', { name: '소속 팀', exact: true }).click();
+    if (name === 'select') await scope.getByRole('combobox', { name: '사용자 정의 선택기', exact: true }).click();
     if (name === 'combobox' || name === 'multi') await scope.getByRole('combobox', { name: name === 'multi' ? '협업 팀' : '담당 팀 검색', exact: true }).fill('운영');
-    const triggers = { menu: '드롭다운 메뉴', dialog: '대화상자', 'nested-select': '대화상자', alert: '삭제 확인', sheet: '사이드 시트', 'nested-combobox': '사이드 시트', popover: '팝오버', toast: '토스트 알림' };
+    const triggers = { menu: '드롭다운 메뉴', dialog: '복합 팝업 대화상자', 'nested-select': '복합 팝업 대화상자', alert: '삭제 확인', sheet: '사이드 시트', 'nested-combobox': '사이드 시트', popover: '팝오버', toast: '토스트 알림' };
     if (triggers[name]) await scope.getByRole('button', { name: triggers[name], exact: true }).click();
     if (name === 'nested-select') await page.getByRole('combobox', { name: '프로젝트 공개 범위', exact: true }).click();
     if (name === 'nested-combobox') await page.getByRole('combobox', { name: '담당자', exact: true }).fill('임현');

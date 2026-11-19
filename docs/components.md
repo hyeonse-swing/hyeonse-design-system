@@ -80,7 +80,7 @@ export function CompactForm() {
 | `FileInput` | 네이티브 파일 선택. `accept/multiple` 지원, `value/defaultValue` 제어 불가 |
 | `PasswordField` | 네이티브 비밀번호 입력과 표시 전환 버튼. 표시 상태는 컴포넌트 내부에서 관리 |
 
-`v0.4.3`부터 고정 항목 선택에 `NativeSelect`를 사용할 수 있습니다. 브라우저의 `<select>`를 그대로 사용해 Base UI 초점 가드를 만들지 않습니다. 빈 문자열은 선택 전 문구에 예약되어 있으므로 항목 `value`는 서로 다른 비어 있지 않은 문자열이어야 합니다. 필수 선택에는 빈 문구가 유효한 값이 아니며, 선택 UI의 모양과 키보드 동작은 브라우저와 운영체제를 따릅니다. 네이티브 `<select>`에는 읽기 전용 상태가 없어 `readOnly`를 받지 않습니다. `v0.4.4`에서는 제어형 `value`와 옵션의 기본 선택을 동기화하므로 `form.reset()` 직후의 동기 `FormData`도 현재 제어값을 반환합니다.
+고정 항목 선택에는 `NativeSelect`를 우선 사용하세요. 브라우저의 `<select>`를 사용해 Base UI 초점 가드를 만들지 않습니다. 빈 문자열은 선택 전 문구에 예약되어 있으므로 항목 `value`는 서로 다른 비어 있지 않은 문자열이어야 합니다. 필수 선택에는 빈 문구가 유효한 값이 아닙니다. 선택 목록과 키보드 동작은 브라우저와 운영체제를 따르고, 닫힌 필드는 HDS 스타일과 화살표를 사용합니다. 모바일 WebKit에서도 44px 터치 영역을 유지합니다. 네이티브 `<select>`에는 읽기 전용 상태가 없어 `readOnly`를 받지 않습니다. `v0.4.4`에서는 제어형 `value`와 옵션의 기본 선택을 동기화하므로 `form.reset()` 직후의 동기 `FormData`도 현재 제어값을 반환합니다.
 
 ```tsx
 import { NativeSelect } from '@hyeonse/design-system/fields';
@@ -101,7 +101,7 @@ import { NativeSelect } from '@hyeonse/design-system/fields';
 
 `Dialog`, `AlertDialog`, `Sheet`, `Popover`는 제목과 트리거를 받습니다. `Tooltip`은 포커스 가능한 트리거와 짧은 텍스트 `content`를 받으며, 시각적 보조 레이블 용도이므로 트리거 자체의 접근 가능한 이름을 제공하고 필수 정보나 터치 전용 안내를 넣지 마세요. [Base UI 사용 지침](https://base-ui.com/react/components/tooltip#usage-guidelines)을 따릅니다. 트리거로 전달하는 컴포넌트는 DOM props와 ref를 전달해야 합니다. 메뉴와 대화상자 계열은 `open/defaultOpen/onOpenChange`를 지원합니다. 제어형 `open`을 사용하면 콜백에서 앱 상태를 갱신하세요.
 
-`v0.4.3`의 `NativeDialog`는 일반 모달에 쓸 수 있는 `<dialog>` 기반 대안입니다. `Dialog`와 같은 `trigger/title/description/children/footer/open/defaultOpen/onOpenChange/size`를 받습니다. 브라우저의 모달 최상위 레이어를 사용하고 Tab·Shift+Tab은 컴포넌트가 내부 조작 요소 사이에서 순환시킵니다. `v0.4.4`에서는 macOS WebKit이 내부 버튼을 건너뛰는 경우에도 다음 버튼으로 즉시 초점을 옮깁니다. Escape, 닫기 버튼, 바깥 클릭으로 닫고 트리거로 초점을 돌립니다. 트리거는 `onClick`과 ARIA 속성을 실제 DOM 버튼까지 전달해야 합니다. 검색 목록·메뉴 등 Base UI 팝업을 안에 넣으면 그 팝업의 초점 가드는 여전히 생깁니다. 복잡한 중첩 팝업이 없는 모달에서 `NativeSelect`와 함께 사용하세요. 제어형 모달 안의 `<form method="dialog">`에서 제출하면 `onOpenChange(false)`로 닫기를 요청합니다. 부모가 `open`을 유지하면 입력을 계속할 수 있고, 부모가 나중에 `open={false}`를 적용해도 마지막 제출 버튼 값을 `returnValue`로 사용합니다. 그 전에 Escape 또는 닫기 버튼으로 새 닫기 요청이 들어오면 보류 중인 제출값을 비웁니다. 유효성 검사에서 제출 자체를 거절할 때는 폼의 `onSubmit`에서 `event.preventDefault()`를 호출하세요.
+일반 모달에는 `NativeDialog`를 우선 사용하세요. `Dialog`와 같은 `trigger/title/description/children/footer/open/defaultOpen/onOpenChange/size`를 받습니다. 브라우저의 모달 최상위 레이어를 사용하고 Tab·Shift+Tab은 컴포넌트가 내부 조작 요소 사이에서 순환시킵니다. `v0.4.4`에서는 macOS WebKit이 내부 버튼을 건너뛰는 경우에도 다음 버튼으로 즉시 초점을 옮깁니다. Escape, 닫기 버튼, 바깥 클릭으로 닫고 트리거로 초점을 돌립니다. 트리거는 `onClick`과 ARIA 속성을 실제 DOM 버튼까지 전달해야 합니다. `NativeDialog` 안의 Base UI 선택기·메뉴·팝오버는 기본 포털이 모달 최상위 레이어 밖에 열려 조작할 수 없으므로 함께 쓰지 마세요. 고정 선택에는 `NativeSelect`를 사용하고, Base UI 팝업 중첩이 필요하면 `Dialog`를 사용하세요. 제어형 모달 안의 `<form method="dialog">`에서 제출하면 `onOpenChange(false)`로 닫기를 요청합니다. 부모가 `open`을 유지하면 입력을 계속할 수 있고, 부모가 나중에 `open={false}`를 적용해도 마지막 제출 버튼 값을 `returnValue`로 사용합니다. 그 전에 Escape 또는 닫기 버튼으로 새 닫기 요청이 들어오면 보류 중인 제출값을 비웁니다. 유효성 검사에서 제출 자체를 거절할 때는 폼의 `onSubmit`에서 `event.preventDefault()`를 호출하세요.
 
 ```tsx
 import { NativeDialog } from '@hyeonse/design-system/overlays';
@@ -112,7 +112,7 @@ import { NativeSelect } from '@hyeonse/design-system/fields';
 </NativeDialog>
 ```
 
-Chromium·Firefox·WebKit 자동 검사에서 두 네이티브 대안의 접근성 트리 이름, 폼 선택·초기화, 모달 초점 순환·닫힘·복귀를 확인했습니다. 실제 VoiceOver 발화와 가상 커서 이동은 이 검사만으로 증명되지 않습니다. 기존 Base UI `Select`·`Dialog` 및 다른 팝업의 WebKit 이름 없는 가드도 그대로 남습니다. [접근성 검증 범위](code-freeze.md#브라우저-검사-범위)를 확인하세요.
+Chromium·Firefox·WebKit 자동 검사에서 두 네이티브 경로의 접근성 트리 이름, 폼 선택·초기화, 모달 초점 순환·닫힘·복귀를 확인했습니다. HDS가 만든 Base UI 가드에는 WebKit에서만 이름을 붙이고, 외부 Base UI 가드와 기존 초점 이동은 유지합니다. `Dialog`·`Sheet`의 제목 영역은 배너 랜드마크로 노출되지 않도록 일반 컨테이너를 사용합니다. 자동 검사만으로 실제 VoiceOver 발화와 모든 가상 커서 경로를 증명할 수 없습니다. [접근성 검증 범위](code-freeze.md#브라우저-검사-범위)를 확인하세요.
 
 `AlertDialog`는 확인 버튼에서만 `onConfirm`을 호출합니다. 비동기 확인 중에는 중복 실행을 막고, 거절된 Promise는 대화상자를 열린 채로 두며 `onError`로 전달합니다. `pending`과 `confirmDisabled`는 앱이 제어합니다. `Sheet`에는 `side='left'|'right'`와 공통 다섯 단계 `size`가 있습니다. `ToastProvider` 안에서 `useToast().add({ title, description?, tone?, timeout? })`를 호출하면 ID가 반환되고 `close(id)`로 닫을 수 있습니다. 기본 표시 제한은 3개, 기본 제한 시간은 5000ms입니다. `viewportLabel`(기본 `알림`)과 `closeLabel`(기본 `알림 닫기`)로 접근 가능한 이름을 지정합니다. F6으로 알림 영역에 이동할 수 있습니다. 토스트만으로 지속적으로 필요한 중요 정보를 전달하지 마세요. [오버레이 예제](../examples/overlay-patterns.tsx)를 참고하세요.
 
