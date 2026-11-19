@@ -55,9 +55,9 @@ export function DisplayDemo() {
       <h3>표와 데이터</h3>
       <Table><TableCaption>주문 요약</TableCaption><TableHeader><TableRow><TableHead>상품</TableHead><TableHead>수량</TableHead></TableRow></TableHeader><TableBody><TableRow><TableCell>노트</TableCell><TableCell>1</TableCell></TableRow><TableRow><TableCell>펜</TableCell><TableCell>3</TableCell></TableRow></TableBody></Table>
       <div className="demo-actions" role="group" aria-label="목록 상태 확인">
-        <button type="button" onClick={() => setTableState('ready')}>목록 보기</button>
-        <button type="button" onClick={() => setTableState('loading')}>불러오는 중</button>
-        <button type="button" onClick={() => setTableState('error')}>오류 상태</button>
+        <Button type="button" variant="secondary" size="sm" onClick={() => setTableState('ready')}>목록 보기</Button>
+        <Button type="button" variant="secondary" size="sm" onClick={() => setTableState('loading')}>불러오는 중</Button>
+        <Button type="button" variant="secondary" size="sm" onClick={() => setTableState('error')}>오류 상태</Button>
       </div>
       <DataTable
         caption="보류 재검수 목록"
