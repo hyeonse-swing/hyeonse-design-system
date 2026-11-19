@@ -200,11 +200,29 @@ async function runCase(browser, engine, name, options, run) {
 }
 
 async function exerciseFocusGuardIsolation(page, base, engine) {
+  // Base UI exposes role=button only on WebKit with VoiceOver available.
+  // Linux WebKit keeps the guards aria-hidden, so exercise the naming adapter
+  // with a fixture-only role transition after recording the native state.
+  async function exposeGuardsForIsolation(locator) {
+    const native = await locator.evaluateAll(elements => elements.map(element => ({ role: element.getAttribute('role'), hidden: element.getAttribute('aria-hidden') })));
+    const voiceOverMode = native.every(element => element.role === 'button' && element.hidden === null);
+    const hiddenMode = native.every(element => element.role === null && element.hidden === 'true');
+    assert(voiceOverMode || hiddenMode, `Unexpected Base UI guard state: ${JSON.stringify(native)}`);
+    if (engine !== 'webkit') assert(hiddenMode, `${engine} must retain Base UI's aria-hidden guards`);
+    if (hiddenMode) await locator.evaluateAll(elements => elements.forEach(element => {
+      element.removeAttribute('aria-hidden');
+      element.setAttribute('role', 'button');
+    }));
+    return voiceOverMode;
+  }
+
   await page.goto(base + '__consumer/focus-guard-isolation.html');
   const raw = page.getByRole('combobox', { name: 'Unrelated team', exact: true });
   await raw.click();
   const guards = page.locator('[data-base-ui-focus-guard]');
   await page.waitForFunction(() => document.querySelectorAll('[data-base-ui-focus-guard]').length === 4);
+  await exposeGuardsForIsolation(guards);
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
   assert.deepEqual(await guards.evaluateAll(elements => elements.map(element => element.getAttribute('aria-label'))), [null, null, null, null], 'Unrelated Base UI guards remain untouched');
   await page.keyboard.press('Escape');
   await page.waitForFunction(() => document.querySelectorAll('[data-base-ui-focus-guard]').length === 0);
@@ -212,28 +230,29 @@ async function exerciseFocusGuardIsolation(page, base, engine) {
   const hds = page.getByRole('combobox', { name: 'HDS team', exact: true });
   await hds.click();
   await page.waitForFunction(() => document.querySelectorAll('[data-base-ui-focus-guard]').length === 4);
-  if (engine === 'webkit') {
-    await page.waitForFunction(() => [...document.querySelectorAll('[data-base-ui-focus-guard]')].every(element => element.getAttribute('aria-label') === 'Popup focus navigation'));
-    assert.deepEqual(await guards.evaluateAll(elements => elements.map(element => ({ role: element.getAttribute('role'), hidden: element.getAttribute('aria-hidden') }))), Array(4).fill({ role: 'button', hidden: null }), 'Naming keeps Base UI focus semantics');
-    await page.evaluate(() => { document.documentElement.lang = 'ko'; });
-    await page.waitForFunction(() => [...document.querySelectorAll('[data-base-ui-focus-guard]')].every(element => element.getAttribute('aria-label') === '팝업 초점 이동'));
-    await guards.first().evaluate(element => element.setAttribute('aria-label', 'Caller label'));
-    await page.evaluate(() => { document.documentElement.lang = 'en'; });
-    await page.waitForFunction(() => [...document.querySelectorAll('[data-base-ui-focus-guard]')].slice(1).every(element => element.getAttribute('aria-label') === 'Popup focus navigation'));
-    assert.equal(await guards.first().getAttribute('aria-label'), 'Caller label', 'Caller-provided label is preserved');
-  } else {
-    assert.deepEqual(await guards.evaluateAll(elements => elements.map(element => ({ role: element.getAttribute('role'), hidden: element.getAttribute('aria-hidden'), label: element.getAttribute('aria-label') }))), Array(4).fill({ role: null, hidden: 'true', label: null }), 'Other engines retain hidden Base UI guards');
-  }
+  const nativeVoiceOverMode = await exposeGuardsForIsolation(guards);
+  await page.waitForFunction(() => [...document.querySelectorAll('[data-base-ui-focus-guard]')].every(element => element.getAttribute('aria-label') === 'Popup focus navigation'));
+  assert.deepEqual(await guards.evaluateAll(elements => elements.map(element => ({ role: element.getAttribute('role'), hidden: element.getAttribute('aria-hidden') }))), Array(4).fill({ role: 'button', hidden: null }), 'Naming keeps exposed Base UI focus semantics');
+  await page.evaluate(() => { document.documentElement.lang = 'ko'; });
+  await page.waitForFunction(() => [...document.querySelectorAll('[data-base-ui-focus-guard]')].every(element => element.getAttribute('aria-label') === '팝업 초점 이동'));
+  await guards.first().evaluate(element => element.setAttribute('aria-label', 'Caller label'));
+  await page.evaluate(() => { document.documentElement.lang = 'en'; });
+  await page.waitForFunction(() => [...document.querySelectorAll('[data-base-ui-focus-guard]')].slice(1).every(element => element.getAttribute('aria-label') === 'Popup focus navigation'));
+  assert.equal(await guards.first().getAttribute('aria-label'), 'Caller label', 'Caller-provided label is preserved');
   await page.keyboard.press('Escape');
   await page.waitForFunction(() => document.querySelectorAll('[data-base-ui-focus-guard]').length === 0);
   await page.locator('#raw-menu').click();
   await page.waitForFunction(() => document.querySelectorAll('[data-base-ui-focus-guard]').length >= 4);
+  await exposeGuardsForIsolation(guards);
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
   assert((await page.locator('[data-base-ui-focus-guard]').evaluateAll(elements => elements.every(element => !element.hasAttribute('aria-label')))), 'Raw outside guards next to a closed HDS trigger stay unnamed');
   await page.keyboard.press('Escape');
   await page.waitForFunction(() => document.querySelectorAll('[data-base-ui-focus-guard]').length === 0);
   await page.getByRole('button', { name: 'Show adjacent menus', exact: true }).click();
   await page.waitForFunction(() => document.querySelector('.raw-menu-popup') && document.querySelector('.hds-menu__popup'));
-  if (engine === 'webkit') {
+  await exposeGuardsForIsolation(guards);
+  await page.waitForFunction(() => [...document.querySelectorAll('.hds-menu__positioner [data-base-ui-focus-guard]')].every(element => element.getAttribute('aria-label') === 'Popup focus navigation'));
+  {
     const menuGuards = await page.locator('[data-base-ui-focus-guard]').evaluateAll(elements => elements.map(guard => {
       const parent = guard.parentElement;
       const directlyNextTo = id => guard.previousElementSibling?.id === id || guard.nextElementSibling?.id === id;
@@ -249,7 +268,7 @@ async function exerciseFocusGuardIsolation(page, base, engine) {
     assert(menuGuards.filter(guard => guard.owner === 'hds').every(guard => guard.label === 'Popup focus navigation'), 'Adjacent HDS menu guards are named');
     assert.equal(menuGuards.filter(guard => guard.owner === 'unknown').length, 0, 'Every adjacent guard has a known owner');
   }
-  return { unrelatedGuardsUntouched: true, adjacentMenusIsolated: engine === 'webkit', hdsGuardsNamedOnWebKit: engine === 'webkit', languageSwitch: engine === 'webkit' };
+  return { unrelatedGuardsUntouched: true, adjacentMenusIsolated: true, namingAdapterExercised: true, nativeVoiceOverMode, languageSwitch: true };
 }
 
 async function exerciseNativeAlternatives(page, base) {
