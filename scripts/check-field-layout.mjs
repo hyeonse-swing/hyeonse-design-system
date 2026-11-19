@@ -45,7 +45,8 @@ async function measure(page) {
     };
     const controls = {
       Input: find('표시 이름').querySelector('.hds-field__control'),
-      Select: find('소속 팀').querySelector('.hds-field__trigger'),
+      NativeSelect: find('소속 팀').querySelector('select.hds-field__nativeSelect'),
+      Select: find('사용자 정의 선택기').querySelector('button.hds-field__trigger'),
       Combobox: find('담당 팀 검색').querySelector('.hds-field__inputGroup'),
       NumberField: find('초대 수').querySelector('.hds-field__numberGroup'),
       DateField: find('예정 날짜').querySelector('.hds-field__control'),
