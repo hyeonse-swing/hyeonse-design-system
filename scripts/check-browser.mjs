@@ -7,7 +7,7 @@ import { dirname, extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 import { chromium, firefox, webkit } from 'playwright';
-import { exerciseFields, exerciseOverlays, exerciseDisplay, exerciseExpandedAccessibility, exerciseFocusGuards, exerciseComboboxDismissal } from './browser-suites.mjs';
+import { exerciseFields, exerciseOverlays, exerciseDisplay, exerciseDataTable, exerciseExpandedAccessibility, exerciseFocusGuards, exerciseComboboxDismissal } from './browser-suites.mjs';
 import { exerciseNativeDialogForm } from '../tests/browser/exercise-native-dialog-form.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -135,8 +135,11 @@ async function a11y(page, selector = 'body') {
         const swatch = element.matches('.hds-swatch[aria-hidden="true"]');
         const navigation = element.matches('.catalog-sidebar nav a, .catalog-sidebar nav a > span:first-child');
         const fieldText = element.matches('.hds-field__label, .hds-field__chip, .hds-dialog__body > p, .hds-demoOverlays__controls > .hds-button, .import-note > a[href="./docs/components.md"]');
+        const tableRegion = element.closest('.hds-dataTable .hds-tableScroll');
+        const scrolledTableText = element.matches('.hds-dataTable__table .hds-table__cell, .hds-dataTable__table .hds-table__cell *') &&
+          tableRegion?.scrollWidth > tableRegion?.clientWidth && checks.length === 1 && checks[0].data?.messageKey === 'elmPartiallyObscured';
         const controlIcon = namedIconButton || element.matches('.hds-field__chevron[aria-hidden="true"], .hds-field__option [data-selected][aria-hidden="true"], .hds-field__iconButton > [aria-hidden="true"], .hds-field__stepper > [aria-hidden="true"], .hds-field__chipRemove > [aria-hidden="true"], .hds-dialog__close > [aria-hidden="true"], .hds-toast__close > [aria-hidden="true"], .hds-menu__check, .hds-menu__check *, .hds-pagination button > [aria-hidden="true"]');
-        if (!swatch && !navigation && !controlIcon && !fieldText) return null;
+        if (!swatch && !navigation && !controlIcon && !fieldText && !scrolledTableText) return null;
         const rgb = value => {
           if (!/^rgba?\(/.test(value)) return null;
           const [r, g, b, alpha = 1] = value.match(/[\d.]+/g).map(Number);
@@ -156,7 +159,7 @@ async function a11y(page, selector = 'body') {
         const values = [luminance(foreground.channels), luminance(background.channels)].sort((a, b) => a - b);
         const ratio = (values[1] + 0.05) / (values[0] + 0.05);
         const minimum = swatch || controlIcon ? 3 : 4.5;
-        return { kind: swatch ? 'selection-mark-contrast' : controlIcon ? 'control-icon-contrast' : fieldText ? 'field-text-contrast' : 'scrollable-navigation-contrast', foreground: foreground.channels, background: background.channels, ratio, minimum, pass: ratio >= minimum };
+        return { kind: swatch ? 'selection-mark-contrast' : controlIcon ? 'control-icon-contrast' : fieldText ? 'field-text-contrast' : scrolledTableText ? 'scrollable-table-text-contrast' : 'scrollable-navigation-contrast', foreground: foreground.channels, background: background.channels, ratio, minimum, pass: ratio >= minimum };
       }, { rule: item.id, target: node.target, checks: node.checks, guardsVerified: verifiedFocusGuardEngines.has(page.context().browser().browserType().name()), comboVerified: verifiedComboboxEngines.has(page.context().browser().browserType().name()) });
       supplementalChecks.push({ rule: item.id, target: node.target, ...check });
     }
@@ -504,6 +507,7 @@ try {
       await runCase(browser, name, 'focus-guard-isolation', {}, page => exerciseFocusGuardIsolation(page, base, name));
       await runCase(browser, name, 'expanded-overlays', { viewport: { width: 390, height: 844 }, colorScheme: 'dark' }, page => exerciseOverlays(page, base));
       await runCase(browser, name, 'expanded-display', { viewport: { width: 390, height: 844 } }, page => exerciseDisplay(page, base));
+      await runCase(browser, name, 'data-table', { viewport: { width: 390, height: 844 } }, page => exerciseDataTable(page, base));
       await runCase(browser, name, 'focus-guard-navigation', {}, async page => { const result = await exerciseFocusGuards(page, base); verifiedFocusGuardEngines.add(name); return result; });
       await runCase(browser, name, 'combobox-dismissal', {}, async page => { const result = await exerciseComboboxDismissal(page, base); verifiedComboboxEngines.add(name); return result; });
       await runCase(browser, name, 'expanded-accessibility', {}, page => exerciseExpandedAccessibility(page, base, a11y, (page, label) => page.screenshot({ path: join(output, `${name}-${label}.png`) })));

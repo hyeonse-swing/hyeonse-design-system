@@ -220,11 +220,12 @@ export const catalogMetadata = {
     { id: 'expanded-forms', description: 'Text, selection, search, number, date, and file controls with public imports.', files: ['examples/expanded-forms.tsx'] },
     { id: 'overlay-patterns', description: 'Menus, dialogs, sheets, popovers, tooltips, and scoped toast notifications.', files: ['examples/overlay-patterns.tsx'] },
     { id: 'display-patterns', description: 'Navigation, semantic tables, cards, progress, and feedback patterns.', files: ['examples/display-patterns.tsx'] },
+    { id: 'data-table', description: 'Controlled return review list with sorting, selection, pagination and a separate detail action.', files: ['examples/data-table.tsx'] },
   ],
 };
 
 // Size contracts live in authored guidance as well as the public declarations.
-const sizedEntries = ['Button', 'TextField', 'Checkbox', 'Badge', 'Input', 'Textarea', 'Select', 'NativeSelect', 'Combobox', 'MultiSelect', 'Switch', 'RadioGroup', 'Slider', 'NumberField', 'PasswordField', 'DateField', 'FileInput', 'DropdownMenu', 'ContextMenu', 'Dialog', 'NativeDialog', 'AlertDialog', 'Sheet', 'Popover', 'Tooltip', 'ToastProvider', 'Tabs', 'Accordion', 'Collapsible', 'Breadcrumb', 'Pagination', 'Stepper', 'SegmentedControl', 'Toggle', 'Card', 'Table', 'Alert', 'Avatar', 'Separator', 'Skeleton', 'Spinner', 'Progress', 'EmptyState', 'AspectRatio', 'ScrollArea', 'Label'];
+const sizedEntries = ['Button', 'TextField', 'Checkbox', 'Badge', 'Input', 'Textarea', 'Select', 'NativeSelect', 'Combobox', 'MultiSelect', 'Switch', 'RadioGroup', 'Slider', 'NumberField', 'PasswordField', 'DateField', 'FileInput', 'DropdownMenu', 'ContextMenu', 'Dialog', 'NativeDialog', 'AlertDialog', 'Sheet', 'Popover', 'Tooltip', 'ToastProvider', 'Tabs', 'Accordion', 'Collapsible', 'Breadcrumb', 'Pagination', 'Stepper', 'SegmentedControl', 'Toggle', 'Card', 'Table', 'DataTable', 'Alert', 'Avatar', 'Separator', 'Skeleton', 'Spinner', 'Progress', 'EmptyState', 'AspectRatio', 'ScrollArea', 'Label'];
 for (const name of sizedEntries) {
   const entry = catalogMetadata.entries[name];
   entry.usage = [...entry.usage, 'size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.'];

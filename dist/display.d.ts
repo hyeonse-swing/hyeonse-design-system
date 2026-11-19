@@ -128,6 +128,39 @@ export type TableCaptionProps = ComponentPropsWithRef<'caption'> & {
     className?: string;
 };
 export declare function TableCaption({ className, ...props }: TableCaptionProps): import("react").JSX.Element;
+export type DataTableSort = {
+    columnId: string;
+    direction: 'asc' | 'desc';
+};
+export type DataTableColumn<Row> = {
+    id: string;
+    header: string;
+    cell: (row: Row) => ReactNode;
+    sortable?: boolean;
+};
+export type DataTableProps<Row> = {
+    caption: string;
+    columns: readonly DataTableColumn<Row>[];
+    rows: readonly Row[];
+    getRowId: (row: Row) => string;
+    getRowLabel?: (row: Row) => string;
+    sort: DataTableSort | null;
+    onSortChange: (sort: DataTableSort) => void;
+    selectedRowId: string | null;
+    onSelectedRowIdChange: (rowId: string | null) => void;
+    page: number;
+    pageCount: number;
+    onPageChange: (page: number) => void;
+    pageSize: number;
+    totalRows: number;
+    state?: 'ready' | 'loading' | 'error';
+    emptyMessage?: string;
+    errorMessage?: string;
+    locale?: 'ko' | 'en';
+    size?: HdsSize;
+    className?: string;
+};
+export declare function DataTable<Row>({ caption, columns, rows, getRowId, getRowLabel, sort, onSortChange, selectedRowId, onSelectedRowIdChange, page, pageCount, onPageChange, pageSize, totalRows, state, emptyMessage, errorMessage, locale, size, className, }: DataTableProps<Row>): import("react").JSX.Element;
 export type AlertProps = Omit<ComponentPropsWithRef<'div'>, 'title'> & {
     tone?: 'info' | 'success' | 'warning' | 'danger';
     title?: ReactNode;

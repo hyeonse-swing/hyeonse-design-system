@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "package": {
     "name": "@hyeonse/design-system",
-    "version": "0.4.9"
+    "version": "0.5.0"
   },
   "boundaries": {
     "provided": [
@@ -444,7 +444,7 @@
       "subpath": "./display",
       "importPath": "@hyeonse/design-system/display",
       "source": "src/display.tsx",
-      "declarations": "import type { ComponentPropsWithRef, ReactNode } from 'react';\nimport type { HdsSize } from './sizing.js';\nimport { Tabs as BaseTabs, Accordion as BaseAccordion, Collapsible as BaseCollapsible, ToggleGroup as BaseToggleGroup, Toggle as BaseToggle } from '@base-ui/react';\nexport type TabsProps = Omit<ComponentPropsWithRef<typeof BaseTabs.Root>, 'className'> & {\n    className?: string;\n    size?: HdsSize;\n};\nexport declare function Tabs({ size, className, ...props }: TabsProps): import(\"react\").JSX.Element;\nexport type TabsListProps = Omit<ComponentPropsWithRef<typeof BaseTabs.List>, 'className'> & {\n    className?: string;\n};\nexport declare function TabsList({ className, ...props }: TabsListProps): import(\"react\").JSX.Element;\nexport type TabsTabProps = Omit<ComponentPropsWithRef<typeof BaseTabs.Tab>, 'className'> & {\n    className?: string;\n};\nexport declare function TabsTab({ className, ...props }: TabsTabProps): import(\"react\").JSX.Element;\nexport type TabsPanelProps = Omit<ComponentPropsWithRef<typeof BaseTabs.Panel>, 'className'> & {\n    className?: string;\n};\nexport declare function TabsPanel({ className, ...props }: TabsPanelProps): import(\"react\").JSX.Element;\nexport type AccordionProps = Omit<ComponentPropsWithRef<typeof BaseAccordion.Root>, 'className'> & {\n    className?: string;\n    size?: HdsSize;\n};\nexport declare function Accordion({ size, className, ...props }: AccordionProps): import(\"react\").JSX.Element;\nexport type AccordionItemProps = Omit<ComponentPropsWithRef<typeof BaseAccordion.Item>, 'className'> & {\n    className?: string;\n};\nexport declare function AccordionItem({ className, ...props }: AccordionItemProps): import(\"react\").JSX.Element;\nexport type AccordionHeaderProps = Omit<ComponentPropsWithRef<typeof BaseAccordion.Header>, 'className'> & {\n    className?: string;\n};\nexport declare function AccordionHeader({ className, ...props }: AccordionHeaderProps): import(\"react\").JSX.Element;\nexport type AccordionTriggerProps = Omit<ComponentPropsWithRef<typeof BaseAccordion.Trigger>, 'className'> & {\n    className?: string;\n};\nexport declare function AccordionTrigger({ className, ...props }: AccordionTriggerProps): import(\"react\").JSX.Element;\nexport type AccordionPanelProps = Omit<ComponentPropsWithRef<typeof BaseAccordion.Panel>, 'className'> & {\n    className?: string;\n};\nexport declare function AccordionPanel({ className, ...props }: AccordionPanelProps): import(\"react\").JSX.Element;\nexport type CollapsibleProps = Omit<ComponentPropsWithRef<typeof BaseCollapsible.Root>, 'className'> & {\n    className?: string;\n    size?: HdsSize;\n};\nexport declare function Collapsible({ size, className, ...props }: CollapsibleProps): import(\"react\").JSX.Element;\nexport type CollapsibleTriggerProps = Omit<ComponentPropsWithRef<typeof BaseCollapsible.Trigger>, 'className'> & {\n    className?: string;\n};\nexport declare function CollapsibleTrigger({ className, ...props }: CollapsibleTriggerProps): import(\"react\").JSX.Element;\nexport type CollapsiblePanelProps = Omit<ComponentPropsWithRef<typeof BaseCollapsible.Panel>, 'className'> & {\n    className?: string;\n};\nexport declare function CollapsiblePanel({ className, ...props }: CollapsiblePanelProps): import(\"react\").JSX.Element;\nexport type BreadcrumbItem = {\n    label: ReactNode;\n    href?: string;\n};\nexport type BreadcrumbProps = Omit<ComponentPropsWithRef<'nav'>, 'children'> & {\n    items: readonly BreadcrumbItem[];\n    separator?: ReactNode;\n    size?: HdsSize;\n};\nexport declare function Breadcrumb({ size, items, separator, className, 'aria-label': ariaLabel, ref, ...props }: BreadcrumbProps): import(\"react\").JSX.Element;\nexport type PaginationProps = Omit<ComponentPropsWithRef<'nav'>, 'children'> & {\n    page: number;\n    pageCount: number;\n    onPageChange: (page: number) => void;\n    locale?: 'ko' | 'en';\n    siblingCount?: number;\n    size?: HdsSize;\n};\nexport declare function Pagination({ size, page, pageCount, onPageChange, locale, siblingCount, className, 'aria-label': ariaLabel, ref, ...props }: PaginationProps): import(\"react\").JSX.Element;\nexport type StepperItem = {\n    label: ReactNode;\n    description?: ReactNode;\n};\nexport type StepperProps = Omit<ComponentPropsWithRef<'ol'>, 'children'> & {\n    steps: readonly StepperItem[];\n    currentStep: number;\n    size?: HdsSize;\n};\nexport declare function Stepper({ size, steps, currentStep, className, ref, ...props }: StepperProps): import(\"react\").JSX.Element;\nexport type SegmentedControlProps = Omit<ComponentPropsWithRef<typeof BaseToggleGroup>, 'className'> & {\n    className?: string;\n    size?: HdsSize;\n};\nexport declare function SegmentedControl({ size, className, multiple, ...props }: SegmentedControlProps): import(\"react\").JSX.Element;\nexport type ToggleProps = Omit<ComponentPropsWithRef<typeof BaseToggle>, 'className'> & {\n    className?: string;\n    size?: HdsSize;\n};\nexport declare function Toggle({ size, className, ...props }: ToggleProps): import(\"react\").JSX.Element;\nexport type CardProps = Omit<ComponentPropsWithRef<'article'>, 'title'> & {\n    title?: ReactNode;\n    description?: ReactNode;\n    footer?: ReactNode;\n    size?: HdsSize;\n};\nexport declare function Card({ size, title, description, footer, children, className, ref, ...props }: CardProps): import(\"react\").JSX.Element;\nexport type TableProps = ComponentPropsWithRef<'table'> & {\n    containerClassName?: string;\n    scrollLabel?: string;\n    size?: HdsSize;\n};\nexport declare function Table({ size, containerClassName, scrollLabel, className, ref, ...props }: TableProps): import(\"react\").JSX.Element;\nexport type TableHeaderProps = ComponentPropsWithRef<'thead'> & {\n    className?: string;\n};\nexport declare function TableHeader({ className, ...props }: TableHeaderProps): import(\"react\").JSX.Element;\nexport type TableBodyProps = ComponentPropsWithRef<'tbody'> & {\n    className?: string;\n};\nexport declare function TableBody({ className, ...props }: TableBodyProps): import(\"react\").JSX.Element;\nexport type TableRowProps = ComponentPropsWithRef<'tr'> & {\n    className?: string;\n};\nexport declare function TableRow({ className, ...props }: TableRowProps): import(\"react\").JSX.Element;\nexport type TableHeadProps = ComponentPropsWithRef<'th'> & {\n    className?: string;\n};\nexport declare function TableHead({ className, scope, ...props }: TableHeadProps): import(\"react\").JSX.Element;\nexport type TableCellProps = ComponentPropsWithRef<'td'> & {\n    className?: string;\n};\nexport declare function TableCell({ className, ...props }: TableCellProps): import(\"react\").JSX.Element;\nexport type TableCaptionProps = ComponentPropsWithRef<'caption'> & {\n    className?: string;\n};\nexport declare function TableCaption({ className, ...props }: TableCaptionProps): import(\"react\").JSX.Element;\nexport type AlertProps = Omit<ComponentPropsWithRef<'div'>, 'title'> & {\n    tone?: 'info' | 'success' | 'warning' | 'danger';\n    title?: ReactNode;\n    size?: HdsSize;\n};\nexport declare function Alert({ size, tone, title, children, className, role, ref, ...props }: AlertProps): import(\"react\").JSX.Element;\nexport type AvatarProps = Omit<ComponentPropsWithRef<'span'>, 'children'> & {\n    src?: string;\n    alt: string;\n    fallback: ReactNode;\n    size?: HdsSize;\n};\nexport declare function Avatar({ src, alt, fallback, size, className, ref, ...props }: AvatarProps): import(\"react\").JSX.Element;\nexport type SeparatorProps = ComponentPropsWithRef<'hr'> & {\n    decorative?: boolean;\n    size?: HdsSize;\n};\nexport declare function Separator({ size, decorative, className, ref, ...props }: SeparatorProps): import(\"react\").JSX.Element;\nexport type SkeletonProps = ComponentPropsWithRef<'span'> & {\n    width?: string | number;\n    height?: string | number;\n    size?: HdsSize;\n};\nexport declare function Skeleton({ size, width, height, style, className, ref, ...props }: SkeletonProps): import(\"react\").JSX.Element;\nexport type SpinnerProps = ComponentPropsWithRef<'span'> & {\n    label?: string;\n    size?: HdsSize;\n};\nexport declare function Spinner({ size, label, className, ref, ...props }: SpinnerProps): import(\"react\").JSX.Element;\nexport type ProgressProps = Omit<ComponentPropsWithRef<'div'>, 'children'> & {\n    value?: number;\n    max?: number;\n    label: string;\n    size?: HdsSize;\n};\nexport declare function Progress({ size, value, max, label, className, ref, ...props }: ProgressProps): import(\"react\").JSX.Element;\nexport type EmptyStateProps = Omit<ComponentPropsWithRef<'div'>, 'title'> & {\n    title: ReactNode;\n    description?: ReactNode;\n    action?: ReactNode;\n    size?: HdsSize;\n};\nexport declare function EmptyState({ size, title, description, action, className, ref, ...props }: EmptyStateProps): import(\"react\").JSX.Element;\nexport type AspectRatioProps = ComponentPropsWithRef<'div'> & {\n    ratio?: number;\n    size?: HdsSize;\n};\nexport declare function AspectRatio({ size, ratio, style, className, ref, ...props }: AspectRatioProps): import(\"react\").JSX.Element;\nexport type ScrollAreaProps = ComponentPropsWithRef<'div'> & {\n    maxHeight?: string | number;\n    label: string;\n    size?: HdsSize;\n};\nexport declare function ScrollArea({ size, maxHeight, label, style, className, ref, ...props }: ScrollAreaProps): import(\"react\").JSX.Element;\nexport type LabelProps = ComponentPropsWithRef<'label'> & {\n    required?: boolean;\n    size?: HdsSize;\n};\nexport declare function Label({ size, required, children, className, ref, ...props }: LabelProps): import(\"react\").JSX.Element;\nexport type VisuallyHiddenProps = ComponentPropsWithRef<'span'> & {\n    className?: string;\n};\nexport declare function VisuallyHidden({ className, ref, ...props }: VisuallyHiddenProps): import(\"react\").JSX.Element;\n",
+      "declarations": "import type { ComponentPropsWithRef, ReactNode } from 'react';\nimport type { HdsSize } from './sizing.js';\nimport { Tabs as BaseTabs, Accordion as BaseAccordion, Collapsible as BaseCollapsible, ToggleGroup as BaseToggleGroup, Toggle as BaseToggle } from '@base-ui/react';\nexport type TabsProps = Omit<ComponentPropsWithRef<typeof BaseTabs.Root>, 'className'> & {\n    className?: string;\n    size?: HdsSize;\n};\nexport declare function Tabs({ size, className, ...props }: TabsProps): import(\"react\").JSX.Element;\nexport type TabsListProps = Omit<ComponentPropsWithRef<typeof BaseTabs.List>, 'className'> & {\n    className?: string;\n};\nexport declare function TabsList({ className, ...props }: TabsListProps): import(\"react\").JSX.Element;\nexport type TabsTabProps = Omit<ComponentPropsWithRef<typeof BaseTabs.Tab>, 'className'> & {\n    className?: string;\n};\nexport declare function TabsTab({ className, ...props }: TabsTabProps): import(\"react\").JSX.Element;\nexport type TabsPanelProps = Omit<ComponentPropsWithRef<typeof BaseTabs.Panel>, 'className'> & {\n    className?: string;\n};\nexport declare function TabsPanel({ className, ...props }: TabsPanelProps): import(\"react\").JSX.Element;\nexport type AccordionProps = Omit<ComponentPropsWithRef<typeof BaseAccordion.Root>, 'className'> & {\n    className?: string;\n    size?: HdsSize;\n};\nexport declare function Accordion({ size, className, ...props }: AccordionProps): import(\"react\").JSX.Element;\nexport type AccordionItemProps = Omit<ComponentPropsWithRef<typeof BaseAccordion.Item>, 'className'> & {\n    className?: string;\n};\nexport declare function AccordionItem({ className, ...props }: AccordionItemProps): import(\"react\").JSX.Element;\nexport type AccordionHeaderProps = Omit<ComponentPropsWithRef<typeof BaseAccordion.Header>, 'className'> & {\n    className?: string;\n};\nexport declare function AccordionHeader({ className, ...props }: AccordionHeaderProps): import(\"react\").JSX.Element;\nexport type AccordionTriggerProps = Omit<ComponentPropsWithRef<typeof BaseAccordion.Trigger>, 'className'> & {\n    className?: string;\n};\nexport declare function AccordionTrigger({ className, ...props }: AccordionTriggerProps): import(\"react\").JSX.Element;\nexport type AccordionPanelProps = Omit<ComponentPropsWithRef<typeof BaseAccordion.Panel>, 'className'> & {\n    className?: string;\n};\nexport declare function AccordionPanel({ className, ...props }: AccordionPanelProps): import(\"react\").JSX.Element;\nexport type CollapsibleProps = Omit<ComponentPropsWithRef<typeof BaseCollapsible.Root>, 'className'> & {\n    className?: string;\n    size?: HdsSize;\n};\nexport declare function Collapsible({ size, className, ...props }: CollapsibleProps): import(\"react\").JSX.Element;\nexport type CollapsibleTriggerProps = Omit<ComponentPropsWithRef<typeof BaseCollapsible.Trigger>, 'className'> & {\n    className?: string;\n};\nexport declare function CollapsibleTrigger({ className, ...props }: CollapsibleTriggerProps): import(\"react\").JSX.Element;\nexport type CollapsiblePanelProps = Omit<ComponentPropsWithRef<typeof BaseCollapsible.Panel>, 'className'> & {\n    className?: string;\n};\nexport declare function CollapsiblePanel({ className, ...props }: CollapsiblePanelProps): import(\"react\").JSX.Element;\nexport type BreadcrumbItem = {\n    label: ReactNode;\n    href?: string;\n};\nexport type BreadcrumbProps = Omit<ComponentPropsWithRef<'nav'>, 'children'> & {\n    items: readonly BreadcrumbItem[];\n    separator?: ReactNode;\n    size?: HdsSize;\n};\nexport declare function Breadcrumb({ size, items, separator, className, 'aria-label': ariaLabel, ref, ...props }: BreadcrumbProps): import(\"react\").JSX.Element;\nexport type PaginationProps = Omit<ComponentPropsWithRef<'nav'>, 'children'> & {\n    page: number;\n    pageCount: number;\n    onPageChange: (page: number) => void;\n    locale?: 'ko' | 'en';\n    siblingCount?: number;\n    size?: HdsSize;\n};\nexport declare function Pagination({ size, page, pageCount, onPageChange, locale, siblingCount, className, 'aria-label': ariaLabel, ref, ...props }: PaginationProps): import(\"react\").JSX.Element;\nexport type StepperItem = {\n    label: ReactNode;\n    description?: ReactNode;\n};\nexport type StepperProps = Omit<ComponentPropsWithRef<'ol'>, 'children'> & {\n    steps: readonly StepperItem[];\n    currentStep: number;\n    size?: HdsSize;\n};\nexport declare function Stepper({ size, steps, currentStep, className, ref, ...props }: StepperProps): import(\"react\").JSX.Element;\nexport type SegmentedControlProps = Omit<ComponentPropsWithRef<typeof BaseToggleGroup>, 'className'> & {\n    className?: string;\n    size?: HdsSize;\n};\nexport declare function SegmentedControl({ size, className, multiple, ...props }: SegmentedControlProps): import(\"react\").JSX.Element;\nexport type ToggleProps = Omit<ComponentPropsWithRef<typeof BaseToggle>, 'className'> & {\n    className?: string;\n    size?: HdsSize;\n};\nexport declare function Toggle({ size, className, ...props }: ToggleProps): import(\"react\").JSX.Element;\nexport type CardProps = Omit<ComponentPropsWithRef<'article'>, 'title'> & {\n    title?: ReactNode;\n    description?: ReactNode;\n    footer?: ReactNode;\n    size?: HdsSize;\n};\nexport declare function Card({ size, title, description, footer, children, className, ref, ...props }: CardProps): import(\"react\").JSX.Element;\nexport type TableProps = ComponentPropsWithRef<'table'> & {\n    containerClassName?: string;\n    scrollLabel?: string;\n    size?: HdsSize;\n};\nexport declare function Table({ size, containerClassName, scrollLabel, className, ref, ...props }: TableProps): import(\"react\").JSX.Element;\nexport type TableHeaderProps = ComponentPropsWithRef<'thead'> & {\n    className?: string;\n};\nexport declare function TableHeader({ className, ...props }: TableHeaderProps): import(\"react\").JSX.Element;\nexport type TableBodyProps = ComponentPropsWithRef<'tbody'> & {\n    className?: string;\n};\nexport declare function TableBody({ className, ...props }: TableBodyProps): import(\"react\").JSX.Element;\nexport type TableRowProps = ComponentPropsWithRef<'tr'> & {\n    className?: string;\n};\nexport declare function TableRow({ className, ...props }: TableRowProps): import(\"react\").JSX.Element;\nexport type TableHeadProps = ComponentPropsWithRef<'th'> & {\n    className?: string;\n};\nexport declare function TableHead({ className, scope, ...props }: TableHeadProps): import(\"react\").JSX.Element;\nexport type TableCellProps = ComponentPropsWithRef<'td'> & {\n    className?: string;\n};\nexport declare function TableCell({ className, ...props }: TableCellProps): import(\"react\").JSX.Element;\nexport type TableCaptionProps = ComponentPropsWithRef<'caption'> & {\n    className?: string;\n};\nexport declare function TableCaption({ className, ...props }: TableCaptionProps): import(\"react\").JSX.Element;\nexport type DataTableSort = {\n    columnId: string;\n    direction: 'asc' | 'desc';\n};\nexport type DataTableColumn<Row> = {\n    id: string;\n    header: string;\n    cell: (row: Row) => ReactNode;\n    sortable?: boolean;\n};\nexport type DataTableProps<Row> = {\n    caption: string;\n    columns: readonly DataTableColumn<Row>[];\n    rows: readonly Row[];\n    getRowId: (row: Row) => string;\n    getRowLabel?: (row: Row) => string;\n    sort: DataTableSort | null;\n    onSortChange: (sort: DataTableSort) => void;\n    selectedRowId: string | null;\n    onSelectedRowIdChange: (rowId: string | null) => void;\n    page: number;\n    pageCount: number;\n    onPageChange: (page: number) => void;\n    pageSize: number;\n    totalRows: number;\n    state?: 'ready' | 'loading' | 'error';\n    emptyMessage?: string;\n    errorMessage?: string;\n    locale?: 'ko' | 'en';\n    size?: HdsSize;\n    className?: string;\n};\nexport declare function DataTable<Row>({ caption, columns, rows, getRowId, getRowLabel, sort, onSortChange, selectedRowId, onSelectedRowIdChange, page, pageCount, onPageChange, pageSize, totalRows, state, emptyMessage, errorMessage, locale, size, className, }: DataTableProps<Row>): import(\"react\").JSX.Element;\nexport type AlertProps = Omit<ComponentPropsWithRef<'div'>, 'title'> & {\n    tone?: 'info' | 'success' | 'warning' | 'danger';\n    title?: ReactNode;\n    size?: HdsSize;\n};\nexport declare function Alert({ size, tone, title, children, className, role, ref, ...props }: AlertProps): import(\"react\").JSX.Element;\nexport type AvatarProps = Omit<ComponentPropsWithRef<'span'>, 'children'> & {\n    src?: string;\n    alt: string;\n    fallback: ReactNode;\n    size?: HdsSize;\n};\nexport declare function Avatar({ src, alt, fallback, size, className, ref, ...props }: AvatarProps): import(\"react\").JSX.Element;\nexport type SeparatorProps = ComponentPropsWithRef<'hr'> & {\n    decorative?: boolean;\n    size?: HdsSize;\n};\nexport declare function Separator({ size, decorative, className, ref, ...props }: SeparatorProps): import(\"react\").JSX.Element;\nexport type SkeletonProps = ComponentPropsWithRef<'span'> & {\n    width?: string | number;\n    height?: string | number;\n    size?: HdsSize;\n};\nexport declare function Skeleton({ size, width, height, style, className, ref, ...props }: SkeletonProps): import(\"react\").JSX.Element;\nexport type SpinnerProps = ComponentPropsWithRef<'span'> & {\n    label?: string;\n    size?: HdsSize;\n};\nexport declare function Spinner({ size, label, className, ref, ...props }: SpinnerProps): import(\"react\").JSX.Element;\nexport type ProgressProps = Omit<ComponentPropsWithRef<'div'>, 'children'> & {\n    value?: number;\n    max?: number;\n    label: string;\n    size?: HdsSize;\n};\nexport declare function Progress({ size, value, max, label, className, ref, ...props }: ProgressProps): import(\"react\").JSX.Element;\nexport type EmptyStateProps = Omit<ComponentPropsWithRef<'div'>, 'title'> & {\n    title: ReactNode;\n    description?: ReactNode;\n    action?: ReactNode;\n    size?: HdsSize;\n};\nexport declare function EmptyState({ size, title, description, action, className, ref, ...props }: EmptyStateProps): import(\"react\").JSX.Element;\nexport type AspectRatioProps = ComponentPropsWithRef<'div'> & {\n    ratio?: number;\n    size?: HdsSize;\n};\nexport declare function AspectRatio({ size, ratio, style, className, ref, ...props }: AspectRatioProps): import(\"react\").JSX.Element;\nexport type ScrollAreaProps = ComponentPropsWithRef<'div'> & {\n    maxHeight?: string | number;\n    label: string;\n    size?: HdsSize;\n};\nexport declare function ScrollArea({ size, maxHeight, label, style, className, ref, ...props }: ScrollAreaProps): import(\"react\").JSX.Element;\nexport type LabelProps = ComponentPropsWithRef<'label'> & {\n    required?: boolean;\n    size?: HdsSize;\n};\nexport declare function Label({ size, required, children, className, ref, ...props }: LabelProps): import(\"react\").JSX.Element;\nexport type VisuallyHiddenProps = ComponentPropsWithRef<'span'> & {\n    className?: string;\n};\nexport declare function VisuallyHidden({ className, ref, ...props }: VisuallyHiddenProps): import(\"react\").JSX.Element;\n",
       "exports": [
         {
           "name": "TabsProps",
@@ -705,6 +705,26 @@
           "name": "TableCaption",
           "kind": "value",
           "signature": "export declare function TableCaption({ className, ...props }: TableCaptionProps): import(\"react\").JSX.Element;"
+        },
+        {
+          "name": "DataTableSort",
+          "kind": "type",
+          "signature": "export type DataTableSort = {\n    columnId: string;\n    direction: 'asc' | 'desc';\n};"
+        },
+        {
+          "name": "DataTableColumn",
+          "kind": "type",
+          "signature": "export type DataTableColumn<Row> = {\n    id: string;\n    header: string;\n    cell: (row: Row) => ReactNode;\n    sortable?: boolean;\n};"
+        },
+        {
+          "name": "DataTableProps",
+          "kind": "type",
+          "signature": "export type DataTableProps<Row> = {\n    caption: string;\n    columns: readonly DataTableColumn<Row>[];\n    rows: readonly Row[];\n    getRowId: (row: Row) => string;\n    getRowLabel?: (row: Row) => string;\n    sort: DataTableSort | null;\n    onSortChange: (sort: DataTableSort) => void;\n    selectedRowId: string | null;\n    onSelectedRowIdChange: (rowId: string | null) => void;\n    page: number;\n    pageCount: number;\n    onPageChange: (page: number) => void;\n    pageSize: number;\n    totalRows: number;\n    state?: 'ready' | 'loading' | 'error';\n    emptyMessage?: string;\n    errorMessage?: string;\n    locale?: 'ko' | 'en';\n    size?: HdsSize;\n    className?: string;\n};"
+        },
+        {
+          "name": "DataTable",
+          "kind": "value",
+          "signature": "export declare function DataTable<Row>({ caption, columns, rows, getRowId, getRowLabel, sort, onSortChange, selectedRowId, onSelectedRowIdChange, page, pageCount, onPageChange, pageSize, totalRows, state, emptyMessage, errorMessage, locale, size, className, }: DataTableProps<Row>): import(\"react\").JSX.Element;"
         },
         {
           "name": "AlertProps",
@@ -4598,6 +4618,152 @@
       ]
     },
     {
+      "id": "DataTable",
+      "kind": "component",
+      "summary": "Controlled semantic table with sorting, single-row selection, and finite pagination.",
+      "importPath": "@hyeonse/design-system/display",
+      "source": "src/display.tsx",
+      "signature": "export declare function DataTable<Row>({ caption, columns, rows, getRowId, getRowLabel, sort, onSortChange, selectedRowId, onSelectedRowIdChange, page, pageCount, onPageChange, pageSize, totalRows, state, emptyMessage, errorMessage, locale, size, className, }: DataTableProps<Row>): import(\"react\").JSX.Element;",
+      "usage": [
+        "Import DataTable from @hyeonse/design-system/display and load tokens.css before components.css.",
+        "Pass already sorted current-page rows, stable row IDs, and controlled sort, selection, page, pageCount, totalRows, and pageSize.",
+        "Keep selection by stable ID when it leaves the current page; clear it explicitly when a record is deleted.",
+        "size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals."
+      ],
+      "states": [
+        "ready",
+        "loading",
+        "error",
+        "empty",
+        "selected row on another page"
+      ],
+      "accessibility": [
+        "Uses a captioned native table with aria-sort on the active column, labeled sort buttons and row checkboxes.",
+        "Moves focus to the named table scroll region after pagination; announces the current range and off-page selection."
+      ],
+      "limitations": [
+        "Sorting, paging, and data fetching are controlled by the application."
+      ],
+      "examples": [
+        "data-table"
+      ],
+      "keywords": [
+        "table",
+        "sort",
+        "selection",
+        "pagination",
+        "data",
+        "표",
+        "정렬",
+        "선택",
+        "페이지",
+        "size",
+        "사이징"
+      ],
+      "props": [
+        {
+          "name": "caption",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "columns",
+          "type": "readonly DataTableColumn<Row>[]",
+          "required": true
+        },
+        {
+          "name": "rows",
+          "type": "readonly Row[]",
+          "required": true
+        },
+        {
+          "name": "getRowId",
+          "type": "(row: Row) => string",
+          "required": true
+        },
+        {
+          "name": "getRowLabel",
+          "type": "(row: Row) => string",
+          "required": false
+        },
+        {
+          "name": "sort",
+          "type": "DataTableSort | null",
+          "required": true
+        },
+        {
+          "name": "onSortChange",
+          "type": "(sort: DataTableSort) => void",
+          "required": true
+        },
+        {
+          "name": "selectedRowId",
+          "type": "string | null",
+          "required": true
+        },
+        {
+          "name": "onSelectedRowIdChange",
+          "type": "(rowId: string | null) => void",
+          "required": true
+        },
+        {
+          "name": "page",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "pageCount",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "onPageChange",
+          "type": "(page: number) => void",
+          "required": true
+        },
+        {
+          "name": "pageSize",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "totalRows",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "state",
+          "type": "'ready' | 'loading' | 'error'",
+          "required": false
+        },
+        {
+          "name": "emptyMessage",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "errorMessage",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "locale",
+          "type": "'ko' | 'en'",
+          "required": false
+        },
+        {
+          "name": "size",
+          "type": "HdsSize",
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
       "id": "Alert",
       "kind": "component",
       "summary": "Status or urgent message with semantic role.",
@@ -6088,6 +6254,17 @@
           "path": "examples/display-patterns.tsx",
           "language": "tsx",
           "code": "import { Tabs, TabsList, TabsTab, TabsPanel, Accordion, AccordionItem, AccordionHeader, AccordionTrigger, AccordionPanel, Breadcrumb, Card, Alert, Progress } from '@hyeonse/design-system/display';\n\nexport function DisplayPatterns() {\n  return <>\n    <Breadcrumb items={[{ label: '홈', href: '/' }, { label: '설정' }]} />\n    <Tabs defaultValue=\"overview\"><TabsList activateOnFocus><TabsTab value=\"overview\">개요</TabsTab><TabsTab value=\"details\">상세</TabsTab></TabsList><TabsPanel value=\"overview\">개요 내용</TabsPanel><TabsPanel value=\"details\">상세 내용</TabsPanel></Tabs>\n    <Accordion defaultValue={['shipping']}><AccordionItem value=\"shipping\"><AccordionHeader><AccordionTrigger>배송 안내</AccordionTrigger></AccordionHeader><AccordionPanel>평균 2일이 걸립니다.</AccordionPanel></AccordionItem></Accordion>\n    <Card title=\"주문 상태\" description=\"오늘의 주문\" footer=\"최종 갱신: 오늘\"><Progress value={45} label=\"주문 진행률\" /></Card>\n    <Alert tone=\"success\" title=\"저장 완료\">변경사항을 저장했습니다.</Alert>\n  </>;\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "data-table",
+      "description": "Controlled return review list with sorting, selection, pagination and a separate detail action.",
+      "files": [
+        {
+          "path": "examples/data-table.tsx",
+          "language": "tsx",
+          "code": "import { useState } from 'react';\nimport { DataTable, type DataTableSort } from '@hyeonse/design-system/display';\n\ntype ReturnRow = { id: string; received: string; product: string; holdReason: string; status: string };\nconst returns: ReturnRow[] = [\n  { id: 'RET-2418', received: '2026-11-10', product: '코튼 재킷', holdReason: '상태 재확인', status: '재검수 대기' },\n  { id: 'RET-2419', received: '2026-11-11', product: '셔츠', holdReason: '포장 확인', status: '재검수 대기' },\n  { id: 'RET-2420', received: '2026-11-11', product: '셔츠', holdReason: '상품 라벨 확인', status: '재검수 대기' },\n  { id: 'RET-2421', received: '2026-11-12', product: '가방', holdReason: '손잡이 확인', status: '재검수 대기' },\n];\n\nexport function HeldReturns() {\n  const [sort, setSort] = useState<DataTableSort>({ columnId: 'received', direction: 'asc' });\n  const [selectedRowId, setSelectedRowId] = useState<string | null>(null);\n  const [page, setPage] = useState(1);\n  const [openedRowId, setOpenedRowId] = useState<string | null>(null);\n  const pageSize = 2;\n  // A server-backed consumer may sort/page before passing its current page.\n  const ordered = [...returns].sort((a, b) => {\n    const field = sort.columnId as 'received' | 'id';\n    const compared = a[field].localeCompare(b[field], 'ko');\n    return (sort.direction === 'asc' ? compared : -compared) || a.id.localeCompare(b.id);\n  });\n  const rows = ordered.slice((page - 1) * pageSize, page * pageSize);\n  return <>\n    <DataTable<ReturnRow>\n      caption=\"보류 재검수 목록\"\n      columns={[\n        { id: 'id', header: '반품 번호', sortable: true, cell: row => row.id },\n        { id: 'received', header: '접수일', sortable: true, cell: row => row.received },\n        { id: 'product', header: '상품', cell: row => row.product },\n        { id: 'holdReason', header: '보류 사유', cell: row => row.holdReason },\n        { id: 'status', header: '상태', cell: row => <><span>{row.status}</span> <button type=\"button\" onClick={() => setOpenedRowId(row.id)}>상세 열기 {row.id}</button></> },\n      ]}\n      rows={rows}\n      getRowId={row => row.id}\n      getRowLabel={row => row.product}\n      sort={sort}\n      onSortChange={next => { setSort(next); setPage(1); }}\n      selectedRowId={selectedRowId}\n      onSelectedRowIdChange={setSelectedRowId}\n      page={page}\n      pageCount={Math.max(1, Math.ceil(returns.length / pageSize))}\n      onPageChange={setPage}\n      pageSize={pageSize}\n      totalRows={returns.length}\n    />\n    {openedRowId && <p role=\"status\">상세 대상 {openedRowId}</p>}\n  </>;\n}\n"
         }
       ]
     }

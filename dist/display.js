@@ -1,6 +1,6 @@
 'use client';
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SizeContext, useHdsSize } from './sizing.js';
 import { Tabs as BaseTabs, Accordion as BaseAccordion, Collapsible as BaseCollapsible, ToggleGroup as BaseToggleGroup, Toggle as BaseToggle } from '@base-ui/react';
 const cn = (base, extra) => `${base}${extra ? ` ${extra}` : ''}`;
@@ -48,6 +48,48 @@ export function TableRow({ className, ...props }) { return _jsx("tr", { ...props
 export function TableHead({ className, scope = 'col', ...props }) { return _jsx("th", { ...props, scope: scope, className: cn('hds-table__head', className) }); }
 export function TableCell({ className, ...props }) { return _jsx("td", { ...props, className: cn('hds-table__cell', className) }); }
 export function TableCaption({ className, ...props }) { return _jsx("caption", { ...props, className: cn('hds-table__caption', className) }); }
+export function DataTable({ caption, columns, rows, getRowId, getRowLabel, sort, onSortChange, selectedRowId, onSelectedRowIdChange, page, pageCount, onPageChange, pageSize, totalRows, state = 'ready', emptyMessage, errorMessage, locale = 'ko', size, className, }) {
+    const scrollRef = useRef(null);
+    const restoreFocus = useRef(false);
+    useEffect(() => {
+        if (restoreFocus.current) {
+            scrollRef.current?.focus();
+            restoreFocus.current = false;
+        }
+    }, [page]);
+    if (!caption.trim() || !columns.length || columns.some(column => !column.id || !column.header.trim()) ||
+        new Set(columns.map(column => column.id)).size !== columns.length ||
+        !Number.isSafeInteger(pageSize) || pageSize < 1 ||
+        !Number.isSafeInteger(totalRows) || totalRows < 0 ||
+        !Number.isSafeInteger(pageCount) || pageCount < 1 ||
+        !Number.isSafeInteger(page) || page < 1 || page > pageCount ||
+        rows.length > pageSize || new Set(rows.map(getRowId)).size !== rows.length ||
+        (sort && !columns.some(column => column.id === sort.columnId && column.sortable))) {
+        throw new RangeError('DataTable requires stable columns and row IDs, a valid page, and a sortable sort column.');
+    }
+    const words = locale === 'ko'
+        ? { select: '선택', sortAscending: '오름차순 정렬', sortDescending: '내림차순 정렬',
+            selectedElsewhere: '선택한 행이 현재 페이지에 없습니다.', clear: '선택 해제',
+            loading: '목록을 불러오는 중입니다.', error: '목록을 불러오지 못했습니다.',
+            empty: '표시할 항목이 없습니다.', range: (from, to) => `전체 ${totalRows}건 중 ${from}–${to}건 · ${page}/${pageCount}페이지` }
+        : { select: 'Select', sortAscending: 'Sort ascending', sortDescending: 'Sort descending',
+            selectedElsewhere: 'The selected row is outside this page.', clear: 'Clear selection',
+            loading: 'Loading rows.', error: 'Could not load rows.',
+            empty: 'No rows to display.', range: (from, to) => `Rows ${from}–${to} of ${totalRows} · page ${page} of ${pageCount}` };
+    const visibleRows = state === 'ready' ? rows : [];
+    const from = visibleRows.length ? (page - 1) * pageSize + 1 : 0;
+    const to = visibleRows.length ? from + visibleRows.length - 1 : 0;
+    const offPage = state === 'ready' && selectedRowId !== null && !visibleRows.some(row => getRowId(row) === selectedRowId);
+    return _jsx(Sized, { size: size, children: resolved => _jsxs("div", { "data-hds-size": resolved, className: cn('hds-dataTable', className), children: [_jsx("div", { ref: scrollRef, className: "hds-tableScroll", tabIndex: 0, role: "region", "aria-label": caption, children: _jsxs("table", { className: "hds-table hds-dataTable__table", children: [_jsx("caption", { className: "hds-table__caption", children: caption }), _jsx("thead", { className: "hds-table__header", children: _jsxs("tr", { className: "hds-table__row", children: [_jsx("th", { className: "hds-table__head hds-dataTable__selection", scope: "col", children: words.select }), columns.map(column => {
+                                            const direction = sort?.columnId === column.id ? sort.direction : undefined;
+                                            const next = direction === 'asc' ? 'desc' : 'asc';
+                                            return _jsx("th", { className: "hds-table__head", scope: "col", "aria-sort": direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : undefined, children: column.sortable ? _jsxs("button", { type: "button", className: "hds-dataTable__sort", onClick: () => onSortChange({ columnId: column.id, direction: next }), "aria-label": `${column.header}: ${next === 'asc' ? words.sortAscending : words.sortDescending}`, children: [_jsx("span", { children: column.header }), _jsx("span", { "aria-hidden": "true", className: "hds-dataTable__sortIndicator", "data-direction": direction ?? 'none' })] }) : column.header }, column.id);
+                                        })] }) }), _jsxs("tbody", { className: "hds-table__body", children: [visibleRows.map(row => {
+                                        const rowId = getRowId(row);
+                                        const rowLabel = getRowLabel?.(row) || rowId;
+                                        return _jsxs("tr", { className: "hds-table__row", "data-selected": selectedRowId === rowId || undefined, children: [_jsx("td", { className: "hds-table__cell hds-dataTable__selection", children: _jsx("label", { className: "hds-dataTable__pick", children: _jsx("input", { type: "checkbox", checked: selectedRowId === rowId, "aria-label": `${words.select} ${rowLabel} (${rowId})`, onChange: () => onSelectedRowIdChange(selectedRowId === rowId ? null : rowId) }) }) }), columns.map(column => _jsx("td", { className: "hds-table__cell", children: column.cell(row) }, column.id))] }, rowId);
+                                    }), !visibleRows.length && _jsx("tr", { className: "hds-table__row", children: _jsx("td", { className: "hds-table__cell hds-dataTable__empty", colSpan: columns.length + 1, children: state === 'loading' ? words.loading : state === 'error' ? errorMessage || words.error : emptyMessage || words.empty }) })] })] }) }), _jsxs("div", { className: "hds-dataTable__footer", children: [_jsxs("div", { role: "status", "aria-live": "polite", className: "hds-dataTable__status", children: [words.range(from, to), offPage && _jsxs("span", { children: [" ", words.selectedElsewhere, " ", _jsx("button", { type: "button", onClick: () => onSelectedRowIdChange(null), children: words.clear })] })] }), _jsx(Pagination, { page: page, pageCount: pageCount, onPageChange: next => { restoreFocus.current = true; onPageChange(next); }, locale: locale, size: resolved, "aria-label": `${caption} · ${locale === 'ko' ? '페이지 이동' : 'pagination'}` })] })] }) });
+}
 export function Alert({ size, tone = 'info', title, children, className, role, ref, ...props }) { return _jsx(Sized, { size: size, children: resolved => _jsxs("div", { ...props, ref: ref, role: role ?? (tone === 'danger' ? 'alert' : 'status'), "data-hds-size": resolved, className: cn(`hds-alert hds-alert--${tone}`, className), children: [title && _jsx("strong", { children: title }), children] }) }); }
 function AvatarContent({ src, alt, fallback }) {
     const [failed, setFailed] = useState(false);

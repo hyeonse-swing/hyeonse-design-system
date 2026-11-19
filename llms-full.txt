@@ -1,6 +1,6 @@
 # @hyeonse/design-system
 
-Installed package version: 0.4.9
+Installed package version: 0.5.0
 
 ## Setup
 
@@ -2168,6 +2168,65 @@ export declare function TableCaption({ className, ...props }: TableCaptionProps)
 
 Examples: `hds example display-patterns`
 
+## DataTable
+
+Controlled semantic table with sorting, single-row selection, and finite pagination.
+
+Kind: component · Import: `@hyeonse/design-system/display`
+
+```typescript
+export declare function DataTable<Row>({ caption, columns, rows, getRowId, getRowLabel, sort, onSortChange, selectedRowId, onSelectedRowIdChange, page, pageCount, onPageChange, pageSize, totalRows, state, emptyMessage, errorMessage, locale, size, className, }: DataTableProps<Row>): import("react").JSX.Element;
+```
+
+### Locally declared props
+
+- `caption`: `string`
+- `columns`: `readonly DataTableColumn<Row>[]`
+- `rows`: `readonly Row[]`
+- `getRowId`: `(row: Row) => string`
+- `getRowLabel?`: `(row: Row) => string`
+- `sort`: `DataTableSort | null`
+- `onSortChange`: `(sort: DataTableSort) => void`
+- `selectedRowId`: `string | null`
+- `onSelectedRowIdChange`: `(rowId: string | null) => void`
+- `page`: `number`
+- `pageCount`: `number`
+- `onPageChange`: `(page: number) => void`
+- `pageSize`: `number`
+- `totalRows`: `number`
+- `state?`: `'ready' | 'loading' | 'error'`
+- `emptyMessage?`: `string`
+- `errorMessage?`: `string`
+- `locale?`: `'ko' | 'en'`
+- `size?`: `HdsSize`
+- `className?`: `string`
+
+### Usage
+
+- Import DataTable from @hyeonse/design-system/display and load tokens.css before components.css.
+- Pass already sorted current-page rows, stable row IDs, and controlled sort, selection, page, pageCount, totalRows, and pageSize.
+- Keep selection by stable ID when it leaves the current page; clear it explicitly when a record is deleted.
+- size accepts xs/sm/md/lg/xl; omitted size inherits the nearest SizeProvider or layout, falling back to md. A child size overrides its parent, including across portals.
+
+### States
+
+- ready
+- loading
+- error
+- empty
+- selected row on another page
+
+### Accessibility
+
+- Uses a captioned native table with aria-sort on the active column, labeled sort buttons and row checkboxes.
+- Moves focus to the named table scroll region after pagination; announces the current range and off-page selection.
+
+### Limits
+
+- Sorting, paging, and data fetching are controlled by the application.
+
+Examples: `hds example data-table`
+
 ## Alert
 
 Status or urgent message with semantic role.
@@ -3096,6 +3155,39 @@ export type TableCaptionProps = ComponentPropsWithRef<'caption'> & {
     className?: string;
 };
 export declare function TableCaption({ className, ...props }: TableCaptionProps): import("react").JSX.Element;
+export type DataTableSort = {
+    columnId: string;
+    direction: 'asc' | 'desc';
+};
+export type DataTableColumn<Row> = {
+    id: string;
+    header: string;
+    cell: (row: Row) => ReactNode;
+    sortable?: boolean;
+};
+export type DataTableProps<Row> = {
+    caption: string;
+    columns: readonly DataTableColumn<Row>[];
+    rows: readonly Row[];
+    getRowId: (row: Row) => string;
+    getRowLabel?: (row: Row) => string;
+    sort: DataTableSort | null;
+    onSortChange: (sort: DataTableSort) => void;
+    selectedRowId: string | null;
+    onSelectedRowIdChange: (rowId: string | null) => void;
+    page: number;
+    pageCount: number;
+    onPageChange: (page: number) => void;
+    pageSize: number;
+    totalRows: number;
+    state?: 'ready' | 'loading' | 'error';
+    emptyMessage?: string;
+    errorMessage?: string;
+    locale?: 'ko' | 'en';
+    size?: HdsSize;
+    className?: string;
+};
+export declare function DataTable<Row>({ caption, columns, rows, getRowId, getRowLabel, sort, onSortChange, selectedRowId, onSelectedRowIdChange, page, pageCount, onPageChange, pageSize, totalRows, state, emptyMessage, errorMessage, locale, size, className, }: DataTableProps<Row>): import("react").JSX.Element;
 export type AlertProps = Omit<ComponentPropsWithRef<'div'>, 'title'> & {
     tone?: 'info' | 'success' | 'warning' | 'danger';
     title?: ReactNode;
@@ -3931,6 +4023,65 @@ export function DisplayPatterns() {
     <Accordion defaultValue={['shipping']}><AccordionItem value="shipping"><AccordionHeader><AccordionTrigger>배송 안내</AccordionTrigger></AccordionHeader><AccordionPanel>평균 2일이 걸립니다.</AccordionPanel></AccordionItem></Accordion>
     <Card title="주문 상태" description="오늘의 주문" footer="최종 갱신: 오늘"><Progress value={45} label="주문 진행률" /></Card>
     <Alert tone="success" title="저장 완료">변경사항을 저장했습니다.</Alert>
+  </>;
+}
+```
+
+## data-table
+
+Controlled return review list with sorting, selection, pagination and a separate detail action.
+
+### examples/data-table.tsx
+
+```tsx
+import { useState } from 'react';
+import { DataTable, type DataTableSort } from '@hyeonse/design-system/display';
+
+type ReturnRow = { id: string; received: string; product: string; holdReason: string; status: string };
+const returns: ReturnRow[] = [
+  { id: 'RET-2418', received: '2026-11-10', product: '코튼 재킷', holdReason: '상태 재확인', status: '재검수 대기' },
+  { id: 'RET-2419', received: '2026-11-11', product: '셔츠', holdReason: '포장 확인', status: '재검수 대기' },
+  { id: 'RET-2420', received: '2026-11-11', product: '셔츠', holdReason: '상품 라벨 확인', status: '재검수 대기' },
+  { id: 'RET-2421', received: '2026-11-12', product: '가방', holdReason: '손잡이 확인', status: '재검수 대기' },
+];
+
+export function HeldReturns() {
+  const [sort, setSort] = useState<DataTableSort>({ columnId: 'received', direction: 'asc' });
+  const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [openedRowId, setOpenedRowId] = useState<string | null>(null);
+  const pageSize = 2;
+  // A server-backed consumer may sort/page before passing its current page.
+  const ordered = [...returns].sort((a, b) => {
+    const field = sort.columnId as 'received' | 'id';
+    const compared = a[field].localeCompare(b[field], 'ko');
+    return (sort.direction === 'asc' ? compared : -compared) || a.id.localeCompare(b.id);
+  });
+  const rows = ordered.slice((page - 1) * pageSize, page * pageSize);
+  return <>
+    <DataTable<ReturnRow>
+      caption="보류 재검수 목록"
+      columns={[
+        { id: 'id', header: '반품 번호', sortable: true, cell: row => row.id },
+        { id: 'received', header: '접수일', sortable: true, cell: row => row.received },
+        { id: 'product', header: '상품', cell: row => row.product },
+        { id: 'holdReason', header: '보류 사유', cell: row => row.holdReason },
+        { id: 'status', header: '상태', cell: row => <><span>{row.status}</span> <button type="button" onClick={() => setOpenedRowId(row.id)}>상세 열기 {row.id}</button></> },
+      ]}
+      rows={rows}
+      getRowId={row => row.id}
+      getRowLabel={row => row.product}
+      sort={sort}
+      onSortChange={next => { setSort(next); setPage(1); }}
+      selectedRowId={selectedRowId}
+      onSelectedRowIdChange={setSelectedRowId}
+      page={page}
+      pageCount={Math.max(1, Math.ceil(returns.length / pageSize))}
+      onPageChange={setPage}
+      pageSize={pageSize}
+      totalRows={returns.length}
+    />
+    {openedRowId && <p role="status">상세 대상 {openedRowId}</p>}
   </>;
 }
 ```

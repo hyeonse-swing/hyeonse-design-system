@@ -73,7 +73,7 @@ Provider는 현재 탭의 값을 갱신한 뒤 저장 가능한 환경에서 loc
 | `@hyeonse/design-system/layout` | `SizeProvider`, `Container`, `Stack`, `Inline`, `Grid` |
 | `@hyeonse/design-system/fields` | `Input`, `Textarea`, `Select`, `NativeSelect`, `Combobox`, `MultiSelect`, `Switch`, `RadioGroup`, `Slider`, `NumberField`, `DateField`, `FileInput`, `PasswordField` |
 | `@hyeonse/design-system/overlays` | `DropdownMenu`, `ContextMenu`, `Dialog`, `NativeDialog`, `AlertDialog`, `Sheet`, `Popover`, `Tooltip`, `ToastProvider`, `useToast` |
-| `@hyeonse/design-system/display` | `Tabs`, `TabsList`, `TabsTab`, `TabsPanel`; `Accordion`, `AccordionItem`, `AccordionHeader`, `AccordionTrigger`, `AccordionPanel`; `Collapsible`, `CollapsibleTrigger`, `CollapsiblePanel`; `Breadcrumb`, `Pagination`, `Stepper`, `SegmentedControl`, `Toggle`; `Card`; `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell`, `TableCaption`; `Alert`, `Avatar`, `Separator`, `Skeleton`, `Spinner`, `Progress`, `EmptyState`, `AspectRatio`, `ScrollArea`, `Label`, `VisuallyHidden` |
+| `@hyeonse/design-system/display` | `Tabs`, `TabsList`, `TabsTab`, `TabsPanel`; `Accordion`, `AccordionItem`, `AccordionHeader`, `AccordionTrigger`, `AccordionPanel`; `Collapsible`, `CollapsibleTrigger`, `CollapsiblePanel`; `Breadcrumb`, `Pagination`, `Stepper`, `SegmentedControl`, `Toggle`; `Card`; `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell`, `TableCaption`, `DataTable`; `Alert`, `Avatar`, `Separator`, `Skeleton`, `Spinner`, `Progress`, `EmptyState`, `AspectRatio`, `ScrollArea`, `Label`, `VisuallyHidden` |
 
 `display` 목록에는 Tabs·Accordion·Table 등의 조합용 하위 요소가 포함됩니다. 각 내보내기가 독립된 완성형 컴포넌트라는 뜻은 아닙니다. 타입 내보내기는 각 진입점의 공개 선언에서 확인하세요.
 

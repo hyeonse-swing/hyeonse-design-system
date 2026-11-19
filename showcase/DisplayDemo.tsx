@@ -1,10 +1,31 @@
 import { useState } from 'react';
-import { Tabs, TabsList, TabsTab, TabsPanel, Accordion, AccordionItem, AccordionHeader, AccordionTrigger, AccordionPanel, Collapsible, CollapsibleTrigger, CollapsiblePanel, Breadcrumb, Pagination, Stepper, SegmentedControl, Toggle, Card, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, Alert, Avatar, Separator, Skeleton, Spinner, Progress, EmptyState, AspectRatio, ScrollArea, Label, VisuallyHidden } from '../dist/display.js';
+import { Tabs, TabsList, TabsTab, TabsPanel, Accordion, AccordionItem, AccordionHeader, AccordionTrigger, AccordionPanel, Collapsible, CollapsibleTrigger, CollapsiblePanel, Breadcrumb, Pagination, Stepper, SegmentedControl, Toggle, Card, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, DataTable, type DataTableSort, Alert, Avatar, Separator, Skeleton, Spinner, Progress, EmptyState, AspectRatio, ScrollArea, Label, VisuallyHidden } from '../dist/display.js';
 import { Input } from '../dist/fields.js';
+import { Button } from '../dist/primitives.js';
+
+const returnRecords = [
+  { id: 'RET-2418', received: '2026-11-10', product: '워시드 코튼 재킷', reason: '포장 확인 필요', status: '재검수 대기' },
+  { id: 'RET-2419', received: '2026-11-11', product: '운동화', reason: '상태 확인 필요', status: '재검수 대기' },
+  { id: 'RET-2420', received: '2026-11-11', product: '운동화', reason: '사이즈 표기가 달라 실제 상품을 확인해야 합니다. 포장과 라벨이 서로 일치하는지도 확인합니다.', status: '재검수 대기' },
+  { id: 'RET-2421', received: '2026-11-12', product: '린넨 셔츠', reason: '오염 여부 확인', status: '재검수 대기' },
+  { id: 'RET-2422', received: '2026-11-13', product: '가방', reason: '손잡이 상태 확인', status: '재검수 대기' },
+  { id: 'RET-2423', received: '2026-11-14', product: '안경', reason: '케이스 확인', status: '재검수 대기' },
+];
 
 export function DisplayDemo() {
   const [page, setPage] = useState(2);
   const [view, setView] = useState(['list']);
+  const [tableSort, setTableSort] = useState<DataTableSort>({ columnId: 'received', direction: 'asc' });
+  const [tablePage, setTablePage] = useState(1);
+  const [selectedReturn, setSelectedReturn] = useState<string | null>(null);
+  const [openedReturn, setOpenedReturn] = useState<string | null>(null);
+  const [tableState, setTableState] = useState<'ready' | 'loading' | 'error'>('ready');
+  const sortedReturns = [...returnRecords].sort((a, b) => {
+    const field = tableSort.columnId as 'received' | 'id';
+    const compared = a[field].localeCompare(b[field], 'ko');
+    return (tableSort.direction === 'asc' ? compared : -compared) || a.id.localeCompare(b.id);
+  });
+  const currentReturns = sortedReturns.slice((tablePage - 1) * 2, tablePage * 2);
   return <section data-suite="display" aria-label="탐색과 표시 컴포넌트 예시">
     <div className="demo-group">
       <h3>페이지와 내용 탐색</h3>
@@ -33,6 +54,35 @@ export function DisplayDemo() {
     <div className="demo-group">
       <h3>표와 데이터</h3>
       <Table><TableCaption>주문 요약</TableCaption><TableHeader><TableRow><TableHead>상품</TableHead><TableHead>수량</TableHead></TableRow></TableHeader><TableBody><TableRow><TableCell>노트</TableCell><TableCell>1</TableCell></TableRow><TableRow><TableCell>펜</TableCell><TableCell>3</TableCell></TableRow></TableBody></Table>
+      <div className="demo-actions" role="group" aria-label="목록 상태 확인">
+        <button type="button" onClick={() => setTableState('ready')}>목록 보기</button>
+        <button type="button" onClick={() => setTableState('loading')}>불러오는 중</button>
+        <button type="button" onClick={() => setTableState('error')}>오류 상태</button>
+      </div>
+      <DataTable
+        caption="보류 재검수 목록"
+        columns={[
+          { id: 'id', header: '반품 번호', sortable: true, cell: row => row.id },
+          { id: 'received', header: '접수일', sortable: true, cell: row => row.received },
+          { id: 'product', header: '상품', cell: row => row.product },
+          { id: 'reason', header: '보류 사유', cell: row => row.reason },
+          { id: 'status', header: '상태', cell: row => <><span>{row.status}</span> <Button type="button" variant="secondary" size="sm" onClick={() => setOpenedReturn(row.id)}>상세 열기 {row.id}</Button></> },
+        ]}
+        rows={currentReturns}
+        getRowId={row => row.id}
+        getRowLabel={row => row.product}
+        sort={tableSort}
+        onSortChange={value => { setTableSort(value); setTablePage(1); }}
+        selectedRowId={selectedReturn}
+        onSelectedRowIdChange={setSelectedReturn}
+        page={tablePage}
+        pageCount={3}
+        onPageChange={setTablePage}
+        pageSize={2}
+        totalRows={returnRecords.length}
+        state={tableState}
+      />
+      {openedReturn && <p className="demo-status" role="status">{openedReturn} 상세를 열었습니다.</p>}
     </div>
     <div className="demo-grid">
       <div className="demo-group">

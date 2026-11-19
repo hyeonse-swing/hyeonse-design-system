@@ -173,7 +173,7 @@ test('catalog rejects stale or missing authored API and token descriptions', () 
 });
 
 test('examples are embedded from files, with stable IDs and public imports', () => {
-  assert.deepEqual(catalog.examples.map(example => example.id), ['layout-sizing', 'display-settings', 'token-card', 'form-controls', 'expanded-forms', 'overlay-patterns', 'display-patterns']);
+  assert.deepEqual(catalog.examples.map(example => example.id), ['layout-sizing', 'display-settings', 'token-card', 'form-controls', 'expanded-forms', 'overlay-patterns', 'display-patterns', 'data-table']);
   for (const example of catalog.examples) {
     for (const file of example.files) assert.equal(file.code, readFileSync(resolve(root, file.path), 'utf8'));
   }

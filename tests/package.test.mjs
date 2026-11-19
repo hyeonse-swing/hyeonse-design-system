@@ -41,7 +41,7 @@ test('packed package exposes its own CLI/catalog/docs and usable React examples 
     assert(!catalogText.includes(root), 'catalog metadata must not expose the author workspace');
     assert.doesNotMatch(catalogText, /(?:\/Users\/|\/home\/|\/var\/folders\/|[A-Z]:\\Users\\)/, 'catalog metadata must use package paths');
     const catalog = JSON.parse(catalogText);
-    for (const [module, count] of [['fields', 13], ['overlays', 10], ['display', 36], ['layout', 5]]) {
+    for (const [module, count] of [['fields', 13], ['overlays', 10], ['display', 37], ['layout', 5]]) {
       const importPath = `@hyeonse/design-system/${module}`;
       assert.equal(installedPackage.exports[`./${module}`].default, `./dist/${module}.js`);
       assert.equal(installedPackage.exports[`./${module}`].types, `./dist/${module}.d.ts`);
@@ -68,7 +68,7 @@ test('packed package exposes its own CLI/catalog/docs and usable React examples 
     for (const name of ['react', 'react-dom', 'csstype', '@types/react']) {
       if (!existsSync(join(directory, 'node_modules', name))) symlinkSync(join(root, 'node_modules', name), join(directory, 'node_modules', name), 'dir');
     }
-    assert.deepEqual(catalog.examples.map(example => example.id).sort(), ['display-settings', 'token-card', 'form-controls', 'expanded-forms', 'overlay-patterns', 'display-patterns', 'layout-sizing'].sort());
+    assert.deepEqual(catalog.examples.map(example => example.id).sort(), ['display-settings', 'token-card', 'form-controls', 'expanded-forms', 'overlay-patterns', 'display-patterns', 'data-table', 'layout-sizing'].sort());
     for (const id of catalog.examples.map(example => example.id)) {
       const example = JSON.parse(execute('npm', ['exec', '--offline', '--no', '--', 'hds', 'example', id, '--json'], directory)).data;
       for (const file of example.files) {
@@ -79,8 +79,8 @@ test('packed package exposes its own CLI/catalog/docs and usable React examples 
     }
     writeFileSync(join(directory, 'tsconfig.json'), JSON.stringify({ compilerOptions: { target: 'ES2020', module: 'NodeNext', moduleResolution: 'NodeNext', jsx: 'react-jsx', strict: true, skipLibCheck: true, noEmit: true }, include: ['examples/*.ts', 'examples/*.tsx'] }));
     execute(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', join(directory, 'tsconfig.json')], directory);
-    execute(join(root, 'node_modules/esbuild/bin/esbuild'), [...['display-settings', 'form-controls', 'expanded-forms', 'overlay-patterns', 'display-patterns', 'layout-sizing'].map(id => `examples/${id}.tsx`), 'examples/preferences.ts', '--bundle', '--platform=browser', '--format=esm', '--outdir=build'], directory);
-    for (const id of ['display-settings', 'form-controls', 'expanded-forms', 'overlay-patterns', 'display-patterns', 'layout-sizing', 'preferences']) {
+    execute(join(root, 'node_modules/esbuild/bin/esbuild'), [...['display-settings', 'form-controls', 'expanded-forms', 'overlay-patterns', 'display-patterns', 'data-table', 'layout-sizing'].map(id => `examples/${id}.tsx`), 'examples/preferences.ts', '--bundle', '--platform=browser', '--format=esm', '--outdir=build'], directory);
+    for (const id of ['display-settings', 'form-controls', 'expanded-forms', 'overlay-patterns', 'display-patterns', 'data-table', 'layout-sizing', 'preferences']) {
       assert(existsSync(join(directory, 'build', `${id}.js`)), `${id} browser bundle`);
     }
     const render = execute(process.execPath, ['--input-type=module', '-e', "import React from 'react'; import {renderToString} from 'react-dom/server'; import {PreferencesProvider, PreferencesPanel} from '@hyeonse/design-system/react'; console.log(renderToString(React.createElement(PreferencesProvider, {defaults:{corners:'soft'}}, React.createElement(PreferencesPanel,{locale:'en'}))));"], directory);

@@ -4,10 +4,10 @@
 
 ## 사용
 
-[`v0.4.9` 설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.9.tgz)는 `NativeSelect`의 ref를 교체하거나 선택기를 제거할 때 React 19 콜백 ref가 반환한 정리 함수를 호출합니다. React 컴포넌트에는 React와 React DOM 19.x가 필요합니다. React 없이 스타일을 쓰는 방법은 [CSS 설치 안내](docs/api.md#css)를 참고하세요.
+[`v0.5.0` 설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.5.0.tgz)에는 제어형 정렬·단일 행 선택·페이지 이동을 제공하는 `DataTable`이 들어 있습니다. 현재 페이지의 정렬된 데이터를 앱에서 전달하며, 선택한 행이 다른 페이지로 이동해도 ID로 유지합니다. React 컴포넌트에는 React와 React DOM 19.x가 필요합니다. React 없이 스타일을 쓰는 방법은 [CSS 설치 안내](docs/api.md#css)를 참고하세요.
 
 ```sh
-npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.9.tgz
+npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.5.0.tgz
 
 # 기존 v0.3.0 태그가 필요한 프로젝트만
 npm install github:hyeonse-swing/hyeonse-design-system#v0.3.0

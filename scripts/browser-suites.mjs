@@ -210,7 +210,7 @@ export async function exerciseDisplay(page, base) {
   await collapsible.click();
   assert.equal(await collapsible.getAttribute('aria-expanded'), 'true');
   await collapsible.click();
-  const pagination = scope.locator('.hds-pagination');
+  const pagination = scope.getByRole('navigation', { name: '페이지 이동', exact: true });
   await pagination.getByRole('button', { name: '다음 페이지', exact: true }).click();
   assert.equal(await pagination.locator('[aria-current="page"]').innerText(), '3');
   const toggle = scope.getByRole('button', { name: '격자', exact: true });
@@ -223,6 +223,43 @@ export async function exerciseDisplay(page, base) {
   assert.equal(await scope.getByRole('img', { name: '임현세', exact: true }).isVisible(), true);
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
   return { tabKeyboard: true, accordion: true, collapsible: true, pagination: true, selection: true, tableSemantics: true, feedback: true };
+}
+
+export async function exerciseDataTable(page, base) {
+  const scope = await category(page, base, 'display');
+  const table = scope.getByRole('table', { name: '보류 재검수 목록' });
+  const scroll = scope.getByRole('region', { name: '보류 재검수 목록' });
+  const dateHeader = table.getByRole('columnheader', { name: '접수일' });
+  assert.equal(await dateHeader.getAttribute('aria-sort'), 'ascending');
+  const sortButton = dateHeader.getByRole('button');
+  await sortButton.focus();
+  await sortButton.press('Enter');
+  assert.equal(await dateHeader.getAttribute('aria-sort'), 'descending');
+  await sortButton.press('Space');
+  assert.equal(await dateHeader.getAttribute('aria-sort'), 'ascending');
+  assert.equal(await page.evaluate(() => document.activeElement?.textContent?.includes('접수일')), true);
+
+  const first = table.getByRole('checkbox', { name: /RET-2418/ });
+  await first.check();
+  assert.equal(await first.isChecked(), true);
+  const navigation = scope.getByRole('navigation', { name: '보류 재검수 목록 · 페이지 이동' });
+  await navigation.getByRole('button', { name: '다음 페이지' }).click();
+  assert.equal(await scope.getByRole('region', { name: '보류 재검수 목록' }).evaluate(node => document.activeElement === node), true);
+  assert.match(await scope.locator('.hds-dataTable__status').innerText(), /선택한 행이 현재 페이지에 없습니다/);
+  assert.match(await scope.locator('.hds-dataTable__status').innerText(), /전체 6건 중 3–4건/);
+  await scope.getByRole('button', { name: '선택 해제' }).click();
+  assert.equal(await scope.getByRole('button', { name: '선택 해제' }).count(), 0);
+  await table.getByRole('button', { name: '상세 열기 RET-2420' }).click();
+  assert.match(await scope.getByRole('status').filter({ hasText: '상세를 열었습니다' }).innerText(), /RET-2420/);
+  await scope.getByRole('button', { name: '불러오는 중' }).click();
+  assert.match(await table.innerText(), /목록을 불러오는 중입니다/);
+  await scope.getByRole('button', { name: '오류 상태' }).click();
+  assert.match(await table.innerText(), /목록을 불러오지 못했습니다/);
+  await scope.getByRole('button', { name: '목록 보기' }).click();
+  assert.equal(await table.getByRole('row').count(), 3);
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  assert.equal(await scroll.evaluate(node => node.scrollWidth > node.clientWidth), true);
+  return { sortKeyboard: true, selectionAndPage: true, detailSeparated: true, states: true, horizontalScroll: true };
 }
 
 export async function exerciseExpandedAccessibility(page, base, check, snapshot) {
@@ -351,7 +388,8 @@ export async function exerciseComboboxDismissal(page, base) {
       if (nested) await scope.getByRole('button', { name: '사이드 시트', exact: true }).click();
       await page.evaluate(() => { window.__hdsA11yHiddenBeforeCombo = new WeakSet(document.querySelectorAll('[aria-hidden="true"]')); });
       await page.getByRole('combobox', { name, exact: true }).fill(nested ? '임현' : '운영');
-      await page.locator('.hds-field__popup').waitFor();
+      const popup = page.locator('.hds-field__popup:visible');
+      await popup.waitFor();
       const hiddenCount = await page.evaluate(() => {
         window.__hdsHiddenDuringCombo = [...document.querySelectorAll('[aria-hidden="true"]')].filter(element => !window.__hdsA11yHiddenBeforeCombo.has(element) && !element.hasAttribute('data-base-ui-focus-guard'));
         return window.__hdsHiddenDuringCombo.length;
@@ -360,7 +398,7 @@ export async function exerciseComboboxDismissal(page, base) {
         if (nested) await page.getByRole('dialog', { name: '작업 상세', exact: true }).locator('.hds-dialog__title').click();
         else await scope.locator('#fields-alias').click();
       } else await page.keyboard.press(action);
-      await page.locator('.hds-field__popup').waitFor({ state: 'hidden' });
+      await popup.waitFor({ state: 'hidden' });
       await page.waitForFunction(() => window.__hdsHiddenDuringCombo.every(element => !element.isConnected || element.getAttribute('aria-hidden') !== 'true'));
       assert.equal(await page.evaluate(() => Boolean(document.activeElement?.closest('[aria-hidden="true"], [inert]'))), false, 'Dismissal restores access before focus leaves the combobox');
       observations.push({ name, action, temporaryHiddenElements: hiddenCount, restored: true });

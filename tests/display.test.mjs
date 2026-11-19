@@ -3,9 +3,38 @@ import assert from 'node:assert/strict';
 import React, { act } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { JSDOM } from 'jsdom';
-const { Card, Breadcrumb, Pagination, Stepper, Table, TableCaption, TableHeader, TableBody, TableRow, TableHead, TableCell, Progress, Spinner, Skeleton, Avatar, Label, VisuallyHidden, Tabs, TabsList, TabsTab, TabsPanel } = await import(process.env.HDS_DISPLAY_TEST_MODULE ?? '../dist/display.js');
+const { Card, Breadcrumb, Pagination, Stepper, Table, TableCaption, TableHeader, TableBody, TableRow, TableHead, TableCell, DataTable, Progress, Spinner, Skeleton, Avatar, Label, VisuallyHidden, Tabs, TabsList, TabsTab, TabsPanel } = await import(process.env.HDS_DISPLAY_TEST_MODULE ?? '../dist/display.js');
 const h = React.createElement;
 const documentOf = element => new JSDOM(renderToStaticMarkup(element)).window.document;
+
+test('data table exposes sorted native headers, distinct row selection and off-page state', () => {
+  const props = {
+    caption: '보류 목록',
+    columns: [{ id: 'received', header: '접수일', sortable: true, cell: row => row.received }, { id: 'product', header: '상품', cell: row => row.product }],
+    rows: [{ id: 'R-1', received: '2026-11-19', product: '셔츠' }, { id: 'R-2', received: '2026-11-19', product: '셔츠' }],
+    getRowId: row => row.id,
+    sort: { columnId: 'received', direction: 'asc' },
+    onSortChange() {},
+    selectedRowId: 'R-2',
+    onSelectedRowIdChange() {},
+    page: 1, pageCount: 2, onPageChange() {}, pageSize: 2, totalRows: 4,
+  };
+  const document = documentOf(h(DataTable, props));
+  assert.equal(document.querySelector('table caption').textContent, '보류 목록');
+  assert.equal(document.querySelector('th[aria-sort="ascending"]').textContent, '접수일');
+  assert.equal(document.querySelector('th[aria-sort="ascending"] .hds-dataTable__sortIndicator').dataset.direction, 'asc');
+  assert.equal(document.querySelectorAll('th[scope="col"]').length, 3);
+  assert.deepEqual([...document.querySelectorAll('tbody input')].map(input => input.getAttribute('aria-label')), ['선택 R-1 (R-1)', '선택 R-2 (R-2)']);
+  assert.equal(document.querySelectorAll('tbody input:checked').length, 1);
+  assert.match(document.querySelector('[role="status"]').textContent, /전체 4건 중 1–2건/);
+  const next = documentOf(h(DataTable, { ...props, page: 2, rows: [], selectedRowId: 'R-2' }));
+  assert.match(next.querySelector('[role="status"]').textContent, /선택한 행이 현재 페이지에 없습니다/);
+  assert.equal(next.querySelectorAll('tbody input').length, 0);
+  assert.equal(documentOf(h(DataTable, { ...props, rows: [], totalRows: 0, pageCount: 1, selectedRowId: null })).querySelector('tbody td').textContent.trim(), '표시할 항목이 없습니다.');
+  assert.equal(documentOf(h(DataTable, { ...props, state: 'loading' })).querySelector('tbody td').textContent.trim(), '목록을 불러오는 중입니다.');
+  assert.equal(documentOf(h(DataTable, { ...props, state: 'error', errorMessage: '다시 시도' })).querySelector('tbody td').textContent.trim(), '다시 시도');
+  assert.throws(() => renderToStaticMarkup(h(DataTable, { ...props, rows: [props.rows[0], props.rows[0]] })), RangeError);
+});
 
 test('navigation renders current location, finite pages, and current process step', () => {
   const document = documentOf(h(React.Fragment, null,

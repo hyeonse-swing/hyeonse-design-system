@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ComponentPropsWithRef, ReactNode } from 'react';
 import { SizeContext, useHdsSize } from './sizing.js';
 import type { HdsSize } from './sizing.js';
@@ -80,6 +80,115 @@ export type TableCellProps = ComponentPropsWithRef<'td'> & { className?: string 
 export function TableCell({ className, ...props }: TableCellProps) { return <td {...props} className={cn('hds-table__cell', className)} />; }
 export type TableCaptionProps = ComponentPropsWithRef<'caption'> & { className?: string };
 export function TableCaption({ className, ...props }: TableCaptionProps) { return <caption {...props} className={cn('hds-table__caption', className)} />; }
+
+export type DataTableSort = { columnId: string; direction: 'asc' | 'desc' };
+export type DataTableColumn<Row> = {
+  id: string;
+  header: string;
+  cell: (row: Row) => ReactNode;
+  sortable?: boolean;
+};
+export type DataTableProps<Row> = {
+  caption: string;
+  columns: readonly DataTableColumn<Row>[];
+  rows: readonly Row[];
+  getRowId: (row: Row) => string;
+  getRowLabel?: (row: Row) => string;
+  sort: DataTableSort | null;
+  onSortChange: (sort: DataTableSort) => void;
+  selectedRowId: string | null;
+  onSelectedRowIdChange: (rowId: string | null) => void;
+  page: number;
+  pageCount: number;
+  onPageChange: (page: number) => void;
+  pageSize: number;
+  totalRows: number;
+  state?: 'ready' | 'loading' | 'error';
+  emptyMessage?: string;
+  errorMessage?: string;
+  locale?: 'ko' | 'en';
+  size?: HdsSize;
+  className?: string;
+};
+export function DataTable<Row>({
+  caption, columns, rows, getRowId, getRowLabel, sort, onSortChange,
+  selectedRowId, onSelectedRowIdChange, page, pageCount, onPageChange,
+  pageSize, totalRows, state = 'ready', emptyMessage, errorMessage,
+  locale = 'ko', size, className,
+}: DataTableProps<Row>) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const restoreFocus = useRef(false);
+  useEffect(() => {
+    if (restoreFocus.current) {
+      scrollRef.current?.focus();
+      restoreFocus.current = false;
+    }
+  }, [page]);
+  if (!caption.trim() || !columns.length || columns.some(column => !column.id || !column.header.trim()) ||
+      new Set(columns.map(column => column.id)).size !== columns.length ||
+      !Number.isSafeInteger(pageSize) || pageSize < 1 ||
+      !Number.isSafeInteger(totalRows) || totalRows < 0 ||
+      !Number.isSafeInteger(pageCount) || pageCount < 1 ||
+      !Number.isSafeInteger(page) || page < 1 || page > pageCount ||
+      rows.length > pageSize || new Set(rows.map(getRowId)).size !== rows.length ||
+      (sort && !columns.some(column => column.id === sort.columnId && column.sortable))) {
+    throw new RangeError('DataTable requires stable columns and row IDs, a valid page, and a sortable sort column.');
+  }
+  const words = locale === 'ko'
+    ? { select: '선택', sortAscending: '오름차순 정렬', sortDescending: '내림차순 정렬',
+      selectedElsewhere: '선택한 행이 현재 페이지에 없습니다.', clear: '선택 해제',
+      loading: '목록을 불러오는 중입니다.', error: '목록을 불러오지 못했습니다.',
+      empty: '표시할 항목이 없습니다.', range: (from: number, to: number) => `전체 ${totalRows}건 중 ${from}–${to}건 · ${page}/${pageCount}페이지` }
+    : { select: 'Select', sortAscending: 'Sort ascending', sortDescending: 'Sort descending',
+      selectedElsewhere: 'The selected row is outside this page.', clear: 'Clear selection',
+      loading: 'Loading rows.', error: 'Could not load rows.',
+      empty: 'No rows to display.', range: (from: number, to: number) => `Rows ${from}–${to} of ${totalRows} · page ${page} of ${pageCount}` };
+  const visibleRows = state === 'ready' ? rows : [];
+  const from = visibleRows.length ? (page - 1) * pageSize + 1 : 0;
+  const to = visibleRows.length ? from + visibleRows.length - 1 : 0;
+  const offPage = state === 'ready' && selectedRowId !== null && !visibleRows.some(row => getRowId(row) === selectedRowId);
+  return <Sized size={size}>{resolved => <div data-hds-size={resolved} className={cn('hds-dataTable', className)}>
+    <div ref={scrollRef} className="hds-tableScroll" tabIndex={0} role="region" aria-label={caption}>
+      <table className="hds-table hds-dataTable__table">
+        <caption className="hds-table__caption">{caption}</caption>
+        <thead className="hds-table__header"><tr className="hds-table__row">
+          <th className="hds-table__head hds-dataTable__selection" scope="col">{words.select}</th>
+          {columns.map(column => {
+            const direction = sort?.columnId === column.id ? sort.direction : undefined;
+            const next = direction === 'asc' ? 'desc' : 'asc';
+            return <th key={column.id} className="hds-table__head" scope="col" aria-sort={direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : undefined}>
+              {column.sortable ? <button type="button" className="hds-dataTable__sort" onClick={() => onSortChange({ columnId: column.id, direction: next })} aria-label={`${column.header}: ${next === 'asc' ? words.sortAscending : words.sortDescending}`}>
+                <span>{column.header}</span><span aria-hidden="true" className="hds-dataTable__sortIndicator" data-direction={direction ?? 'none'} />
+              </button> : column.header}
+            </th>;
+          })}
+        </tr></thead>
+        <tbody className="hds-table__body">
+          {visibleRows.map(row => {
+            const rowId = getRowId(row);
+            const rowLabel = getRowLabel?.(row) || rowId;
+            return <tr key={rowId} className="hds-table__row" data-selected={selectedRowId === rowId || undefined}>
+              <td className="hds-table__cell hds-dataTable__selection"><label className="hds-dataTable__pick"><input type="checkbox" checked={selectedRowId === rowId}
+                aria-label={`${words.select} ${rowLabel} (${rowId})`}
+                onChange={() => onSelectedRowIdChange(selectedRowId === rowId ? null : rowId)} /></label></td>
+              {columns.map(column => <td key={column.id} className="hds-table__cell">{column.cell(row)}</td>)}
+            </tr>;
+          })}
+          {!visibleRows.length && <tr className="hds-table__row"><td className="hds-table__cell hds-dataTable__empty" colSpan={columns.length + 1}>
+            {state === 'loading' ? words.loading : state === 'error' ? errorMessage || words.error : emptyMessage || words.empty}
+          </td></tr>}
+        </tbody>
+      </table>
+    </div>
+    <div className="hds-dataTable__footer">
+      <div role="status" aria-live="polite" className="hds-dataTable__status">
+        {words.range(from, to)}
+        {offPage && <span> {words.selectedElsewhere} <button type="button" onClick={() => onSelectedRowIdChange(null)}>{words.clear}</button></span>}
+      </div>
+      <Pagination page={page} pageCount={pageCount} onPageChange={next => { restoreFocus.current = true; onPageChange(next); }} locale={locale} size={resolved} aria-label={`${caption} · ${locale === 'ko' ? '페이지 이동' : 'pagination'}`} />
+    </div>
+  </div>}</Sized>;
+}
 export type AlertProps = Omit<ComponentPropsWithRef<'div'>, 'title'> & { tone?: 'info' | 'success' | 'warning' | 'danger'; title?: ReactNode; size?: HdsSize };
 export function Alert({ size, tone = 'info', title, children, className, role, ref, ...props }: AlertProps) { return <Sized size={size}>{resolved => <div {...props} ref={ref} role={role ?? (tone === 'danger' ? 'alert' : 'status')} data-hds-size={resolved} className={cn(`hds-alert hds-alert--${tone}`, className)}>{title && <strong>{title}</strong>}{children}</div>}</Sized>; }
 export type AvatarProps = Omit<ComponentPropsWithRef<'span'>, 'children'> & { src?: string; alt: string; fallback: ReactNode; size?: HdsSize };
