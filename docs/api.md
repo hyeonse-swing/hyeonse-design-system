@@ -5,7 +5,7 @@
 ## 설치
 
 ```sh
-npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.8.tgz
+npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.9.tgz
 ```
 
 [릴리스 매니페스트](https://design-system.hyeonse.dev/releases/manifest.json)의 `version`, `url`, `sha256`, `integrity`로 버전과 파일 무결성을 확인하세요. 기존 GitHub `v0.3.0` 태그에는 기본 컴포넌트 네 개가 있고 새 `layout`·`fields`·`overlays`·`display` 진입점은 없습니다. Base UI 1.9.0의 WebKit VoiceOver 초점 가드는 [상위 이슈 #5237](https://github.com/mui/base-ui/issues/5237)의 동작대로 버튼 역할을 유지합니다. HDS가 만든 가드에만 접근 가능한 이름을 붙이며 다른 Base UI 컴포넌트에는 적용하지 않습니다. 고정 선택과 일반 모달에는 `NativeSelect`, `NativeDialog`를 우선 사용하세요. Base UI 팝업을 `NativeDialog` 안에 중첩하면 기본 포털이 모달 밖에 열려 조작할 수 없으므로 복합 팝업에는 `Dialog`를 유지해야 합니다. [브라우저 검증 범위](code-freeze.md#브라우저-검사-범위)를 확인하세요.
@@ -15,7 +15,7 @@ npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4
 React가 없는 별도 프로젝트에서 스타일만 사용한다면 npm의 피어 의존성 설치를 생략하세요.
 
 ```sh
-npm install --omit=peer https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.8.tgz
+npm install --omit=peer https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.9.tgz
 ```
 
 일반 npm 설치에는 Base UI의 피어 의존성인 React와 React DOM이 포함될 수 있습니다. React 컴포넌트를 사용하는 프로젝트에는 React와 React DOM 19.x를 설치하세요.

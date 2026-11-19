@@ -4,10 +4,10 @@
 
 ## 사용
 
-[`v0.4.8` 설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.8.tgz)는 Safari·VoiceOver에서 HDS 팝업의 초점 가드에 이름을 붙이고 모달 제목 영역의 배너 낭독을 수정합니다. React 컴포넌트에는 React와 React DOM 19.x가 필요합니다. React 없이 스타일을 쓰는 방법은 [CSS 설치 안내](docs/api.md#css)를 참고하세요.
+[`v0.4.9` 설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.9.tgz)는 `NativeSelect`의 ref를 교체하거나 선택기를 제거할 때 React 19 콜백 ref가 반환한 정리 함수를 호출합니다. React 컴포넌트에는 React와 React DOM 19.x가 필요합니다. React 없이 스타일을 쓰는 방법은 [CSS 설치 안내](docs/api.md#css)를 참고하세요.
 
 ```sh
-npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.8.tgz
+npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.9.tgz
 
 # 기존 v0.3.0 태그가 필요한 프로젝트만
 npm install github:hyeonse-swing/hyeonse-design-system#v0.3.0

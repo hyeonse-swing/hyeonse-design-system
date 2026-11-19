@@ -134,6 +134,42 @@ async function withClient(view, run) {
   }
 }
 
+test('NativeSelect cleans up replaced and unmounted refs without a null callback', async () => {
+  const calls = [];
+  const cleanupRef = name => node => {
+    calls.push(`${name}:${node ? 'node' : 'null'}`);
+    return () => calls.push(`${name}:cleanup`);
+  };
+  const firstRef = cleanupRef('first');
+  const lastRef = cleanupRef('last');
+  let legacyNode;
+  const legacyRef = node => { legacyNode = node; calls.push(`legacy:${node ? 'node' : 'null'}`); };
+  const objectRef = React.createRef();
+  const view = ref => e(fields.NativeSelect, { label: 'Team', options, ref });
+  let select;
+
+  await withClient(view(firstRef), async ({ document, root }) => {
+    select = document.querySelector('select');
+    assert.ok(select);
+    assert.deepEqual(calls, ['first:node']);
+
+    await act(async () => root.render(view(legacyRef)));
+    assert.equal(document.querySelector('select'), select, 'ref replacement keeps the same select');
+    assert.equal(legacyNode, select);
+    assert.deepEqual(calls, ['first:node', 'first:cleanup', 'legacy:node']);
+
+    await act(async () => root.render(view(objectRef)));
+    assert.equal(legacyNode, null);
+    assert.deepEqual(calls, ['first:node', 'first:cleanup', 'legacy:node', 'legacy:null']);
+    assert.equal(objectRef.current, select);
+
+    await act(async () => root.render(view(lastRef)));
+    assert.equal(objectRef.current, null);
+    assert.deepEqual(calls, ['first:node', 'first:cleanup', 'legacy:node', 'legacy:null', 'last:node']);
+  });
+  assert.deepEqual(calls, ['first:node', 'first:cleanup', 'legacy:node', 'legacy:null', 'last:node', 'last:cleanup']);
+});
+
 test('native fields and password reveal preserve value through form reset', async () => {
   const inputRef = React.createRef();
   await withClient(e('form', null,

@@ -152,8 +152,15 @@ export function NativeSelect({ label, hint, error, size, options, name, form, id
   const selectRef = useRef<HTMLSelectElement | null>(null);
   const setRef = useCallback((node: HTMLSelectElement | null) => {
     selectRef.current = node;
-    if (typeof ref === 'function') ref(node);
-    else if (ref) ref.current = node;
+    if (typeof ref === 'function') {
+      const cleanup = ref(node);
+      if (typeof cleanup === 'function') return () => {
+        selectRef.current = null;
+        cleanup();
+      };
+    } else if (ref) {
+      ref.current = node;
+    }
   }, [ref]);
   useLayoutEffect(() => {
     const select = selectRef.current;
