@@ -78,6 +78,17 @@ test('every shipped runtime export has an authored entry and declarations includ
   assert.deepEqual(catalog.entries.map(entry => entry.id).sort(), [...runtime.values()].flatMap(module => Object.keys(module)).sort());
 });
 
+test('current archive API table lists every shipped component export', () => {
+  const rows = readFileSync(resolve(root, 'docs/api.md'), 'utf8').split('\n');
+  for (const name of ['layout', 'fields', 'overlays', 'display']) {
+    const importPath = `@hyeonse/design-system/${name}`;
+    const row = rows.find(line => line.startsWith(`| \`${importPath}\` |`));
+    assert.ok(row, `missing public API row for ${importPath}`);
+    const listed = [...row.matchAll(/`([^`]+)`/g)].map(match => match[1]).slice(1).sort();
+    assert.deepEqual(listed, Object.keys(runtimeModules.get(`./${name}`)).sort(), `${importPath} table does not match its runtime exports`);
+  }
+});
+
 test('React props come from declarations and utility defaults match runtime', () => {
   assert.deepEqual(byId('PreferencesProvider').props, [
     { name: 'children', type: 'ReactNode', required: true },

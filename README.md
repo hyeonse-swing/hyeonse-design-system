@@ -4,10 +4,10 @@
 
 ## 사용
 
-[`v0.4.5` 설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.5.tgz)는 폼을 초기화한 직후에도 제어형 스위치와 라디오의 현재 선택을 제출하고, 네이티브 모달 안에서 폼을 제출해도 부모의 열림 상태를 따릅니다. 고정 항목에는 `NativeSelect`, 일반 모달에는 `NativeDialog`를 사용할 수 있습니다. Base UI 오버레이의 WebKit 초점 가드는 [검증 범위](docs/code-freeze.md)에 기록했습니다. 이전 고정 아카이브는 각 버전 주소에서 계속 설치할 수 있습니다.
+[`v0.4.6` 설치 아카이브](https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.6.tgz)는 `NativeSelect`와 `NativeDialog`의 공개 가져오기 경로를 API 표에 포함합니다. 고정 항목 선택에는 `NativeSelect`, 일반 모달에는 `NativeDialog`를 사용할 수 있습니다. Base UI 오버레이의 WebKit 초점 가드는 [검증 범위](docs/code-freeze.md)에 기록했습니다. 이전 고정 아카이브는 각 버전 주소에서 계속 설치할 수 있습니다.
 
 ```sh
-npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.5.tgz
+npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.6.tgz
 
 # 기존 v0.3.0 태그가 필요한 프로젝트만
 npm install github:hyeonse-swing/hyeonse-design-system#v0.3.0

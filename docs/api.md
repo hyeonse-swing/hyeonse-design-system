@@ -5,7 +5,7 @@
 ## 설치
 
 ```sh
-npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.5.tgz
+npm install https://design-system.hyeonse.dev/releases/hyeonse-design-system-0.4.6.tgz
 ```
 
 [릴리스 매니페스트](https://design-system.hyeonse.dev/releases/manifest.json)의 `version`, `url`, `sha256`, `integrity`로 버전과 파일 무결성을 확인하세요. 기존 GitHub `v0.3.0` 태그에는 기본 컴포넌트 네 개가 있고 새 `layout`·`fields`·`overlays`·`display` 진입점은 없습니다. Base UI 1.9.0을 쓰는 컴포넌트에는 WebKit VoiceOver 초점 가드의 이름 누락([상위 이슈 #5237](https://github.com/mui/base-ui/issues/5237))이 남아 있습니다. 고정 선택과 일반 모달에는 `NativeSelect`, `NativeDialog`를 선택할 수 있습니다. [브라우저 검증 범위](code-freeze.md#브라우저-검사-범위)를 확인하세요.
@@ -58,13 +58,13 @@ Provider는 현재 탭의 값을 갱신한 뒤 저장 가능한 환경에서 loc
 
 `@hyeonse/design-system/primitives`는 `Button`, `TextField`, `Checkbox`, `Badge`와 각각의 Props 타입을 제공합니다. React 19 네이티브 속성과 `ref`를 전달합니다. 이 진입점은 `v0.2.0`에 없습니다.
 
-`v0.4.0` 아카이브의 새 진입점은 다음과 같습니다. 이 API를 쓰는 소비 앱은 React와 React DOM 19가 필요하며, CSS는 `tokens.css` 다음 `components.css` 순서로 불러옵니다. 패키지에는 MIT 라이선스의 `@base-ui/react@1.9.0`이 런타임 의존성으로 고정되어 있습니다. 컴포넌트별 상태와 예제는 [컴포넌트 안내](components.md)를 확인하세요.
+현재 설치 아카이브의 공개 진입점은 다음과 같습니다. 이 API를 쓰는 소비 앱은 React와 React DOM 19가 필요하며, CSS는 `tokens.css` 다음 `components.css` 순서로 불러옵니다. 패키지에는 MIT 라이선스의 `@base-ui/react@1.9.0`이 런타임 의존성으로 고정되어 있습니다. 컴포넌트별 상태와 예제는 [컴포넌트 안내](components.md)를 확인하세요.
 
 | 공개 진입점 | 런타임 내보내기 |
 | --- | --- |
 | `@hyeonse/design-system/layout` | `SizeProvider`, `Container`, `Stack`, `Inline`, `Grid` |
-| `@hyeonse/design-system/fields` | `Input`, `Textarea`, `Select`, `Combobox`, `MultiSelect`, `Switch`, `RadioGroup`, `Slider`, `NumberField`, `DateField`, `FileInput`, `PasswordField` |
-| `@hyeonse/design-system/overlays` | `DropdownMenu`, `ContextMenu`, `Dialog`, `AlertDialog`, `Sheet`, `Popover`, `Tooltip`, `ToastProvider`, `useToast` |
+| `@hyeonse/design-system/fields` | `Input`, `Textarea`, `Select`, `NativeSelect`, `Combobox`, `MultiSelect`, `Switch`, `RadioGroup`, `Slider`, `NumberField`, `DateField`, `FileInput`, `PasswordField` |
+| `@hyeonse/design-system/overlays` | `DropdownMenu`, `ContextMenu`, `Dialog`, `NativeDialog`, `AlertDialog`, `Sheet`, `Popover`, `Tooltip`, `ToastProvider`, `useToast` |
 | `@hyeonse/design-system/display` | `Tabs`, `TabsList`, `TabsTab`, `TabsPanel`; `Accordion`, `AccordionItem`, `AccordionHeader`, `AccordionTrigger`, `AccordionPanel`; `Collapsible`, `CollapsibleTrigger`, `CollapsiblePanel`; `Breadcrumb`, `Pagination`, `Stepper`, `SegmentedControl`, `Toggle`; `Card`; `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell`, `TableCaption`; `Alert`, `Avatar`, `Separator`, `Skeleton`, `Spinner`, `Progress`, `EmptyState`, `AspectRatio`, `ScrollArea`, `Label`, `VisuallyHidden` |
 
 `display` 목록에는 Tabs·Accordion·Table 등의 조합용 하위 요소가 포함됩니다. 각 내보내기가 독립된 완성형 컴포넌트라는 뜻은 아닙니다. 타입 내보내기는 각 진입점의 공개 선언에서 확인하세요.
